@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+  <bean id="userDao" class="xyz.yanghaoyu.flora.test.UserDao">
+    <property name="temp" value="howieyoung"/>
+  </bean>
+
+  <bean id="userService" class="xyz.yanghaoyu.flora.test.User">
+    <property name="name" value="howieyoung"/>
+    <property name="userDao" ref="userDao"/>
+  </bean>
+</beans>
