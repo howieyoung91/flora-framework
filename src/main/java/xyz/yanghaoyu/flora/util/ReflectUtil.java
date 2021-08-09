@@ -1,5 +1,7 @@
 package xyz.yanghaoyu.flora.util;
 
+import javax.annotation.*;
+import java.lang.annotation.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -65,5 +67,44 @@ public class ReflectUtil {
             }
         }
         return cl;
+    }
+
+    public static Class<?> loadClass(String className, boolean isInitialized) {
+        Class<?> clazz = null;
+        try {
+            clazz = Class.forName(className, isInitialized, getDefaultClassLoader());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return clazz;
+    }
+
+    public static Annotation getAnnotation(Class clazz, Class<? extends Annotation> targetAnno) {
+        Annotation[] annotations = clazz.getAnnotations();
+        for (Annotation annotation : annotations) {
+            if (
+                    annotation.annotationType() != Deprecated.class &&
+                    annotation.annotationType() != SuppressWarnings.class &&
+                    annotation.annotationType() != Override.class &&
+                    annotation.annotationType() != PostConstruct.class &&
+                    annotation.annotationType() != PreDestroy.class &&
+                    annotation.annotationType() != Resource.class &&
+                    annotation.annotationType() != Resources.class &&
+                    annotation.annotationType() != Generated.class &&
+                    annotation.annotationType() != Target.class &&
+                    annotation.annotationType() != Retention.class &&
+                    annotation.annotationType() != Documented.class &&
+                    annotation.annotationType() != Inherited.class
+            ) {
+                if (
+                        annotation.annotationType() == targetAnno
+                ) {
+                    return annotation;
+                } else {
+                    getAnnotation(annotation.annotationType(), targetAnno);
+                }
+            }
+        }
+        return null;
     }
 }

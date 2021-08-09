@@ -9,7 +9,6 @@ import xyz.yanghaoyu.flora.beans.factory.support.BeanDefinitionRegistry;
  * @version 1.0
  */
 
-
 public abstract class AbstractBeanDefinitionAnnotationReader extends AbstractBeanDefinitionReader implements BeanDefinitionAnnotationReader {
     public AbstractBeanDefinitionAnnotationReader(BeanDefinitionRegistry registry) {
         super(registry);

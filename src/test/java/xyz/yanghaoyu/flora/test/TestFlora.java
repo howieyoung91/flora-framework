@@ -2,7 +2,8 @@ package xyz.yanghaoyu.flora.test;
 
 import org.junit.Test;
 import xyz.yanghaoyu.flora.beans.factory.support.DefaultListableBeanFactory;
-import xyz.yanghaoyu.flora.core.io.reader.XmlBeanDefinitionReader;
+import xyz.yanghaoyu.flora.context.support.ClassPathXmlApplicationContext;
+import xyz.yanghaoyu.flora.core.io.reader.DefaultBeanDefinitionAnnotationReader;
 
 /**
  * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/7 23:07<i/>
@@ -12,13 +13,19 @@ import xyz.yanghaoyu.flora.core.io.reader.XmlBeanDefinitionReader;
 public class TestFlora {
     @Test
     public void test() {
+        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:application.xml");
+        UserService userService = applicationContext.getBean("userService", UserService.class);
+        userService.say();
+        userService.t();
+    }
+
+    @Test
+    public void testAnnoReader() {
         // 1.初始化 BeanFactory
         DefaultListableBeanFactory beanFactory = new DefaultListableBeanFactory();
-        // 2. 读取配置文件&注册Bean
-        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
-        reader.loadBeanDefinitions("classpath:application.xml");
-        // 3. 获取Bean对象调用方法
-        User userService = (User) beanFactory.getBean("userService");
+        DefaultBeanDefinitionAnnotationReader reader = new DefaultBeanDefinitionAnnotationReader(beanFactory);
+        reader.loadBeanDefinitions("xyz.yanghaoyu.flora.test");
+        UserService userService = (UserService) beanFactory.getBean("userService");
         userService.t();
         userService.say();
     }

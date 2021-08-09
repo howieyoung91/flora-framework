@@ -1,18 +1,22 @@
 package xyz.yanghaoyu.flora.test;
 
+import xyz.yanghaoyu.flora.annotation.Component;
+import xyz.yanghaoyu.flora.annotation.Inject;
+
 /**
  * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/7 23:06<i/>
  * @version 1.0
  */
 
-
-public class User {
+@Component
+public class UserService {
     String name = "Howie";
+    @Inject.ByName
     UserDao userDao;
 
-    public User() { }
+    public UserService() { }
 
-    public User(String name) {
+    public UserService(String name) {
         this.name = name;
     }
 

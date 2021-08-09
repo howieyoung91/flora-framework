@@ -14,4 +14,6 @@ public interface BeanDefinitionFileReader extends BeanDefinitionReader {
     void loadBeanDefinitions(Resource... resources) throws BeansException, IOException;
 
     void loadBeanDefinitions(String location) throws BeansException, IOException;
+
+    void loadBeanDefinitions(String... locations) throws BeansException, IOException;
 }

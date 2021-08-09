@@ -4,7 +4,7 @@
     <property name="temp" value="howieyoung"/>
   </bean>
 
-  <bean id="userService" class="xyz.yanghaoyu.flora.test.User">
+  <bean id="userService" class="xyz.yanghaoyu.flora.test.UserService">
     <property name="name" value="howieyoung"/>
     <property name="userDao" ref="userDao"/>
   </bean>
