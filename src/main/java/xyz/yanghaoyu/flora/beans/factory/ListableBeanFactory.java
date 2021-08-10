@@ -1,7 +1,6 @@
 package xyz.yanghaoyu.flora.beans.factory;
 
 import xyz.yanghaoyu.flora.BeansException;
-import xyz.yanghaoyu.flora.beans.factory.BeanFactory;
 
 import java.util.Map;
 

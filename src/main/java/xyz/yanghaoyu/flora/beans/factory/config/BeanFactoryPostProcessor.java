@@ -6,5 +6,4 @@ import xyz.yanghaoyu.flora.beans.factory.ConfigurableListableBeanFactory;
 
 public interface BeanFactoryPostProcessor {
     void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException;
-
 }

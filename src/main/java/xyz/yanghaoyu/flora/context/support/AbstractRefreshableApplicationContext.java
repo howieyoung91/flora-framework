@@ -2,7 +2,6 @@ package xyz.yanghaoyu.flora.context.support;
 
 import xyz.yanghaoyu.flora.BeansException;
 import xyz.yanghaoyu.flora.beans.factory.ConfigurableListableBeanFactory;
-import xyz.yanghaoyu.flora.beans.factory.support.BeanDefinitionRegistry;
 import xyz.yanghaoyu.flora.beans.factory.support.DefaultListableBeanFactory;
 
 /**

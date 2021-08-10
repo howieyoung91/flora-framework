@@ -14,7 +14,9 @@ public class TestFlora {
     @Test
     public void test() {
         ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:application.xml");
+        applicationContext.registerShutdownHook();
         UserService userService = applicationContext.getBean("userService", UserService.class);
+        UserDao userDao = applicationContext.getBean("userDao", UserDao.class);
         userService.say();
         userService.t();
     }
