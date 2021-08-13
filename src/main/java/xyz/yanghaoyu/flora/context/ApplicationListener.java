@@ -1,10 +1,9 @@
 package xyz.yanghaoyu.flora.context;
 
-/**
- * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/11 20:43<i/>
- * @version 1.0
- */
+import xyz.yanghaoyu.flora.context.event.ApplicationEvent;
 
+import java.util.EventListener;
 
-public class ApplicationListener {
+public interface ApplicationListener<E extends ApplicationEvent> extends EventListener {
+    void onApplicationEvent(E event);
 }

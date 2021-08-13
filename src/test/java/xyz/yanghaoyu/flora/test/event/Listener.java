@@ -1,10 +1,12 @@
 package xyz.yanghaoyu.flora.test.event;
 
-/**
- * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/12 11:35<i/>
- * @version 1.0
- */
+import xyz.yanghaoyu.flora.context.ApplicationListener;
+import xyz.yanghaoyu.flora.context.event.ContextRefreshedEvent;
 
 
-public class Listener {
+public class Listener implements ApplicationListener<ContextRefreshedEvent> {
+    @Override
+    public void onApplicationEvent(ContextRefreshedEvent event) {
+        System.out.println("123");
+    }
 }

@@ -1,10 +1,9 @@
 package xyz.yanghaoyu.flora.beans.factory;
 
-/**
- * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/10 20:57<i/>
- * @version 1.0
- */
+import xyz.yanghaoyu.flora.BeansException;
+import xyz.yanghaoyu.flora.context.ApplicationContext;
 
 
-public interface ApplicationContextAware {
+public interface ApplicationContextAware extends Aware {
+    void setApplicationContext(ApplicationContext applicationContext) throws BeansException;
 }

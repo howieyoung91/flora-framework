@@ -1,10 +1,11 @@
 package xyz.yanghaoyu.flora.context.event;
 
-/**
- * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/11 20:24<i/>
- * @version 1.0
- */
+public class ApplicationContextEvent extends ApplicationEvent {
+    public ApplicationContextEvent(Object source) {
+        super(source);
+    }
 
-
-public class ApplicationContextEvent {
+    public ApplicationEvent getApplicationContext() {
+        return ((ApplicationEvent) getSource());
+    }
 }

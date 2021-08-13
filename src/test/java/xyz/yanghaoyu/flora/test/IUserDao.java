@@ -7,4 +7,5 @@ package xyz.yanghaoyu.flora.test;
 
 
 public interface IUserDao {
+    String queryUserName(String uId);
 }

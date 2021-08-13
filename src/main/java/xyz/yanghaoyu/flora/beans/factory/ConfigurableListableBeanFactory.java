@@ -20,5 +20,4 @@ public interface ConfigurableListableBeanFactory extends ListableBeanFactory, Au
 
     void addBeanPostProcessor(BeanPostProcessor beanPostProcessor);
 
-    void destroySingletons();
 }

@@ -37,5 +37,4 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
     protected String[] getConfigLocations() {
         return configLocations;
     }
-
 }

@@ -1,6 +1,7 @@
 package xyz.yanghaoyu.flora.beans.factory.support;
 
 import xyz.yanghaoyu.flora.BeansException;
+import xyz.yanghaoyu.flora.beans.factory.FactoryBean;
 import xyz.yanghaoyu.flora.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.beans.factory.config.BeanPostProcessor;
 import xyz.yanghaoyu.flora.beans.factory.config.ConfigurableBeanFactory;
@@ -9,31 +10,48 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public abstract class AbstractBeanFactory extends DefaultSingletonBeanRegistry implements ConfigurableBeanFactory {
+public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport implements ConfigurableBeanFactory {
 
     /**
      * BeanPostProcessors to apply in createBean
      */
     private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
 
-    @Override
-    public Object getBean(String name) throws BeansException {
-        Object bean = getSingleton(name);
-        if (bean != null) {
-            return bean;
+    protected <T> T doGetBean(final String name, final Object[] args) {
+        Object sharedInstance = getSingleton(name);
+        if (sharedInstance != null) {
+            return (T) getObjectForBeanInstance(sharedInstance, name);
         }
         BeanDefinition beanDefinition = getBeanDefinition(name);
-        return createBean(name, beanDefinition, null);
+        Object bean = createBean(name, beanDefinition, args);
+        return (T) getObjectForBeanInstance(bean, name);
+    }
+
+    private Object getObjectForBeanInstance(Object beanInstance, String beanName) {
+        // 如果不是 FactoryBean,直接返回原对象即可
+        if (!(beanInstance instanceof FactoryBean)) {
+            return beanInstance;
+        }
+        // 先看看缓存中是否存在
+        Object object = getCachedObjectForFactoryBean(beanName);
+
+        // 不存在的话 则需要调用 FactoryBean#getObject 进行创建
+        if (object == null) {
+            FactoryBean<?> factoryBean = (FactoryBean<?>) beanInstance;
+            object = getObjectFromFactoryBean(factoryBean, beanName);
+        }
+
+        return object;
+    }
+
+    @Override
+    public Object getBean(String name) throws BeansException {
+        return doGetBean(name, null);
     }
 
     @Override
     public Object getBean(String name, Object... args) throws BeansException {
-        Object bean = getSingleton(name);
-        if (bean != null) {
-            return bean;
-        }
-        BeanDefinition beanDefinition = getBeanDefinition(name);
-        return createBean(name, beanDefinition, args);
+        return doGetBean(name, args);
     }
 
     @Override

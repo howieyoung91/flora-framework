@@ -1,10 +1,26 @@
 package xyz.yanghaoyu.flora.test;
 
-/**
- * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/11 11:29<i/>
- * @version 1.0
- */
+import xyz.yanghaoyu.flora.beans.factory.FactoryBean;
 
 
-public class IUserDaoFactory {
+public class IUserDaoFactory implements FactoryBean<IUserDao> {
+    @Override
+    public IUserDao getObject() throws Exception {
+        return new IUserDao() {
+            @Override
+            public String queryUserName(String uId) {
+                return uId;
+            }
+        };
+    }
+
+    @Override
+    public Class<?> getObjectType() {
+        return IUserDao.class;
+    }
+
+    @Override
+    public boolean isSingleton() {
+        return false;
+    }
 }

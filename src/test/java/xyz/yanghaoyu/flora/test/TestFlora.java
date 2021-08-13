@@ -19,6 +19,7 @@ public class TestFlora {
         UserDao userDao = applicationContext.getBean("userDao", UserDao.class);
         userService.say();
         userService.t();
+        userService.doIUserDao();
     }
 
     @Test
@@ -30,5 +31,6 @@ public class TestFlora {
         UserService userService = (UserService) beanFactory.getBean("userService");
         userService.t();
         userService.say();
+        userService.doIUserDao();
     }
 }

@@ -6,9 +6,8 @@ package xyz.yanghaoyu.flora.context.event;
  */
 
 
-public class ContextClosedEvent extends ApplicationContextEvent {
-    public ContextClosedEvent(Object source) {
+public class ContextRefreshedEvent extends ApplicationContextEvent {
+    public ContextRefreshedEvent(Object source) {
         super(source);
     }
-    
 }

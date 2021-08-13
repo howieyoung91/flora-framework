@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
-  <bean id="userDao" class="xyz.yanghaoyu.flora.test.UserDao" init-method="init" destroy-method="destroy">
+  <bean id="userDao" scope="prototype" class="xyz.yanghaoyu.flora.test.UserDao" init-method="init"
+        destroy-method="destroy">
     <property name="temp" value="howieyoung"/>
   </bean>
 
-  <bean id="userService" class="xyz.yanghaoyu.flora.test.UserService">
+  <bean id="userService" scope="prototype" class="xyz.yanghaoyu.flora.test.UserService">
     <property name="name" value="howieyoung"/>
     <property name="userDao" ref="userDao"/>
+    <property name="iUserDao" ref="iUserDao"/>
   </bean>
-  <bean id="pro" class="xyz.yanghaoyu.flora.test.Pro"/>
+  <bean id="pro" class="xyz.yanghaoyu.flora.test.Pro" scope="prototype"/>
+  <bean id="iUserDao" class="xyz.yanghaoyu.flora.test.IUserDaoFactory" scope="prototype"/>
+  <bean id="listener" class="xyz.yanghaoyu.flora.test.event.Listener"/>
 </beans>

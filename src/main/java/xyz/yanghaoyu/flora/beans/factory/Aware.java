@@ -1,10 +1,9 @@
 package xyz.yanghaoyu.flora.beans.factory;
 
 /**
- * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/10 20:55<i/>
- * @version 1.0
+ * 容器感知对象
+ * 仅作为一个标识
  */
-
 
 public interface Aware {
 }

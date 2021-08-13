@@ -9,10 +9,14 @@ import xyz.yanghaoyu.flora.beans.factory.PropertyValues;
 
 
 public class BeanDefinition {
+    public static final String SCOPE_SINGLETON = ConfigurableBeanFactory.SCOPE_SINGLETON;
+    public static final String SCOPE_PROTOTYPE = ConfigurableBeanFactory.SCOPE_PROTOTYPE;
     private Class beanClass;
     private PropertyValues propertyValues;
     private String initMethodName;
     private String destroyMethodName;
+    private boolean singleton = true;
+    private boolean prototype = false;
 
     public BeanDefinition(Class beanClass) {
         this.beanClass = beanClass;
@@ -48,5 +52,20 @@ public class BeanDefinition {
     public BeanDefinition setDestroyMethodName(String destroyMethodName) {
         this.destroyMethodName = destroyMethodName;
         return this;
+    }
+
+    public boolean isSingleton() {
+        return singleton;
+    }
+
+    public void setScope(String beanScope) {
+        if (SCOPE_PROTOTYPE.equals(beanScope)) {
+            this.prototype = true;
+            this.singleton = false;
+        }
+    }
+
+    public boolean isPrototype() {
+        return prototype;
     }
 }
