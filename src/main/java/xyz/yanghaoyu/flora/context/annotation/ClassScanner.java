@@ -1,44 +1,38 @@
-package xyz.yanghaoyu.flora.core.io.scanner;
+package xyz.yanghaoyu.flora.core.ioc.scanner;
 
-import xyz.yanghaoyu.flora.core.io.container.ClassContainer;
-import xyz.yanghaoyu.flora.core.io.container.DefaultClassContainer;
-import xyz.yanghaoyu.flora.util.ReflectUtil;
-import xyz.yanghaoyu.flora.util.StringUtil;
+import org.apache.commons.lang.StringUtils;
+import xyz.yanghaoyu.flora.util.ClassUtil;
 
 import java.io.File;
 import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
- * 类扫描器
+ * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/3/13 15:14<i/>
+ * @version 1.0
  */
 
-public abstract class ClassScanner implements Scanner {
+public abstract class ClassScanner {
     protected final String targetPackage;
-    ClassContainer classContainer;
+    protected final Set<Class<?>> classSet = new HashSet<>();
 
-    public ClassScanner(String targetPackage) {
-        this.targetPackage = targetPackage;
-        this.classContainer = new DefaultClassContainer();
+    public ClassScanner(String pkgName) {
+        this.targetPackage = pkgName;
     }
 
-    public ClassScanner(String targetPackage, ClassContainer classContainer) {
-        this.targetPackage = targetPackage;
-        this.classContainer = classContainer == null ? new DefaultClassContainer() : classContainer;
+    public Set<Class<?>> getClassSet() {
+        return classSet;
     }
 
-    public ClassContainer getClassContainer() {
-        return this.classContainer;
-    }
-
-    @Override
     public final ClassScanner scan() {
         try {
             // 从包名获取 URL 类型的资源
-            Enumeration<URL> urls = ReflectUtil.getDefaultClassLoader().getResources(targetPackage.replace(".", "/"));
+            Enumeration<URL> urls = ClassUtil.getClassLoader().getResources(targetPackage.replace(".", "/"));
             // 遍历 URL 资源
             while (urls.hasMoreElements()) {
                 URL url = urls.nextElement();
@@ -48,7 +42,7 @@ public abstract class ClassScanner implements Scanner {
                     if (protocol.equals("file")) {
                         // 若在 class 目录中，则执行添加类操作
                         String packagePath = url.getPath().replaceAll("%20", " ");
-                        addClass(packagePath, targetPackage);
+                        addClass(classSet, packagePath, targetPackage);
                     } else if (protocol.equals("jar")) {
                         // 若在 jar 包中，则解析 jar 包中的 entry
                         JarURLConnection jarURLConnection = (JarURLConnection) url.openConnection();
@@ -62,7 +56,7 @@ public abstract class ClassScanner implements Scanner {
                                 // 获取类名
                                 String className = jarEntryName.substring(0, jarEntryName.lastIndexOf(".")).replaceAll("/", ".");
                                 // 执行添加类操作
-                                doAddClass(className);
+                                doAddClass(classSet, className);
                             }
                         }
                     }
@@ -74,7 +68,7 @@ public abstract class ClassScanner implements Scanner {
         return this;
     }
 
-    private void addClass(String packagePath, String packageName) {
+    private final void addClass(Set<Class<?>> classSets, String packagePath, String packageName) {
         try {
             // 获取包名路径下的 class 文件或目录
             File[] files = new File(packagePath).listFiles(file -> (file.isFile() && file.getName().endsWith(".class")) || file.isDirectory());
@@ -85,24 +79,24 @@ public abstract class ClassScanner implements Scanner {
                 if (file.isFile()) {
                     // 获取类名
                     String className = fileName.substring(0, fileName.lastIndexOf("."));
-                    if (StringUtil.isNotEmpty(packageName)) {
+                    if (StringUtils.isNotEmpty(packageName)) {
                         className = packageName + "." + className;
                     }
                     // 执行添加类操作
-                    doAddClass(className);
+                    doAddClass(classSet, className);
                 } else {
                     // 获取子包
                     String subPackagePath = fileName;
-                    if (StringUtil.isNotEmpty(packagePath)) {
+                    if (StringUtils.isNotEmpty(packagePath)) {
                         subPackagePath = packagePath + "/" + subPackagePath;
                     }
                     // 子包名
                     String subPackageName = fileName;
-                    if (StringUtil.isNotEmpty(packageName)) {
+                    if (StringUtils.isNotEmpty(packageName)) {
                         subPackageName = packageName + "." + subPackageName;
                     }
                     // 递归调用
-                    addClass(subPackagePath, subPackageName);
+                    addClass(classSet, subPackagePath, subPackageName);
                 }
             }
         } catch (Exception e) {
@@ -110,12 +104,12 @@ public abstract class ClassScanner implements Scanner {
         }
     }
 
-    private void doAddClass(String className) {
+    private final void doAddClass(Set<Class<?>> classSet, String className) {
         // 加载类
-        Class<?> cls = ReflectUtil.loadClass(className, false);
+        Class<?> cls = ClassUtil.loadClass(className, false);
         // 判断是否可以添加类
         if (checkAddClass(cls)) {
-            classContainer.add(cls);
+            classSet.add(cls);
         }
     }
 

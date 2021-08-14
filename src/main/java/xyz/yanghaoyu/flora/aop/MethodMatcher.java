@@ -1,10 +1,13 @@
 package xyz.yanghaoyu.flora.aop;
 
+import java.lang.reflect.Method;
+
 /**
- * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/12 17:22<i/>
- * @version 1.0
+ * 方法匹配器
+ * <p>
+ * 在目标类下找到对应的方法
  */
 
-
 public interface MethodMatcher {
+    boolean matches(Method method, Class<?> targetClass);
 }

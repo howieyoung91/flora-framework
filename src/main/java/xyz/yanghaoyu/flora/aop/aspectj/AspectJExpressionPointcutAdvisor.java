@@ -1,10 +1,42 @@
 package xyz.yanghaoyu.flora.aop.aspectj;
 
-/**
- * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/12 17:54<i/>
- * @version 1.0
- */
+import org.aopalliance.aop.Advice;
+import xyz.yanghaoyu.flora.aop.Pointcut;
+import xyz.yanghaoyu.flora.aop.PointcutAdvisor;
+
+public class AspectJExpressionPointcutAdvisor implements PointcutAdvisor {
+    // 切面
+    private AspectJExpressionPointcut pointcut;
+    // 具体的拦截方法 传入的是拦截器
+    private Advice advice;
+    // 表达式
+    private String expression;
+
+    @Override
+    public Pointcut getPointcut() {
+        if (null == pointcut) {
+            pointcut = new AspectJExpressionPointcut(expression);
+        }
+        return pointcut;
+    }
+
+    @Override
+    public Advice getAdvice() {
+        return advice;
+    }
 
 
-public class AspectJExpressionPointcutAdvisor {
+    public AspectJExpressionPointcutAdvisor setAdvice(Advice advice) {
+        this.advice = advice;
+        return this;
+    }
+
+    public String getExpression() {
+        return expression;
+    }
+
+    public AspectJExpressionPointcutAdvisor setExpression(String expression) {
+        this.expression = expression;
+        return this;
+    }
 }

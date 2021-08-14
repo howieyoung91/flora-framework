@@ -1,10 +1,8 @@
 package xyz.yanghaoyu.flora.aop;
 
 /**
- * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/12 17:24<i/>
- * @version 1.0
+ * 类匹配器
  */
-
-
-public class ClassFilter {
+public interface ClassFilter {
+    boolean matches(Class<?> clazz);
 }

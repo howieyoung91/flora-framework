@@ -13,6 +13,9 @@ import java.util.LinkedList;
 import java.util.Set;
 
 /**
+ * 抽象事件广播器
+ * 事件广播器中绑定了许多事件监听器, 一旦某个事件发生( multicast 被调用 ), 则会把事件交给与该事件的相关监听器处理
+ *
  * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/11 20:45<i/>
  * @version 1.0
  */
@@ -65,7 +68,6 @@ public abstract class AbstractApplicationEventMulticaster implements Application
         Class<?> eventClassName;
         try {
             eventClassName = Class.forName(className);
-            System.out.println(eventClassName);
         } catch (ClassNotFoundException e) {
             throw new BeansException("wrong event class name: " + className);
         }

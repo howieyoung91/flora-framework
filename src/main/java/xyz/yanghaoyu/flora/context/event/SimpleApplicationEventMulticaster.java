@@ -8,7 +8,6 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
         setBeanFactory(beanFactory);
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void multicastEvent(final ApplicationEvent event) {
         for (final ApplicationListener listener : getApplicationListeners(event)) {

@@ -15,11 +15,13 @@ public class TestFlora {
     public void test() {
         ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:application.xml");
         applicationContext.registerShutdownHook();
-        UserService userService = applicationContext.getBean("userService", UserService.class);
-        UserDao userDao = applicationContext.getBean("userDao", UserDao.class);
-        userService.say();
-        userService.t();
+        IUserService userService = applicationContext.getBean("userService", IUserService.class);
+        // Object userService = applicationContext.getBean("userService");
+        // UserDao userDao = applicationContext.getBean("userDao", UserDao.class);
+        // userService.say();
+        // userService.t();
         userService.doIUserDao();
+        userService.doSth();
     }
 
     @Test

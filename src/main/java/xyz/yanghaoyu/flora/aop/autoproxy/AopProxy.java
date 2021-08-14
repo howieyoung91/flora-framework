@@ -6,5 +6,6 @@ package xyz.yanghaoyu.flora.aop.autoproxy;
  */
 
 
-public class AopProxy {
+public interface AopProxy {
+    Object getProxy();
 }

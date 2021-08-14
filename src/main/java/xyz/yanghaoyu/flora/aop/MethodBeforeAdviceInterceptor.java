@@ -1,10 +1,22 @@
 package xyz.yanghaoyu.flora.aop;
 
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
+
 /**
- * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/12 18:02<i/>
- * @version 1.0
+ * 前置增强拦截器
  */
+public class MethodBeforeAdviceInterceptor implements MethodInterceptor {
+    private MethodBeforeAdvice advice;
 
-
-public class MethodBeforeAdviceInterceptor {
+    @Override
+    public Object invoke(MethodInvocation methodInvocation) throws Throwable {
+        // 触发前置增强
+        this.advice.before(
+                methodInvocation.getMethod(),
+                methodInvocation.getArguments(),
+                methodInvocation.getThis()
+        );
+        return methodInvocation.proceed();
+    }
 }

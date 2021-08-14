@@ -7,9 +7,11 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import xyz.yanghaoyu.flora.BeansException;
 import xyz.yanghaoyu.flora.beans.factory.PropertyValue;
+import xyz.yanghaoyu.flora.beans.factory.config.AutowiredAnnotationBeanPostProcessor;
 import xyz.yanghaoyu.flora.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.beans.factory.config.BeanReference;
 import xyz.yanghaoyu.flora.beans.factory.support.BeanDefinitionRegistry;
+import xyz.yanghaoyu.flora.context.annotation.ClassPathBeanDefinitionScanner;
 import xyz.yanghaoyu.flora.core.io.loader.ResourceLoader;
 import xyz.yanghaoyu.flora.core.io.resource.Resource;
 import xyz.yanghaoyu.flora.util.StringUtil;
@@ -70,6 +72,26 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
         if (!Objects.equals(root.getNodeName(), "beans")) {
             return;
         }
+        NodeList componentScanNodeList = root.getElementsByTagName("component-scan");
+        if (componentScanNodeList.getLength() == 1) {
+            // do scanPackage
+            Node componentScan = componentScanNodeList.item(0);
+            if (componentScan instanceof Element) {
+                String basePackage = ((Element) componentScan).getAttribute("base-package");
+                if (StringUtil.isEmpty(basePackage)) {
+                    throw new BeansException("The value of base-package attribute can not be empty or null");
+                }
+                String[] basePaths = basePackage.split(",");
+                new ClassPathBeanDefinitionScanner(getRegistry()).doScan(basePaths);
+
+                // 注入 AutowiredAnnotationProcessor 这样才能在 BeanProcessor 中注入属性
+                getRegistry().registerBeanDefinition("internalAutowiredAnnotationProcessor", new BeanDefinition(AutowiredAnnotationBeanPostProcessor.class));
+            }
+        } else if (componentScanNodeList.getLength() > 1) {
+            // 一个xml中只能出现一个 <component-scan/>
+            throw new BeansException("duplicate declaration <component-scan/>");
+        }
+
         NodeList childNodes = root.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             Node item = childNodes.item(i);
@@ -92,7 +114,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
             // 解析id
             // 优先级 id > name
             if (StringUtil.isEmpty(beanName)) {
-                beanName = StringUtil.firstLowerCase(clazz.getSimpleName());
+                beanName = StringUtil.lowerFirstChar(clazz.getSimpleName());
             }
             // 解析初始化方法
             beanDefinition.setInitMethodName(initMethodName);

@@ -7,6 +7,6 @@ import xyz.yanghaoyu.flora.context.event.ContextRefreshedEvent;
 public class Listener implements ApplicationListener<ContextRefreshedEvent> {
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
-        System.out.println("123");
+        System.out.println("refresh 完毕!");
     }
 }

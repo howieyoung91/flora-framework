@@ -1,0 +1,10 @@
+package xyz.yanghaoyu.flora.beans.factory.config;
+
+/**
+ * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/14 11:27<i/>
+ * @version 1.0
+ */
+
+
+public class AutowiredAnnotationBeanPostProcessor {
+}

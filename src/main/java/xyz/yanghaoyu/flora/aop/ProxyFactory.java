@@ -1,10 +1,29 @@
 package xyz.yanghaoyu.flora.aop;
 
+import xyz.yanghaoyu.flora.aop.autoproxy.AopProxy;
+import xyz.yanghaoyu.flora.aop.autoproxy.Cglib2AopProxy;
+import xyz.yanghaoyu.flora.aop.autoproxy.JdkDynamicAopProxy;
+
 /**
- * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/12 18:06<i/>
- * @version 1.0
+ * 代理工厂 用于生成 代理Bean
  */
-
-
 public class ProxyFactory {
+    private AdvisedSupport advisedSupport;
+
+    public ProxyFactory(AdvisedSupport advisedSupport) {
+        this.advisedSupport = advisedSupport;
+    }
+
+    public Object getProxy() {
+        return createAopProxy().getProxy();
+    }
+
+    private AopProxy createAopProxy() {
+        if (advisedSupport.isProxyTargetClass()) {
+            return new Cglib2AopProxy(advisedSupport);
+        }
+
+        return new JdkDynamicAopProxy(advisedSupport);
+    }
+
 }

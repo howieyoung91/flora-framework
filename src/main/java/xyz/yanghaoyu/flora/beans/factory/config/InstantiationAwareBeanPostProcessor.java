@@ -1,10 +1,12 @@
 package xyz.yanghaoyu.flora.beans.factory.config;
 
-/**
- * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/12 18:15<i/>
- * @version 1.0
- */
+import xyz.yanghaoyu.flora.BeansException;
 
 
-public class InstantiationAwareBeanPostProcessor {
+public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
+
+    /**
+     * 在 Bean 对象执行初始化方法之前，执行此方法
+     */
+    Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException;
 }
