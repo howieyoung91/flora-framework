@@ -1,6 +1,6 @@
 package xyz.yanghaoyu.flora.context.event;
 
-import xyz.yanghaoyu.flora.BeansException;
+import xyz.yanghaoyu.flora.exception.BeansException;
 import xyz.yanghaoyu.flora.beans.factory.BeanFactory;
 import xyz.yanghaoyu.flora.beans.factory.BeanFactoryAware;
 import xyz.yanghaoyu.flora.context.ApplicationListener;

@@ -7,4 +7,5 @@ package xyz.yanghaoyu.flora.test.bean;
 
 
 public interface UserService {
+    void say();
 }

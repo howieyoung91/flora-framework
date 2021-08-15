@@ -1,4 +1,4 @@
-package xyz.yanghaoyu.flora;
+package xyz.yanghaoyu.flora.exception;
 
 /**
  * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/7 20:47<i/>

@@ -1,36 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
-  <bean
-      id="userDao"
-      class="xyz.yanghaoyu.flora.test.UserDao"
-      init-method="init"
-      destroy-method="destroy">
-    <property name="temp" value="howieyoung"/>
+  <component-scan base-package="xyz.yanghaoyu.flora.test"/>
+  <bean class="xyz.yanghaoyu.flora.beans.factory.PropertyPlaceholderConfigurer">
+    <property name="location" value="classpath:token.properties"/>
   </bean>
 
-
-  <bean id="pro" class="xyz.yanghaoyu.flora.test.Pro"/>
-
-  <bean id="iUserDao" class="xyz.yanghaoyu.flora.test.IUserDaoFactory"/>
-
-  <bean id="listener" class="xyz.yanghaoyu.flora.test.event.Listener"/>
-
-  <bean class="xyz.yanghaoyu.flora.aop.autoproxy.DefaultAdvisorAutoProxyCreator"/>
-
-  <bean id="beforeAdvice" class="xyz.yanghaoyu.flora.test.UserServiceBeforeAdvice"/>
-
-  <bean id="methodInterceptor" class="xyz.yanghaoyu.flora.aop.MethodBeforeAdviceInterceptor">
-    <property name="advice" ref="beforeAdvice"/>
+  <bean id="inter" class="xyz.yanghaoyu.flora.aop.MethodBeforeAdviceInterceptor">
+    <property name="advice" ref="userServiceAdvice"/>
   </bean>
 
   <bean id="pointcutAdvisor" class="xyz.yanghaoyu.flora.aop.aspectj.AspectJExpressionPointcutAdvisor">
-    <property name="expression" value="execution(* xyz.yanghaoyu.flora.test.IUserService.*(..))"/>
-    <property name="advice" ref="methodInterceptor"/>
+    <property name="expression" value="execution(* xyz.yanghaoyu.flora.test.bean.UserService.*(..))"/>
+    <property name="advice" ref="inter"/>
   </bean>
+  <enable-aop/>
+  <!--  <bean class="xyz.yanghaoyu.flora.aop.autoproxy.DefaultAdvisorAutoProxyCreator"/>-->
 
-  <bean class="xyz.yanghaoyu.flora.test.UserService">
-    <property name="name" value="howieyoung"/>
-    <property name="userDao" ref="userDao"/>
-    <property name="iUserDao" ref="iUserDao"/>
-  </bean>
+  <!--  <bean-->
+  <!--      id="userDao"-->
+  <!--      class="xyz.yanghaoyu.flora.test.UserDao"-->
+  <!--      init-method="init"-->
+  <!--      destroy-method="destroy"-->
+  <!--  >-->
+  <!--    <property name="temp" value="howieyoung"/>-->
+  <!--  </bean>-->
+  <!--  <bean id="pro" class="xyz.yanghaoyu.flora.test.bean.Pro"/>-->
+
+  <!--  <bean id="iUserDao" class="xyz.yanghaoyu.flora.test.IUserDaoFactory"/>-->
+
+  <!--  <bean id="listener" class="xyz.yanghaoyu.flora.test.event.Listener"/>-->
+
+  <!--  <bean class="xyz.yanghaoyu.flora.aop.autoproxy.DefaultAdvisorAutoProxyCreator"/>-->
+
+  <!--  <bean id="beforeAdvice" class="xyz.yanghaoyu.flora.test.UserServiceBeforeAdvice"/>-->
+
+  <!--  <bean id="methodInterceptor" class="xyz.yanghaoyu.flora.aop.MethodBeforeAdviceInterceptor">-->
+  <!--    <property name="advice" ref="beforeAdvice"/>-->
+  <!--  </bean>-->
+
+  <!--  <bean id="pointcutAdvisor" class="xyz.yanghaoyu.flora.aop.aspectj.AspectJExpressionPointcutAdvisor">-->
+  <!--    <property name="expression" value="execution(* xyz.yanghaoyu.flora.test.IUserService.*(..))"/>-->
+  <!--    <property name="advice" ref="methodInterceptor"/>-->
+  <!--  </bean>-->
+
+  <!--  <bean class="xyz.yanghaoyu.flora.test.UserService">-->
+  <!--    <property name="name" value="howieyoung"/>-->
+  <!--    &lt;!&ndash;    <property name="userDao" ref="userDao"/>&ndash;&gt;-->
+  <!--    <property name="iUserDao" ref="iUserDao"/>-->
+  <!--  </bean>-->
 </beans>

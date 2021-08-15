@@ -1,6 +1,6 @@
 package xyz.yanghaoyu.flora.context.support;
 
-import xyz.yanghaoyu.flora.BeansException;
+import xyz.yanghaoyu.flora.exception.BeansException;
 
 /**
  * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/9 11:39<i/>

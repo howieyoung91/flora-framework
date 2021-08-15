@@ -41,10 +41,15 @@ public class ReflectUtil {
     }
 
 
-    public static void setFieldValue(Object bean, String name, Object value) throws NoSuchFieldException, IllegalAccessException {
-        Field field = bean.getClass().getDeclaredField(name);
-        field.setAccessible(true);
-        field.set(bean, value);
+    public static void setFieldValue(Object bean, String name, Object value) {
+        Field field = null;
+        try {
+            field = bean.getClass().getDeclaredField(name);
+            field.setAccessible(true);
+            field.set(bean, value);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     public static ClassLoader getDefaultClassLoader() {
@@ -106,5 +111,23 @@ public class ReflectUtil {
             }
         }
         return null;
+    }
+
+    /**
+     * Check whether the specified class is a CGLIB-generated class.
+     *
+     * @param clazz the class to check
+     */
+    public static boolean isCglibProxyClass(Class<?> clazz) {
+        return (clazz != null && isCglibProxyClassName(clazz.getName()));
+    }
+
+    /**
+     * Check whether the specified class name is a CGLIB-generated class.
+     *
+     * @param className the class name to check
+     */
+    public static boolean isCglibProxyClassName(String className) {
+        return (className != null && className.contains("$$"));
     }
 }

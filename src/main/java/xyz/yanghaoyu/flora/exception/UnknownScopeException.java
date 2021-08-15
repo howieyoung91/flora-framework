@@ -1,10 +1,23 @@
 package xyz.yanghaoyu.flora.exception;
 
-/**
- * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/14 16:41<i/>
- * @version 1.0
- */
 
+public class UnknownScopeException extends BeansException {
+    public UnknownScopeException() {
+    }
 
-public class UnkownScope {
+    public UnknownScopeException(String message) {
+        super(message);
+    }
+
+    public UnknownScopeException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public UnknownScopeException(Throwable cause) {
+        super(cause);
+    }
+
+    public UnknownScopeException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
+    }
 }

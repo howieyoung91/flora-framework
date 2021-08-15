@@ -1,10 +1,25 @@
 package xyz.yanghaoyu.flora.test.bean;
 
+import xyz.yanghaoyu.flora.annotation.Component;
+import xyz.yanghaoyu.flora.annotation.Inject;
+import xyz.yanghaoyu.flora.annotation.Value;
+
 /**
  * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/14 13:58<i/>
  * @version 1.0
  */
 
+@Component
+public class UserServiceImpl implements UserService {
+    @Inject.ByType
+    UserDao userDao;
+    @Value("${token}")
+    String temp;
 
-public class UserServiceImpl {
+    @Override
+    public void say() {
+        // System.out.println(userDao);
+        System.out.println("userServiceImpl say");
+        System.out.println(temp);
+    }
 }

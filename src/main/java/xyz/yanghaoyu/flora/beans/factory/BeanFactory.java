@@ -1,7 +1,7 @@
 package xyz.yanghaoyu.flora.beans.factory;
 
 
-import xyz.yanghaoyu.flora.BeansException;
+import xyz.yanghaoyu.flora.exception.BeansException;
 
 public interface BeanFactory {
     Object getBean(String name) throws BeansException;

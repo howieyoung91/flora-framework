@@ -1,19 +1,22 @@
-package xyz.yanghaoyu.flora.core.io.reader;
+package xyz.yanghaoyu.flora.beans.factory.xml;
 
 import cn.hutool.core.util.XmlUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import xyz.yanghaoyu.flora.BeansException;
+import xyz.yanghaoyu.flora.aop.autoproxy.DefaultAdvisorAutoProxyCreator;
 import xyz.yanghaoyu.flora.beans.factory.PropertyValue;
 import xyz.yanghaoyu.flora.beans.factory.config.AutowiredAnnotationBeanPostProcessor;
 import xyz.yanghaoyu.flora.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.beans.factory.config.BeanReference;
 import xyz.yanghaoyu.flora.beans.factory.support.BeanDefinitionRegistry;
+import xyz.yanghaoyu.flora.constant.XmlTagConst;
 import xyz.yanghaoyu.flora.context.annotation.ClassPathBeanDefinitionScanner;
 import xyz.yanghaoyu.flora.core.io.loader.ResourceLoader;
+import xyz.yanghaoyu.flora.core.io.reader.AbstractBeanDefinitionFileReader;
 import xyz.yanghaoyu.flora.core.io.resource.Resource;
+import xyz.yanghaoyu.flora.exception.BeansException;
 import xyz.yanghaoyu.flora.util.StringUtil;
 
 import java.io.IOException;
@@ -69,17 +72,17 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
     protected void doLoadBeanDefinitions(InputStream inputStream) throws ClassNotFoundException {
         Document doc = XmlUtil.readXML(inputStream);
         Element root = doc.getDocumentElement();
-        if (!Objects.equals(root.getNodeName(), "beans")) {
+        if (!Objects.equals(root.getNodeName(), XmlTagConst.BEANS)) {
             return;
         }
-        NodeList componentScanNodeList = root.getElementsByTagName("component-scan");
+        NodeList componentScanNodeList = root.getElementsByTagName(XmlTagConst.COMPONENT_SCAN);
         if (componentScanNodeList.getLength() == 1) {
             // do scanPackage
             Node componentScan = componentScanNodeList.item(0);
             if (componentScan instanceof Element) {
-                String basePackage = ((Element) componentScan).getAttribute("base-package");
+                String basePackage = ((Element) componentScan).getAttribute(XmlTagConst.BASE_PACKAGE);
                 if (StringUtil.isEmpty(basePackage)) {
-                    throw new BeansException("The value of base-package attribute can not be empty or null");
+                    throw new BeansException("The value of " + XmlTagConst.BASE_PACKAGE + " attribute can not be empty or null");
                 }
                 String[] basePaths = basePackage.split(",");
                 new ClassPathBeanDefinitionScanner(getRegistry()).doScan(basePaths);
@@ -89,32 +92,39 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
             }
         } else if (componentScanNodeList.getLength() > 1) {
             // 一个xml中只能出现一个 <component-scan/>
-            throw new BeansException("duplicate declaration <component-scan/>");
+            throw new BeansException("duplicate declaration <component-scan /> !");
         }
+        NodeList aopNodeList = root.getElementsByTagName("enable-aop");
+        if (aopNodeList.getLength() == 1) {
+            getRegistry().registerBeanDefinition("defaultAdvisorAutoProxyCreator", new BeanDefinition(DefaultAdvisorAutoProxyCreator.class));
+        } else if (aopNodeList.getLength() > 1) {
+            // 一个xml中只能出现一个 <component-scan/>
+            throw new BeansException("duplicate declaration <enable-aop /> !");
+        }
+
 
         NodeList childNodes = root.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             Node item = childNodes.item(i);
-            if (!(item instanceof Element) || !Objects.equals("bean", childNodes.item(i).getNodeName())) {
+            if (!(item instanceof Element) || !Objects.equals(XmlTagConst.BEAN, childNodes.item(i).getNodeName())) {
                 continue;
             }
             // 解析bean标签
             Element bean = (Element) childNodes.item(i);
-            String clazzName = bean.getAttribute("class");
-            String id = bean.getAttribute("id");
-            String name = bean.getAttribute("name");
-            String beanName = StringUtil.isNotEmpty(id) ? id : name;
-            String initMethodName = bean.getAttribute("init-method");
-            String destroyMethodName = bean.getAttribute("destroy-method");
-            String beanScope = bean.getAttribute("scope");
+            String clazzName = bean.getAttribute(XmlTagConst.CLASS);
+            // String name = bean.getAttribute("name");
+            String beanId = bean.getAttribute(XmlTagConst.ID);
+            String initMethodName = bean.getAttribute(XmlTagConst.INIT_METHOD);
+            String destroyMethodName = bean.getAttribute(XmlTagConst.DESTROY_METHOD);
+            String beanScope = bean.getAttribute(XmlTagConst.SCOPE);
             // 解析 类
             Class<?> clazz = null;
             clazz = Class.forName(clazzName);
             BeanDefinition beanDefinition = new BeanDefinition(clazz);
             // 解析id
             // 优先级 id > name
-            if (StringUtil.isEmpty(beanName)) {
-                beanName = StringUtil.lowerFirstChar(clazz.getSimpleName());
+            if (StringUtil.isEmpty(beanId)) {
+                beanId = StringUtil.lowerFirstChar(clazz.getSimpleName());
             }
             // 解析初始化方法
             beanDefinition.setInitMethodName(initMethodName);
@@ -130,14 +140,14 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
                 if (!(bean.getChildNodes().item(j) instanceof Element)) {
                     continue;
                 }
-                if (!"property".equals(bean.getChildNodes().item(j).getNodeName())) {
+                if (!XmlTagConst.PROPERTY.equals(bean.getChildNodes().item(j).getNodeName())) {
                     continue;
                 }
                 // 解析标签：property
                 Element property = (Element) bean.getChildNodes().item(j);
-                String attrName = property.getAttribute("name");
-                String attrValue = property.getAttribute("value");
-                String attrRef = property.getAttribute("ref");
+                String attrName = property.getAttribute(XmlTagConst.NAME);
+                String attrValue = property.getAttribute(XmlTagConst.VALUE);
+                String attrRef = property.getAttribute(XmlTagConst.REF);
                 // 获取属性值：引入对象、值对象
                 Object value = StringUtil.isNotEmpty(attrRef)
                         ? new BeanReference(attrRef)
@@ -147,11 +157,11 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
                 beanDefinition.getPropertyValues().addPropertyValue(propertyValue);
             }
             // 如果已经存在
-            if (getRegistry().containsBeanDefinition(beanName)) {
-                throw new BeansException("Duplicate beanName[" + beanName + "] is not allowed");
+            if (getRegistry().containsBeanDefinition(beanId)) {
+                throw new BeansException("Duplicate beanId[" + beanId + "] is not allowed");
             }
             // 注册 BeanDefinition
-            getRegistry().registerBeanDefinition(beanName, beanDefinition);
+            getRegistry().registerBeanDefinition(beanId, beanDefinition);
         }
     }
 }

@@ -1,4 +1,4 @@
-package xyz.yanghaoyu.flora.core.ioc.scanner;
+package xyz.yanghaoyu.flora.context.annotation;
 
 import java.lang.annotation.Annotation;
 
@@ -14,14 +14,14 @@ public class AnnotationClassScanner extends ClassScanner {
 
     public AnnotationClassScanner(String targetPackage, Class<? extends Annotation> annotationClass) {
         super(targetPackage);
+        if (annotationClass == null) {
+            throw new NullPointerException();
+        }
         this.targetAnnotationClass = annotationClass;
     }
 
     @Override
     public boolean checkAddClass(Class<?> clazz) {
-        if (targetAnnotationClass == null) {
-            throw new NullPointerException();
-        }
         return clazz.isAnnotationPresent(targetAnnotationClass);
     }
 }

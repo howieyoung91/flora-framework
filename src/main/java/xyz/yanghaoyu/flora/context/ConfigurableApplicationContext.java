@@ -1,6 +1,6 @@
 package xyz.yanghaoyu.flora.context;
 
-import xyz.yanghaoyu.flora.BeansException;
+import xyz.yanghaoyu.flora.exception.BeansException;
 
 
 public interface ConfigurableApplicationContext extends ApplicationContext {

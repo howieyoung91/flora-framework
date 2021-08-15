@@ -1,23 +1,23 @@
 package xyz.yanghaoyu.flora.exception;
 
 
-public class DuplicateScopeDecalarationExpcetion extends BeansException {
-    public DuplicateScopeDecalarationExpcetion() {
+public class DuplicateScopeExpcetion extends BeansException {
+    public DuplicateScopeExpcetion() {
     }
 
-    public DuplicateScopeDecalarationExpcetion(String message) {
+    public DuplicateScopeExpcetion(String message) {
         super(message);
     }
 
-    public DuplicateScopeDecalarationExpcetion(String message, Throwable cause) {
+    public DuplicateScopeExpcetion(String message, Throwable cause) {
         super(message, cause);
     }
 
-    public DuplicateScopeDecalarationExpcetion(Throwable cause) {
+    public DuplicateScopeExpcetion(Throwable cause) {
         super(cause);
     }
 
-    public DuplicateScopeDecalarationExpcetion(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+    public DuplicateScopeExpcetion(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
 }

@@ -1,16 +1,9 @@
 package xyz.yanghaoyu.flora.beans.factory.config;
 
+import xyz.yanghaoyu.flora.annotation.Scope;
 import xyz.yanghaoyu.flora.beans.factory.PropertyValues;
 
-/**
- * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/7 20:41<i/>
- * @version 1.0
- */
-
-
 public class BeanDefinition {
-    public static final String SCOPE_SINGLETON = ConfigurableBeanFactory.SCOPE_SINGLETON;
-    public static final String SCOPE_PROTOTYPE = ConfigurableBeanFactory.SCOPE_PROTOTYPE;
     private Class beanClass;
     private PropertyValues propertyValues;
     private String initMethodName;
@@ -59,9 +52,17 @@ public class BeanDefinition {
     }
 
     public void setScope(String beanScope) {
-        if (SCOPE_PROTOTYPE.equals(beanScope)) {
-            this.prototype = true;
-            this.singleton = false;
+        switch (beanScope) {
+            case Scope.SINGLETON: {
+                this.prototype = false;
+                this.singleton = true;
+                break;
+            }
+            case Scope.PROTOTYPE: {
+                this.prototype = true;
+                this.singleton = false;
+                break;
+            }
         }
     }
 

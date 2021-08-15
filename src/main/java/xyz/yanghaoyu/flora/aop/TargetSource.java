@@ -1,5 +1,7 @@
 package xyz.yanghaoyu.flora.aop;
 
+import xyz.yanghaoyu.flora.util.ReflectUtil;
+
 /**
  * 被代理的目标对象
  */
@@ -11,7 +13,10 @@ public class TargetSource {
     }
 
     public Class<?>[] getTargetClass() {
-        return this.target.getClass().getInterfaces();
+        Class<?> clazz = this.target.getClass();
+        clazz = ReflectUtil.isCglibProxyClass(clazz) ? clazz.getSuperclass() : clazz;
+        return clazz.getInterfaces();
+
     }
 
     public Object getTarget() {

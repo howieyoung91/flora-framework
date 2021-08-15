@@ -1,7 +1,7 @@
 package xyz.yanghaoyu.flora.context.support;
 
 import xyz.yanghaoyu.flora.beans.factory.support.DefaultListableBeanFactory;
-import xyz.yanghaoyu.flora.core.io.reader.XmlBeanDefinitionReader;
+import xyz.yanghaoyu.flora.beans.factory.xml.XmlBeanDefinitionReader;
 
 /**
  * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/9 11:38<i/>

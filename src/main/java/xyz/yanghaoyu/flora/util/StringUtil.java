@@ -7,6 +7,8 @@ package xyz.yanghaoyu.flora.util;
 
 
 public class StringUtil {
+    public static final String EMPTY = "";
+
     private StringUtil() { }
 
     public static boolean isEmpty(String str) {
@@ -17,7 +19,7 @@ public class StringUtil {
         return !isEmpty(str);
     }
 
-    public static String firstLowerCase(String str) {
+    public static String lowerFirstChar(String str) {
         char c = str.charAt(0);
         if (c >= 'a') {
             return str;

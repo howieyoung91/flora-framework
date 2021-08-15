@@ -7,4 +7,14 @@ package xyz.yanghaoyu.flora.context.support;
 
 
 public class ContextConfig {
+    private boolean enableAop;
+
+    public boolean isEnableAop() {
+        return enableAop;
+    }
+
+    public ContextConfig setEnableAop(boolean enableAop) {
+        this.enableAop = enableAop;
+        return this;
+    }
 }

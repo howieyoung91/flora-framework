@@ -14,7 +14,7 @@ public @interface Inject {
     @Target({ElementType.FIELD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface ByType {
-
+        boolean require() default true;
     }
 
     @Target({ElementType.FIELD})
@@ -23,5 +23,7 @@ public @interface Inject {
         String value() default "";
 
         String id() default "";
+
+        boolean require() default true;
     }
 }

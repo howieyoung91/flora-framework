@@ -1,6 +1,5 @@
 package xyz.yanghaoyu.flora.context.support;
 
-import xyz.yanghaoyu.flora.BeansException;
 import xyz.yanghaoyu.flora.beans.factory.ConfigurableListableBeanFactory;
 import xyz.yanghaoyu.flora.beans.factory.config.BeanFactoryPostProcessor;
 import xyz.yanghaoyu.flora.beans.factory.config.BeanPostProcessor;
@@ -12,6 +11,7 @@ import xyz.yanghaoyu.flora.context.event.ApplicationEventMulticaster;
 import xyz.yanghaoyu.flora.context.event.ContextRefreshedEvent;
 import xyz.yanghaoyu.flora.context.event.SimpleApplicationEventMulticaster;
 import xyz.yanghaoyu.flora.core.io.loader.DefaultResourceLoader;
+import xyz.yanghaoyu.flora.exception.BeansException;
 
 import java.util.Collection;
 import java.util.Map;
@@ -36,13 +36,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         // 3. 初始化 ApplicationContextAwareProcessor
         initApplicationContextAwareProcessor();
 
-        // 4. 在 Bean 实例化之前，执行 BeanFactoryPostProcessor (Invoke factory processors registered as beans in the context.)
+        // 4. 在 Bean 实例化之前，执行 BeanFactoryPostProcessor
         invokeBeanFactoryPostProcessors(beanFactory);
 
-        // 5. 向 beanFactory 注册 BeanPostProcessor  要在 Bean 实例化之前执行注册操作
+        // 5. 生成并注册 BeanPostProcessor  要在 Bean 实例化之前执行注册操作,
         registerBeanPostProcessors(beanFactory);
 
-        // 6. 初始化与事件相关的容器
+        // 6. 初始化与事件相关的组件
         initApplicationEvent();
 
         // 7. 提前实例化单例Bean对象
@@ -62,6 +62,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         // 在 执行 BeanPostProcessorBeforeInit 时 将会判断 是否实现 ApplicationContextAware
         // 如果实现,将会把Context注入
         ApplicationContextAwareProcessor acp = new ApplicationContextAwareProcessor(this);
+        // getBeanFactory().registerSingleton("applicationContextAwareProcessor", acp);
         getBeanFactory().addBeanPostProcessor(acp);
     }
 
@@ -111,7 +112,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
      */
     private void registerBeanPostProcessors(ConfigurableListableBeanFactory beanFactory) {
         Map<String, BeanPostProcessor> beanPostProcessorMap = beanFactory.getBeansOfType(BeanPostProcessor.class);
-        // 从 声明的 bean中挑选出 BeanPostProcessor 进行注册
+        // 从 声明的 bean 中挑选出 BeanPostProcessor 进行注册
         for (BeanPostProcessor beanPostProcessor : beanPostProcessorMap.values()) {
             beanFactory.addBeanPostProcessor(beanPostProcessor);
         }

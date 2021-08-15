@@ -1,6 +1,6 @@
 package xyz.yanghaoyu.flora.beans.factory;
 
-import xyz.yanghaoyu.flora.BeansException;
+import xyz.yanghaoyu.flora.exception.BeansException;
 import xyz.yanghaoyu.flora.beans.factory.config.AutowireCapableBeanFactory;
 import xyz.yanghaoyu.flora.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.beans.factory.config.BeanPostProcessor;

@@ -2,21 +2,19 @@ package xyz.yanghaoyu.flora.aop.autoproxy;
 
 import org.aopalliance.aop.Advice;
 import org.aopalliance.intercept.MethodInterceptor;
-import xyz.yanghaoyu.flora.BeansException;
 import xyz.yanghaoyu.flora.aop.*;
 import xyz.yanghaoyu.flora.aop.aspectj.AspectJExpressionPointcutAdvisor;
 import xyz.yanghaoyu.flora.beans.factory.BeanFactory;
 import xyz.yanghaoyu.flora.beans.factory.BeanFactoryAware;
 import xyz.yanghaoyu.flora.beans.factory.config.InstantiationAwareBeanPostProcessor;
 import xyz.yanghaoyu.flora.beans.factory.support.DefaultListableBeanFactory;
+import xyz.yanghaoyu.flora.exception.BeansException;
 
 import java.util.Collection;
 
 /**
- * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/12 20:09<i/>
- * @version 1.0
+ * 按照 advisor 生成代理
  */
-
 
 public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPostProcessor, BeanFactoryAware {
     private DefaultListableBeanFactory beanFactory;
@@ -26,10 +24,17 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
         this.beanFactory = (DefaultListableBeanFactory) beanFactory;
     }
 
-    @Override
-    public Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
+    private boolean isInfrastructureClass(Class<?> beanClass) {
+        return Advice.class.isAssignableFrom(beanClass) || Pointcut.class.isAssignableFrom(beanClass)
+               || Advisor.class.isAssignableFrom(beanClass);
+    }
 
-        if (isInfrastructureClass(beanClass)) return null;
+    @Override
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+        Class beanClass = bean.getClass();
+        if (isInfrastructureClass(beanClass)) {
+            return bean;
+        }
         // 先获取 advisor
         Collection<AspectJExpressionPointcutAdvisor> advisors = beanFactory.getBeansOfType(AspectJExpressionPointcutAdvisor.class).values();
 
@@ -42,7 +47,7 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
 
             TargetSource targetSource = null;
             try {
-                targetSource = new TargetSource(beanClass.getDeclaredConstructor().newInstance());
+                targetSource = new TargetSource(bean);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -53,23 +58,6 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
 
             return new ProxyFactory(advisedSupport).getProxy();
         }
-
-        return null;
-    }
-
-    private boolean isInfrastructureClass(Class<?> beanClass) {
-        return Advice.class.isAssignableFrom(beanClass) || Pointcut.class.isAssignableFrom(beanClass)
-               || Advisor.class.isAssignableFrom(beanClass);
-    }
-
-    @Override
-    public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         return bean;
     }
-
-    @Override
-    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        return bean;
-    }
-
 }

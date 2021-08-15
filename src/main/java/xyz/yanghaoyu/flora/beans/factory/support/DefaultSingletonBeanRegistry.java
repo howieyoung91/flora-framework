@@ -1,6 +1,6 @@
 package xyz.yanghaoyu.flora.beans.factory.support;
 
-import xyz.yanghaoyu.flora.BeansException;
+import xyz.yanghaoyu.flora.exception.BeansException;
 import xyz.yanghaoyu.flora.beans.factory.config.SingletonBeanRegistry;
 
 import java.util.HashMap;
