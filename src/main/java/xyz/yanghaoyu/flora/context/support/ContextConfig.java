@@ -1,0 +1,10 @@
+package xyz.yanghaoyu.flora.context.support;
+
+/**
+ * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/15 14:22<i/>
+ * @version 1.0
+ */
+
+
+public class ContextConfig {
+}
