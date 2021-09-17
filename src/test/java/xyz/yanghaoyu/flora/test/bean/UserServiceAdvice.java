@@ -1,7 +1,7 @@
 package xyz.yanghaoyu.flora.test.bean;
 
 import xyz.yanghaoyu.flora.annotation.Component;
-import xyz.yanghaoyu.flora.aop.MethodBeforeAdvice;
+import xyz.yanghaoyu.flora.aop.advice.MethodBeforeAdvice;
 
 import java.lang.reflect.Method;
 

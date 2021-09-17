@@ -11,14 +11,14 @@ import xyz.yanghaoyu.flora.annotation.Value;
 
 @Component
 public class UserServiceImpl implements UserService {
-    @Inject.ByType
-    UserDao userDao;
-    @Value("${token}")
-    String temp;
+        @Inject.ByType
+        UserDao userDao;
+        @Value(value = "${token}", required = false)
+        String temp;
+        UserController userController;
 
-    @Override
-    public void say() {
-        // System.out.println(userDao);
+        @Override
+        public void say() {
         System.out.println("userServiceImpl say");
         System.out.println(temp);
     }

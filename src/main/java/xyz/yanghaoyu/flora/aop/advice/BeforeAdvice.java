@@ -1,4 +1,4 @@
-package xyz.yanghaoyu.flora.aop;
+package xyz.yanghaoyu.flora.aop.advice;
 
 import org.aopalliance.aop.Advice;
 

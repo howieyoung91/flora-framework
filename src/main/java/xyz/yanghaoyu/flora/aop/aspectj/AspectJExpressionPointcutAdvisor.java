@@ -1,20 +1,22 @@
 package xyz.yanghaoyu.flora.aop.aspectj;
 
 import org.aopalliance.aop.Advice;
+import org.aopalliance.intercept.MethodInterceptor;
 import xyz.yanghaoyu.flora.aop.Pointcut;
 import xyz.yanghaoyu.flora.aop.PointcutAdvisor;
 
 public class AspectJExpressionPointcutAdvisor implements PointcutAdvisor {
-    // 切面
+    // 切入点
     private AspectJExpressionPointcut pointcut;
-    // 具体的拦截方法 传入的是拦截器
-    private Advice advice;
+    // private Advice advice;
+    // 拦截器
+    private MethodInterceptor methodInterceptor;
     // 表达式
     private String expression;
 
     @Override
     public Pointcut getPointcut() {
-        if (null == pointcut) {
+        if (pointcut == null) {
             pointcut = new AspectJExpressionPointcut(expression);
         }
         return pointcut;
@@ -22,12 +24,12 @@ public class AspectJExpressionPointcutAdvisor implements PointcutAdvisor {
 
     @Override
     public Advice getAdvice() {
-        return advice;
+        return methodInterceptor;
     }
 
 
-    public AspectJExpressionPointcutAdvisor setAdvice(Advice advice) {
-        this.advice = advice;
+    public AspectJExpressionPointcutAdvisor setAdvice(MethodInterceptor advice) {
+        this.methodInterceptor = advice;
         return this;
     }
 

@@ -1,14 +1,12 @@
 package xyz.yanghaoyu.flora.context.support;
 
-import xyz.yanghaoyu.flora.exception.BeansException;
 import xyz.yanghaoyu.flora.beans.factory.ConfigurableListableBeanFactory;
 import xyz.yanghaoyu.flora.beans.factory.support.DefaultListableBeanFactory;
+import xyz.yanghaoyu.flora.exception.BeansException;
 
 /**
- * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/9 11:38<i/>
- * @version 1.0
+ * 这个类主要关注工厂的创建
  */
-
 
 public abstract class AbstractRefreshableApplicationContext extends AbstractApplicationContext {
     private DefaultListableBeanFactory beanFactory;

@@ -10,7 +10,10 @@ import xyz.yanghaoyu.flora.exception.BeansException;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * 基本实现 BeanFactory 的流程
+ * 具体逻辑由子类实现
+ */
 public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport implements ConfigurableBeanFactory {
 
     /**
@@ -24,8 +27,8 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
     protected <T> T doGetBean(final String name, final Object[] args) {
         Object sharedInstance = getSingleton(name);
+        // 处理 FactoryBean
         if (sharedInstance != null) {
-            // 处理 FactoryBean
             return (T) getObjectForBeanInstance(sharedInstance, name);
         }
         BeanDefinition beanDefinition = getBeanDefinition(name);

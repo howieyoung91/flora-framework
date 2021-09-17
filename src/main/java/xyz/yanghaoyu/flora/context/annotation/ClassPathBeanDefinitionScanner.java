@@ -4,7 +4,7 @@ import xyz.yanghaoyu.flora.annotation.Component;
 import xyz.yanghaoyu.flora.annotation.Scope;
 import xyz.yanghaoyu.flora.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.beans.factory.support.BeanDefinitionRegistry;
-import xyz.yanghaoyu.flora.exception.DuplicateScopeExpcetion;
+import xyz.yanghaoyu.flora.exception.DuplicateDeclarationException;
 import xyz.yanghaoyu.flora.util.StringUtil;
 
 import java.util.Set;
@@ -39,12 +39,11 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
             if (prototypeAnno == null) {
                 beanDefinition.setScope(Scope.SINGLETON);
             } else {
-                throw new DuplicateScopeExpcetion("there are two [Scope] annotation at " + aClass.getSimpleName());
+                throw new DuplicateDeclarationException("there are two [Scope] annotation at " + aClass.getSimpleName());
             }
         }
 
     }
-
 
     private String determineBeanName(BeanDefinition beanDefinition) {
         Class<?> beanClass = beanDefinition.getBeanClass();

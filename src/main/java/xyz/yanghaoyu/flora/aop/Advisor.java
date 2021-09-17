@@ -7,7 +7,6 @@ import org.aopalliance.aop.Advice;
  * @version 1.0
  */
 
-
 public interface Advisor {
     Advice getAdvice();
 }

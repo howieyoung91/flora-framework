@@ -26,6 +26,10 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
         return pvs;
     }
 
+    default Object getEarlyBeanReference(Object bean, String beanName) {
+        return bean;
+    }
+
     //
     // default Object getEarlyBeanReference(Object bean, String beanName) {
     //     return bean;

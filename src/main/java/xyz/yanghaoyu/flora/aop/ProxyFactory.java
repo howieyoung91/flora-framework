@@ -25,5 +25,4 @@ public class ProxyFactory {
 
         return new JdkDynamicAopProxy(advisedSupport);
     }
-
 }

@@ -1,4 +1,6 @@
-package xyz.yanghaoyu.flora.aop;
+package xyz.yanghaoyu.flora.aop.advice;
+
+import xyz.yanghaoyu.flora.aop.advice.BeforeAdvice;
 
 import java.lang.reflect.Method;
 

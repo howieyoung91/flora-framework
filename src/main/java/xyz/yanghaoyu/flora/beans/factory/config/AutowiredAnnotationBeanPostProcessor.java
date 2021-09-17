@@ -7,6 +7,7 @@ import xyz.yanghaoyu.flora.beans.factory.BeanFactoryAware;
 import xyz.yanghaoyu.flora.beans.factory.ConfigurableListableBeanFactory;
 import xyz.yanghaoyu.flora.beans.factory.PropertyValues;
 import xyz.yanghaoyu.flora.exception.BeansException;
+import xyz.yanghaoyu.flora.exception.DuplicateDeclarationException;
 import xyz.yanghaoyu.flora.util.ReflectUtil;
 import xyz.yanghaoyu.flora.util.StringUtil;
 
@@ -26,61 +27,67 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
         Class<?> clazz = bean.getClass();
         clazz = ReflectUtil.isCglibProxyClass(clazz) ? clazz.getSuperclass() : clazz;
         Field[] declaredFields = clazz.getDeclaredFields();
-        //
-
-        // 1. 处理注解 @Value
         for (Field field : declaredFields) {
-            Value valueAnnotation = field.getAnnotation(Value.class);
-            if (null != valueAnnotation) {
-                String value = valueAnnotation.value();
-                String tempValue = beanFactory.resolveEmbeddedValue(value);
-                if (tempValue == null && valueAnnotation.required()) {
-                    throw new NullPointerException();
-                }
-                value = tempValue;
-                ReflectUtil.setFieldValue(bean, field.getName(), value);
-            }
-        }
-
-
-        for (Field field : declaredFields) {
-            // 处理 Inject.ByType
-            Inject.ByType injectByTypeAnno = field.getAnnotation(Inject.ByType.class);
-            if (injectByTypeAnno != null) {
-                Map<String, ?> candidates = beanFactory.getBeansOfType(field.getType());
-                if (candidates.size() == 1) {
-                    for (Object dependOnBean : candidates.values()) {
-                        ReflectUtil.setFieldValue(bean, field.getName(), dependOnBean);
-                    }
-                } else {
-                    if (injectByTypeAnno.require()) {
-                        if (candidates.size() > 1) {
-                            throw new BeansException("multiple beans are candidate! at: " + beanName + "field: " + field.getName() + ". Please use Inject.ByName");
-                        } else {
-                            throw new BeansException("No such Bean which class is  " + field.getType().getName());
-                        }
-                    }
-                }
-            }
-
-            // 处理 Inject.ByName
-            Inject.ByName injectByNameAnno = field.getAnnotation(Inject.ByName.class);
-            if (injectByNameAnno != null) {
-                String value = injectByNameAnno.value();
-                String id = injectByNameAnno.id();
-                if (StringUtil.isEmpty(id)) {
-                    id = StringUtil.isEmpty(value)
-                            ? StringUtil.lowerFirstChar(field.getName())
-                            : value;
-                }
-                Object dependOnBean = beanFactory.getBean(id);
-                if (dependOnBean == null && injectByNameAnno.require()) {
-                    throw new BeansException("No such Bean which id is  " + id);
-                }
-                ReflectUtil.setFieldValue(bean, field.getName(), dependOnBean);
-            }
+            // 1. 处理注解 @Value
+            handleValueAnno(bean, field);
+            // 2. 处理注解 @Inject.ByType 和 @Inject.ByName
+            handleInjectAnno(bean, beanName, field);
         }
 
         return null;
+    }
+
+    private void handleInjectAnno(Object bean, String beanName, Field field) {
+        Inject.ByType injectByTypeAnno = field.getAnnotation(Inject.ByType.class);
+        Inject.ByName injectByNameAnno = field.getAnnotation(Inject.ByName.class);
+        if (injectByNameAnno != null && injectByTypeAnno != null) {
+            throw new DuplicateDeclarationException("the [@Inject.ByType] and [@Inject.ByName] are duplicate!");
+        }
+        // 处理 Inject.ByType
+        if (injectByTypeAnno != null) {
+            Map<String, ?> candidates = beanFactory.getBeansOfType(field.getType());
+            if (candidates.size() == 1) {
+                for (Object dependOnBean : candidates.values()) {
+                    ReflectUtil.setFieldValue(bean, field.getName(), dependOnBean);
+                }
+            } else {
+                if (injectByTypeAnno.required()) {
+                    if (candidates.size() > 1) {
+                        throw new BeansException("multiple beans are candidate! at: " + beanName + "field: " + field.getName() + ". Please use Inject.ByName");
+                    } else {
+                        throw new BeansException("No such Bean which class is  " + field.getType().getName());
+                    }
+                }
+            }
+        }
+
+        // 处理 Inject.ByName
+        if (injectByNameAnno != null) {
+            String value = injectByNameAnno.value();
+            String id = injectByNameAnno.id();
+            if (StringUtil.isEmpty(id)) {
+                id = StringUtil.isEmpty(value)
+                        ? StringUtil.lowerFirstChar(field.getName())
+                        : value;
+            }
+            Object dependOnBean = beanFactory.getBean(id);
+            if (dependOnBean == null && injectByNameAnno.required()) {
+                throw new BeansException("No such Bean which id is  " + id);
+            }
+            ReflectUtil.setFieldValue(bean, field.getName(), dependOnBean);
+        }
+    }
+
+    private void handleValueAnno(Object bean, Field field) {
+        Value valueAnnotation = field.getAnnotation(Value.class);
+        if (null != valueAnnotation) {
+            String value = valueAnnotation.value();
+            String tempValue = beanFactory.resolveEmbeddedValue(value);
+            if (tempValue == null && valueAnnotation.required()) {
+                throw new NullPointerException();
+            }
+            value = tempValue;
+            ReflectUtil.setFieldValue(bean, field.getName(), value);
+        }
     }
 }

@@ -20,7 +20,6 @@ import java.util.Set;
  * @version 1.0
  */
 
-
 public abstract class AbstractApplicationEventMulticaster implements ApplicationEventMulticaster, BeanFactoryAware {
     public final Set<ApplicationListener> applicationListeners = new LinkedHashSet<>();
     private BeanFactory beanFactory;

@@ -28,7 +28,6 @@ import java.util.Objects;
  * @version 1.0
  */
 
-
 public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
     public XmlBeanDefinitionReader(BeanDefinitionRegistry registry) {
         super(registry);
@@ -88,7 +87,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
                 new ClassPathBeanDefinitionScanner(getRegistry()).doScan(basePaths);
 
                 // 注入 AutowiredAnnotationProcessor 这样才能在 BeanProcessor 中注入属性
-                getRegistry().registerBeanDefinition("internalAutowiredAnnotationProcessor", new BeanDefinition(AutowiredAnnotationBeanPostProcessor.class));
+                getRegistry().registerBeanDefinition("autowiredAnnotationProcessor", new BeanDefinition(AutowiredAnnotationBeanPostProcessor.class));
             }
         } else if (componentScanNodeList.getLength() > 1) {
             // 一个xml中只能出现一个 <component-scan/>

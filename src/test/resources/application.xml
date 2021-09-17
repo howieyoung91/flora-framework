@@ -5,13 +5,13 @@
     <property name="location" value="classpath:token.properties"/>
   </bean>
 
-  <bean id="inter" class="xyz.yanghaoyu.flora.aop.MethodBeforeAdviceInterceptor">
+  <bean id="inter" class="xyz.yanghaoyu.flora.aop.interceptor.MethodBeforeAdviceInterceptor">
     <property name="advice" ref="userServiceAdvice"/>
   </bean>
 
   <bean id="pointcutAdvisor" class="xyz.yanghaoyu.flora.aop.aspectj.AspectJExpressionPointcutAdvisor">
     <property name="expression" value="execution(* xyz.yanghaoyu.flora.test.bean.UserService.*(..))"/>
-    <property name="advice" ref="inter"/>
+    <property name="methodInterceptor" ref="inter"/>
   </bean>
   <enable-aop/>
   <!--  <bean class="xyz.yanghaoyu.flora.aop.autoproxy.DefaultAdvisorAutoProxyCreator"/>-->
