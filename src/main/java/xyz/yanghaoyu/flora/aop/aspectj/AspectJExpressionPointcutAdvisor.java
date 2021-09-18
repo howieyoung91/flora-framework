@@ -5,12 +5,18 @@ import org.aopalliance.intercept.MethodInterceptor;
 import xyz.yanghaoyu.flora.aop.Pointcut;
 import xyz.yanghaoyu.flora.aop.PointcutAdvisor;
 
+import java.util.List;
+
 public class AspectJExpressionPointcutAdvisor implements PointcutAdvisor {
     // 切入点
     private AspectJExpressionPointcut pointcut;
     // private Advice advice;
     // 拦截器
     private MethodInterceptor methodInterceptor;
+
+    // 拦截器链
+    private List<MethodInterceptor> methodInterceptors;
+
     // 表达式
     private String expression;
 
@@ -26,7 +32,6 @@ public class AspectJExpressionPointcutAdvisor implements PointcutAdvisor {
     public Advice getAdvice() {
         return methodInterceptor;
     }
-
 
     public AspectJExpressionPointcutAdvisor setAdvice(MethodInterceptor advice) {
         this.methodInterceptor = advice;

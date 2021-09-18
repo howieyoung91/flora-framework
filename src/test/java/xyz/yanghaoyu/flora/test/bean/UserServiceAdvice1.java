@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
  */
 
 @Component
-public class UserServiceAdvice implements MethodAroundAdvice {
+public class UserServiceAdvice1 implements MethodAroundAdvice {
     @Override
     public Object around(Method method, Object[] args, Object target) throws Throwable {
         System.out.println("method before");

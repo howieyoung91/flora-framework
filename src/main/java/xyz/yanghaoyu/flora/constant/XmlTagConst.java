@@ -22,4 +22,6 @@ public interface XmlTagConst {
     String VALUE = "value";
     String NAME = "name";
     String ENABLE_PROPERTY_PLACEHOLDER_CONFIGURER = "enable-property-placeholder-configurer";
+    String ENABLE_AOP = "enable-aop";
+    String AOP_CONFIG = "aop-config";
 }

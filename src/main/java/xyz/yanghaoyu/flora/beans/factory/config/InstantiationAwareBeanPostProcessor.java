@@ -4,10 +4,6 @@ import xyz.yanghaoyu.flora.beans.factory.PropertyValues;
 import xyz.yanghaoyu.flora.exception.BeansException;
 
 public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
-
-    /**
-     * 在 Bean 对象执行实例化之前，执行此方法
-     */
     default Object postProcessBeforeInstantiation(Class<?> beanClass, String beanName) throws BeansException {
         return null;
     }
@@ -25,13 +21,4 @@ public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
     default PropertyValues postProcessPropertyValues(PropertyValues pvs, Object bean, String beanName) throws BeansException {
         return pvs;
     }
-
-    default Object getEarlyBeanReference(Object bean, String beanName) {
-        return bean;
-    }
-
-    //
-    // default Object getEarlyBeanReference(Object bean, String beanName) {
-    //     return bean;
-    // }
 }

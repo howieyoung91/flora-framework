@@ -43,10 +43,10 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
     }
 
     public void registerSingleton(String beanName, Object singletonObject) {
-        // 先从二级缓存和三级缓存中移除
+        singletonObjects.put(beanName, singletonObject);
+        // 从二级缓存和三级缓存中移除
         earlySingletonObjects.remove(beanName);
         singletonFactories.remove(beanName);
-        singletonObjects.put(beanName, singletonObject);
     }
 
     protected void addSingletonFactory(String beanName, ObjectFactory<?> singletonFactory) {

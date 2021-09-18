@@ -6,6 +6,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import xyz.yanghaoyu.flora.aop.autoproxy.DefaultAdvisorAutoProxyCreator;
+import xyz.yanghaoyu.flora.beans.factory.PropertyPlaceholderConfigurer;
 import xyz.yanghaoyu.flora.beans.factory.PropertyValue;
 import xyz.yanghaoyu.flora.beans.factory.config.AutowiredAnnotationBeanPostProcessor;
 import xyz.yanghaoyu.flora.beans.factory.config.BeanDefinition;
@@ -21,6 +22,7 @@ import xyz.yanghaoyu.flora.util.StringUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.rmi.registry.Registry;
 import java.util.Objects;
 
 /**
@@ -74,6 +76,54 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
         if (!Objects.equals(root.getNodeName(), XmlTagConst.BEANS)) {
             return;
         }
+        parseComponentScan(root);
+        parseEnableAop(root);
+        parsePropertyPlaceholderConfigurer(root);
+        parseBeans(root);
+    }
+
+    private void parsePropertyPlaceholderConfigurer(Element root) {
+        NodeList enablePropertyPlaceholderConfigurerList = root.getElementsByTagName(XmlTagConst.ENABLE_PROPERTY_PLACEHOLDER_CONFIGURER);
+        if (enablePropertyPlaceholderConfigurerList.getLength() == 1) {
+            BeanDefinition propertyPlaceholderConfigurerBeanDefinition =
+                    new BeanDefinition(PropertyPlaceholderConfigurer.class);
+            Node tag = enablePropertyPlaceholderConfigurerList.item(0);
+            String location = ((Element) tag).getAttribute("location");
+            // 手动注入
+            propertyPlaceholderConfigurerBeanDefinition
+                    .getPropertyValues()
+                    .addPropertyValue(new PropertyValue("location", location));
+            // 注册进容器
+            getRegistry().registerBeanDefinition("propertyPlaceholderConfigurer", propertyPlaceholderConfigurerBeanDefinition);
+        } else if (enablePropertyPlaceholderConfigurerList.getLength() > 1) {
+            // 一个xml中只能出现一个 <enable-property-placeholder-configurer/>
+            throw new BeansException("duplicate declaration <" + XmlTagConst.ENABLE_PROPERTY_PLACEHOLDER_CONFIGURER + "/> !");
+        }
+    }
+
+    private void parseEnableAop(Element root) {
+        NodeList aopNodeList = root.getElementsByTagName(XmlTagConst.ENABLE_AOP);
+        if (aopNodeList.getLength() == 1) {
+            getRegistry().registerBeanDefinition("defaultAdvisorAutoProxyCreator", new BeanDefinition(DefaultAdvisorAutoProxyCreator.class));
+            // // 解析 aop-config
+            // NodeList aopConfigTags = root.getElementsByTagName(XmlTagConst.AOP_CONFIG);
+            // if (aopConfigTags.getLength() == 1) {
+            //     Node aopConfigTag = aopConfigTags.item(0);
+            //     NodeList aspectTags = aopConfigTag.getChildNodes();
+            //     for (int i = 0; i < aspectTags.getLength(); i++) {
+            //         Node aspectTag = aspectTags.item(i);
+            //         // TODO 解析aspect
+            //     }
+            // } else if (aopConfigTags.getLength() > 1) {
+            //     throw new BeansException("duplicate declaration <" + XmlTagConst.AOP_CONFIG + "/> !");
+            // }
+        } else if (aopNodeList.getLength() > 1) {
+            // 一个xml中只能出现一个 <enable-aop/>
+            throw new BeansException("duplicate declaration <" + XmlTagConst.ENABLE_AOP + "/> !");
+        }
+    }
+
+    private void parseComponentScan(Element root) {
         NodeList componentScanNodeList = root.getElementsByTagName(XmlTagConst.COMPONENT_SCAN);
         if (componentScanNodeList.getLength() == 1) {
             // do scanPackage
@@ -93,15 +143,9 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
             // 一个xml中只能出现一个 <component-scan/>
             throw new BeansException("duplicate declaration <component-scan /> !");
         }
-        NodeList aopNodeList = root.getElementsByTagName("enable-aop");
-        if (aopNodeList.getLength() == 1) {
-            getRegistry().registerBeanDefinition("defaultAdvisorAutoProxyCreator", new BeanDefinition(DefaultAdvisorAutoProxyCreator.class));
-        } else if (aopNodeList.getLength() > 1) {
-            // 一个xml中只能出现一个 <component-scan/>
-            throw new BeansException("duplicate declaration <enable-aop /> !");
-        }
+    }
 
-
+    private void parseBeans(Element root) throws ClassNotFoundException {
         NodeList childNodes = root.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             Node item = childNodes.item(i);

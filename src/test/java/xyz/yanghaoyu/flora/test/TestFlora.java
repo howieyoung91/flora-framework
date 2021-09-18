@@ -2,7 +2,6 @@ package xyz.yanghaoyu.flora.test;
 
 import org.junit.Test;
 import xyz.yanghaoyu.flora.context.support.ClassPathXmlApplicationContext;
-import xyz.yanghaoyu.flora.test.bean.UserController;
 import xyz.yanghaoyu.flora.test.bean.UserService;
 import xyz.yanghaoyu.flora.test.test02.Husband;
 import xyz.yanghaoyu.flora.test.test02.Three;
@@ -18,10 +17,9 @@ public class TestFlora {
     public void test() {
         ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:application.xml");
         applicationContext.registerShutdownHook();
-        UserController userController = applicationContext.getBean("userController", UserController.class);
         UserService userService = applicationContext.getBean("userServiceImpl", UserService.class);
         userService.say();
-        userController.show();
+        userService.doSth();
     }
 
     /**

@@ -6,18 +6,23 @@ import xyz.yanghaoyu.flora.aop.*;
 import xyz.yanghaoyu.flora.aop.aspectj.AspectJExpressionPointcutAdvisor;
 import xyz.yanghaoyu.flora.beans.factory.BeanFactory;
 import xyz.yanghaoyu.flora.beans.factory.BeanFactoryAware;
-import xyz.yanghaoyu.flora.beans.factory.config.InstantiationAwareBeanPostProcessor;
+import xyz.yanghaoyu.flora.beans.factory.config.SmartInstantiationAwareBeanPostProcessor;
 import xyz.yanghaoyu.flora.beans.factory.support.DefaultListableBeanFactory;
 import xyz.yanghaoyu.flora.exception.BeansException;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 按照 advisor 生成代理
  */
 
-public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPostProcessor, BeanFactoryAware {
+public class DefaultAdvisorAutoProxyCreator implements SmartInstantiationAwareBeanPostProcessor, BeanFactoryAware {
     private DefaultListableBeanFactory beanFactory;
+
+    private final Set<Object> earlyProxyReferences = Collections.synchronizedSet(new HashSet<Object>());
 
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -25,41 +30,47 @@ public class DefaultAdvisorAutoProxyCreator implements InstantiationAwareBeanPos
     }
 
     private boolean isInfrastructureClass(Class<?> beanClass) {
-        return Advice.class.isAssignableFrom(beanClass) || Pointcut.class.isAssignableFrom(beanClass)
-               || Advisor.class.isAssignableFrom(beanClass);
+        return Advice.class.isAssignableFrom(beanClass) || Pointcut.class.isAssignableFrom(beanClass) || Advisor.class.isAssignableFrom(beanClass);
     }
 
     @Override
     public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
-        Class beanClass = bean.getClass();
-        if (isInfrastructureClass(beanClass)) {
-            return bean;
+        if (!earlyProxyReferences.contains(beanName)) {
+            return wrapIfNecessary(bean, beanName);
         }
-        // 先获取 advisor
-        Collection<AspectJExpressionPointcutAdvisor> advisors = beanFactory.getBeansOfType(AspectJExpressionPointcutAdvisor.class).values();
+        return bean;
+    }
 
+    protected Object wrapIfNecessary(Object bean, String beanName) {
+        if (isInfrastructureClass(bean.getClass())) return bean;
+
+        Collection<AspectJExpressionPointcutAdvisor> advisors = beanFactory.getBeansOfType(AspectJExpressionPointcutAdvisor.class).values();
+        Object temp = bean;
         for (AspectJExpressionPointcutAdvisor advisor : advisors) {
             ClassFilter classFilter = advisor.getPointcut().getClassFilter();
-            // 类型不匹配 则跳过
-            if (!classFilter.matches(beanClass)) {
+            // 过滤匹配类
+            if (!classFilter.matches(bean.getClass())) {
                 continue;
             }
 
             AdvisedSupport advisedSupport = new AdvisedSupport();
 
-            TargetSource targetSource = null;
-            try {
-                targetSource = new TargetSource(bean);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            TargetSource targetSource = new TargetSource(temp);
             advisedSupport.setTargetSource(targetSource);
             advisedSupport.setMethodInterceptor((MethodInterceptor) advisor.getAdvice());
             advisedSupport.setMethodMatcher(advisor.getPointcut().getMethodMatcher());
-            advisedSupport.setProxyTargetClass(false);
+            advisedSupport.setProxyTargetClass(true);
 
-            return new ProxyFactory(advisedSupport).getProxy();
+            // 返回代理对象
+            temp = new ProxyFactory(advisedSupport).getProxy();
         }
-        return bean;
+
+        return temp;
+    }
+
+    @Override
+    public Object getEarlyBeanReference(Object bean, String beanName) {
+        earlyProxyReferences.add(beanName);
+        return wrapIfNecessary(bean, beanName);
     }
 }

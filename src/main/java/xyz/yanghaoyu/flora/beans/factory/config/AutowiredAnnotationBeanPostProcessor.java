@@ -1,5 +1,8 @@
 package xyz.yanghaoyu.flora.beans.factory.config;
 
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.MethodInterceptor;
+import net.sf.cglib.proxy.MethodProxy;
 import xyz.yanghaoyu.flora.annotation.Inject;
 import xyz.yanghaoyu.flora.annotation.Value;
 import xyz.yanghaoyu.flora.beans.factory.BeanFactory;
@@ -12,6 +15,7 @@ import xyz.yanghaoyu.flora.util.ReflectUtil;
 import xyz.yanghaoyu.flora.util.StringUtil;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Map;
 
 public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareBeanPostProcessor, BeanFactoryAware {
@@ -90,4 +94,27 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
             ReflectUtil.setFieldValue(bean, field.getName(), value);
         }
     }
+
+
+    // public static class SampleClass {
+    //     public void test() {
+    //         System.out.println("hello world");
+    //     }
+    // }
+    //
+    // public static void main(String[] args) {
+    //     Enhancer enhancer = new Enhancer();
+    //     enhancer.setSuperclass(SampleClass.class);
+    //     enhancer.setCallback(new MethodInterceptor() {
+    //         @Override
+    //         public Object intercept(Object obj, Method method, Object[] args, MethodProxy proxy) throws Throwable {
+    //             System.out.println("before method run...");
+    //             Object result = proxy.invokeSuper(obj, args);
+    //             System.out.println("after method run...");
+    //             return result;
+    //         }
+    //     });
+    //     SampleClass sample = (SampleClass) enhancer.create();
+    //     sample.test();
+    // }
 }

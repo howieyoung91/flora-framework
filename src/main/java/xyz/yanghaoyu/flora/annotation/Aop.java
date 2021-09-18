@@ -11,19 +11,23 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface Aop {
-    @interface Before {
-
-    }
+    // @interface Before {
+    //     String value() default "";
+    // }
 
     @interface Around {
-
+        String value() default "";
     }
 
-    @interface After {
-
-    }
-
-    @interface AfterThrowing {
-
-    }
+    // @interface After {
+    //     String value() default "";
+    // }
+    //
+    // @interface AfterThrowing {
+    //     String value() default "";
+    // }
+    //
+    // @interface AfterReturning {
+    //     String value() default "";
+    // }
 }
