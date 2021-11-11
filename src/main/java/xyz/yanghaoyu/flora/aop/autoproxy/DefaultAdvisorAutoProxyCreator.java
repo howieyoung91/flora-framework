@@ -22,7 +22,7 @@ import java.util.Set;
 public class DefaultAdvisorAutoProxyCreator implements SmartInstantiationAwareBeanPostProcessor, BeanFactoryAware {
     private DefaultListableBeanFactory beanFactory;
 
-    private final Set<Object> earlyProxyReferences = Collections.synchronizedSet(new HashSet<Object>());
+    private final Set<Object> earlyProxyReferences = Collections.synchronizedSet(new HashSet<>());
 
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -30,7 +30,9 @@ public class DefaultAdvisorAutoProxyCreator implements SmartInstantiationAwareBe
     }
 
     private boolean isInfrastructureClass(Class<?> beanClass) {
-        return Advice.class.isAssignableFrom(beanClass) || Pointcut.class.isAssignableFrom(beanClass) || Advisor.class.isAssignableFrom(beanClass);
+        return Advice.class.isAssignableFrom(beanClass)
+               || Pointcut.class.isAssignableFrom(beanClass)
+               || Advisor.class.isAssignableFrom(beanClass);
     }
 
     @Override
@@ -42,8 +44,9 @@ public class DefaultAdvisorAutoProxyCreator implements SmartInstantiationAwareBe
     }
 
     protected Object wrapIfNecessary(Object bean, String beanName) {
-        if (isInfrastructureClass(bean.getClass())) return bean;
-
+        if (isInfrastructureClass(bean.getClass())) {
+            return bean;
+        }
         Collection<AspectJExpressionPointcutAdvisor> advisors = beanFactory.getBeansOfType(AspectJExpressionPointcutAdvisor.class).values();
         Object temp = bean;
         for (AspectJExpressionPointcutAdvisor advisor : advisors) {
@@ -52,19 +55,18 @@ public class DefaultAdvisorAutoProxyCreator implements SmartInstantiationAwareBe
             if (!classFilter.matches(bean.getClass())) {
                 continue;
             }
-
             AdvisedSupport advisedSupport = new AdvisedSupport();
-
             TargetSource targetSource = new TargetSource(temp);
             advisedSupport.setTargetSource(targetSource);
             advisedSupport.setMethodInterceptor((MethodInterceptor) advisor.getAdvice());
             advisedSupport.setMethodMatcher(advisor.getPointcut().getMethodMatcher());
-            advisedSupport.setProxyTargetClass(true);
-
+            // false -> JDK代理 true -> cglib
+            advisedSupport.setProxyTargetClass(false);
+            advisedSupport.setMethodInterceptors(advisor.getAdvices());
             // 返回代理对象
+            // 多重代理
             temp = new ProxyFactory(advisedSupport).getProxy();
         }
-
         return temp;
     }
 

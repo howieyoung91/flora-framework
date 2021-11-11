@@ -8,6 +8,7 @@ import xyz.yanghaoyu.flora.aop.advice.MethodBeforeAdvice;
  * 前置增强拦截器
  * 暂不使用
  */
+@Deprecated
 public class MethodBeforeAdviceInterceptor implements MethodInterceptor {
     private MethodBeforeAdvice advice;
 

@@ -3,11 +3,13 @@ package xyz.yanghaoyu.flora.aop.advice;
 import java.lang.reflect.Method;
 
 /**
- * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/12 18:02<i/>
+ * 不支持 Before
+ *
+ * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2021/8/12 18:02<i/>
  * @version 1.0
  */
 
-
+@Deprecated
 public interface MethodBeforeAdvice extends BeforeAdvice {
     void before(Method method, Object[] args, Object target) throws Throwable;
 }

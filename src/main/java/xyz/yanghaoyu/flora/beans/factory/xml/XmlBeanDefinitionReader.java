@@ -5,10 +5,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import xyz.yanghaoyu.flora.aop.autoproxy.DefaultAdvisorAutoProxyCreator;
-import xyz.yanghaoyu.flora.beans.factory.PropertyPlaceholderConfigurer;
 import xyz.yanghaoyu.flora.beans.factory.PropertyValue;
-import xyz.yanghaoyu.flora.beans.factory.config.AutowiredAnnotationBeanPostProcessor;
 import xyz.yanghaoyu.flora.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.beans.factory.config.BeanReference;
 import xyz.yanghaoyu.flora.beans.factory.support.BeanDefinitionRegistry;
@@ -18,11 +15,11 @@ import xyz.yanghaoyu.flora.core.io.loader.ResourceLoader;
 import xyz.yanghaoyu.flora.core.io.reader.AbstractBeanDefinitionFileReader;
 import xyz.yanghaoyu.flora.core.io.resource.Resource;
 import xyz.yanghaoyu.flora.exception.BeansException;
+import xyz.yanghaoyu.flora.util.IocUtil;
 import xyz.yanghaoyu.flora.util.StringUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.rmi.registry.Registry;
 import java.util.Objects;
 
 /**
@@ -85,16 +82,10 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
     private void parsePropertyPlaceholderConfigurer(Element root) {
         NodeList enablePropertyPlaceholderConfigurerList = root.getElementsByTagName(XmlTagConst.ENABLE_PROPERTY_PLACEHOLDER_CONFIGURER);
         if (enablePropertyPlaceholderConfigurerList.getLength() == 1) {
-            BeanDefinition propertyPlaceholderConfigurerBeanDefinition =
-                    new BeanDefinition(PropertyPlaceholderConfigurer.class);
             Node tag = enablePropertyPlaceholderConfigurerList.item(0);
             String location = ((Element) tag).getAttribute("location");
-            // 手动注入
-            propertyPlaceholderConfigurerBeanDefinition
-                    .getPropertyValues()
-                    .addPropertyValue(new PropertyValue("location", location));
             // 注册进容器
-            getRegistry().registerBeanDefinition("propertyPlaceholderConfigurer", propertyPlaceholderConfigurerBeanDefinition);
+            IocUtil.enablePropertyPlaceholderConfigurer(getRegistry(), location);
         } else if (enablePropertyPlaceholderConfigurerList.getLength() > 1) {
             // 一个xml中只能出现一个 <enable-property-placeholder-configurer/>
             throw new BeansException("duplicate declaration <" + XmlTagConst.ENABLE_PROPERTY_PLACEHOLDER_CONFIGURER + "/> !");
@@ -104,19 +95,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
     private void parseEnableAop(Element root) {
         NodeList aopNodeList = root.getElementsByTagName(XmlTagConst.ENABLE_AOP);
         if (aopNodeList.getLength() == 1) {
-            getRegistry().registerBeanDefinition("defaultAdvisorAutoProxyCreator", new BeanDefinition(DefaultAdvisorAutoProxyCreator.class));
-            // // 解析 aop-config
-            // NodeList aopConfigTags = root.getElementsByTagName(XmlTagConst.AOP_CONFIG);
-            // if (aopConfigTags.getLength() == 1) {
-            //     Node aopConfigTag = aopConfigTags.item(0);
-            //     NodeList aspectTags = aopConfigTag.getChildNodes();
-            //     for (int i = 0; i < aspectTags.getLength(); i++) {
-            //         Node aspectTag = aspectTags.item(i);
-            //         // TODO 解析aspect
-            //     }
-            // } else if (aopConfigTags.getLength() > 1) {
-            //     throw new BeansException("duplicate declaration <" + XmlTagConst.AOP_CONFIG + "/> !");
-            // }
+            IocUtil.enableAop(getRegistry());
         } else if (aopNodeList.getLength() > 1) {
             // 一个xml中只能出现一个 <enable-aop/>
             throw new BeansException("duplicate declaration <" + XmlTagConst.ENABLE_AOP + "/> !");
@@ -135,9 +114,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
                 }
                 String[] basePaths = basePackage.split(",");
                 new ClassPathBeanDefinitionScanner(getRegistry()).doScan(basePaths);
-
                 // 注入 AutowiredAnnotationProcessor 这样才能在 BeanProcessor 中注入属性
-                getRegistry().registerBeanDefinition("autowiredAnnotationProcessor", new BeanDefinition(AutowiredAnnotationBeanPostProcessor.class));
+                IocUtil.enableComponentScan(getRegistry());
             }
         } else if (componentScanNodeList.getLength() > 1) {
             // 一个xml中只能出现一个 <component-scan/>

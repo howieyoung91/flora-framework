@@ -1,38 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
   <component-scan base-package="xyz.yanghaoyu.flora.test"/>
-  <bean class="xyz.yanghaoyu.flora.beans.factory.PropertyPlaceholderConfigurer">
-    <property name="location" value="classpath:token.properties"/>
-  </bean>
+
   <enable-property-placeholder-configurer location="classpath:token.properties"/>
-  <!--  <bean id="inter1" class="xyz.yanghaoyu.flora.aop.interceptor.MethodAroundAdviceInterceptor">-->
-  <!--    <property name="advice" ref="userServiceAdvice1"/>-->
-  <!--  </bean>-->
-  <!--  <bean id="pointcutAdvisor1" class="xyz.yanghaoyu.flora.aop.aspectj.AspectJExpressionPointcutAdvisor">-->
-  <!--    <property name="expression" value="execution(* xyz.yanghaoyu.flora.test.bean.UserService.*(..))"/>-->
-  <!--    <property name="methodInterceptor" ref="inter"/>-->
-  <!--  </bean>-->
+
+  <bean id="inter1" class="xyz.yanghaoyu.flora.aop.interceptor.MethodAroundAdviceInterceptor">
+    <property name="advice" ref="userServiceAdvice1"/>
+  </bean>
+
+  <bean id="pointcutAdvisor1" class="xyz.yanghaoyu.flora.aop.aspectj.AspectJExpressionPointcutAdvisor">
+    <property name="expression" value="execution(* xyz.yanghaoyu.flora.test.bean.UserService.*(..))"/>
+    <property name="methodInterceptor" ref="inter"/>
+  </bean>
+
   <bean id="inter" class="xyz.yanghaoyu.flora.aop.interceptor.MethodAroundAdviceInterceptor">
     <property name="advice" ref="userServiceAdvice"/>
   </bean>
 
   <bean id="pointcutAdvisor" class="xyz.yanghaoyu.flora.aop.aspectj.AspectJExpressionPointcutAdvisor">
-    <property name="expression" value="execution(* xyz.yanghaoyu.flora.test.bean.UserService.say(..))"/>
+    <property name="expression" value="execution(* xyz.yanghaoyu.flora.test.bean.UserService.*(..))"/>
     <property name="methodInterceptor" ref="inter"/>
   </bean>
 
 
   <enable-aop/>
   <!--
-  TODO
-  实现 around, 不提供before
-  使用以下代码代替 aop
-  解决 cglib 多重代理
+    TODO
+    实现 around, 不提供 before
+    使用以下代码代替 aop
+    解决 cglib 多重代理
   -->
-  <aop-config>
-    <aspect>
-      <pointcut expression="execution(* xyz.yanghaoyu.flora.test.bean.UserService.*(..))"/>
-      <around method=""/>
-    </aspect>
-  </aop-config>
+  <!--  <aop-config>-->
+  <!--    <aspect>-->
+  <!--      <pointcut expression="execution(* xyz.yanghaoyu.flora.test.bean.UserService.*(..))"/>-->
+  <!--&lt;!&ndash;      <around advice=""/>&ndash;&gt;-->
+  <!--    </aspect>-->
+  <!--  </aop-config>-->
 </beans>

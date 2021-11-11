@@ -33,7 +33,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         // 2. 获取 BeanFactory
         ConfigurableListableBeanFactory beanFactory = getBeanFactory();
 
-        // 3. 初始化 ApplicationContextAwareProcessor
+        // 3. 初始化 ApplicationContextAwareProcessor 为框架提供对象感知功能
         initApplicationContextAwareProcessor();
 
         // 4. 在 Bean 实例化之前，执行 BeanFactoryPostProcessor
@@ -60,7 +60,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         // 由于 BeanFactory 无法感知 ApplicationContext,
         // 因此使用 ApplicationContextAwareProcessor 对 bean 进行增强
         // 在 执行 BeanPostProcessorBeforeInit 时 将会判断 是否实现 ApplicationContextAware
-        // 如果实现,将会把Context注入
+        // 如果实现,将会把 Context 注入
         ApplicationContextAwareProcessor acp = new ApplicationContextAwareProcessor(this);
         // getBeanFactory().registerSingleton("applicationContextAwareProcessor", acp);
         getBeanFactory().addBeanPostProcessor(acp);

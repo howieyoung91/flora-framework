@@ -1,5 +1,7 @@
 package xyz.yanghaoyu.flora.util;
 
+import java.util.LinkedList;
+
 /**
  * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/8 11:34<i/>
  * @version 1.0

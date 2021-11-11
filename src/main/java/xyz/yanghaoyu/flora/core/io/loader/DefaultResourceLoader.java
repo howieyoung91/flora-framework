@@ -9,10 +9,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
- * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/8 10:52<i/>
+ * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2021/8/8 10:52<i/>
  * @version 1.0
  */
-
 
 public class DefaultResourceLoader implements ResourceLoader {
     @Override
@@ -32,3 +31,4 @@ public class DefaultResourceLoader implements ResourceLoader {
         }
     }
 }
+

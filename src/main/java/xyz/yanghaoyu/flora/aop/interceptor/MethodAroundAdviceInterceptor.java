@@ -1,5 +1,6 @@
 package xyz.yanghaoyu.flora.aop.interceptor;
 
+import cn.hutool.extra.ssh.Sftp;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import xyz.yanghaoyu.flora.aop.advice.MethodAroundAdvice;
@@ -13,7 +14,7 @@ public class MethodAroundAdviceInterceptor implements MethodInterceptor {
     @Override
     public Object invoke(MethodInvocation methodInvocation) throws Throwable {
         // 触发环绕增强
-        return this.advice.around(
+        return advice.around(
                 methodInvocation.getMethod(),
                 methodInvocation.getArguments(),
                 methodInvocation.getThis()
