@@ -13,8 +13,8 @@ public class AspectJExpressionPointcutAdvisor implements PointcutAdvisor {
     // private Advice advice;
     // 拦截器
     private MethodInterceptor methodInterceptor;
-    // 拦截器链
-    private List<MethodInterceptor> methodInterceptors;
+    // // 拦截器链
+    // private List<MethodInterceptor> methodInterceptors;
     // 表达式
     private String expression;
 
@@ -31,10 +31,10 @@ public class AspectJExpressionPointcutAdvisor implements PointcutAdvisor {
         return methodInterceptor;
     }
 
-    @Override
-    public List<MethodInterceptor> getAdvices() {
-        return methodInterceptors;
-    }
+    // @Override
+    // public List<MethodInterceptor> getAdvices() {
+    //     return methodInterceptors;
+    // }
 
     public AspectJExpressionPointcutAdvisor setAdvice(MethodInterceptor advice) {
         this.methodInterceptor = advice;

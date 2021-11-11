@@ -17,8 +17,8 @@ public class AdvisedSupport {
     private TargetSource targetSource;
     // 方法拦截器
     private MethodInterceptor methodInterceptor;
-    // 拦截器链
-    private List<MethodInterceptor> methodInterceptors;
+    // // 拦截器链
+    // private List<MethodInterceptor> methodInterceptors;
     // 方法匹配器(检查目标方法是否符合通知条件)
     private MethodMatcher methodMatcher;
 
@@ -42,14 +42,14 @@ public class AdvisedSupport {
         return methodInterceptor;
     }
 
-    public List<MethodInterceptor> getMethodInterceptors() {
-        return methodInterceptors;
-    }
-
-    public AdvisedSupport setMethodInterceptors(List<MethodInterceptor> methodInterceptors) {
-        this.methodInterceptors = methodInterceptors;
-        return this;
-    }
+    // public List<MethodInterceptor> getMethodInterceptors() {
+    //     return methodInterceptors;
+    // }
+    //
+    // public AdvisedSupport setMethodInterceptors(List<MethodInterceptor> methodInterceptors) {
+    //     this.methodInterceptors = methodInterceptors;
+    //     return this;
+    // }
 
     public void setMethodInterceptor(MethodInterceptor methodInterceptor) {
         this.methodInterceptor = methodInterceptor;

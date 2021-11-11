@@ -62,7 +62,7 @@ public class DefaultAdvisorAutoProxyCreator implements SmartInstantiationAwareBe
             advisedSupport.setMethodMatcher(advisor.getPointcut().getMethodMatcher());
             // false -> JDK代理 true -> cglib
             advisedSupport.setProxyTargetClass(false);
-            advisedSupport.setMethodInterceptors(advisor.getAdvices());
+            // advisedSupport.setMethodInterceptors(advisor.getAdvices());
             // 返回代理对象
             // 多重代理
             temp = new ProxyFactory(advisedSupport).getProxy();

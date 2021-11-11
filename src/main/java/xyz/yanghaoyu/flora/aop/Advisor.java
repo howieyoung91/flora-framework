@@ -13,5 +13,5 @@ import java.util.List;
 public interface Advisor {
     Advice getAdvice();
 
-    List<MethodInterceptor> getAdvices();
+    // List<MethodInterceptor> getAdvices();
 }

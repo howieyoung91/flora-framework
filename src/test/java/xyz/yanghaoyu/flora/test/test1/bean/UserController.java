@@ -1,4 +1,4 @@
-package xyz.yanghaoyu.flora.test.bean;
+package xyz.yanghaoyu.flora.test.test1.bean;
 
 import xyz.yanghaoyu.flora.annotation.Component;
 import xyz.yanghaoyu.flora.annotation.Inject;

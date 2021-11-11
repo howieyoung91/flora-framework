@@ -1,4 +1,4 @@
-package xyz.yanghaoyu.flora.test.event;
+package xyz.yanghaoyu.flora.test.test1.event;
 
 import xyz.yanghaoyu.flora.context.ApplicationListener;
 import xyz.yanghaoyu.flora.context.event.ContextRefreshedEvent;

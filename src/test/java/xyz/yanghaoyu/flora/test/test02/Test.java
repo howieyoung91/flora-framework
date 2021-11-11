@@ -1,31 +1,19 @@
-package xyz.yanghaoyu.flora.test;
+package xyz.yanghaoyu.flora.test.test02;
 
-import org.junit.Test;
 import xyz.yanghaoyu.flora.context.support.ClassPathXmlApplicationContext;
-import xyz.yanghaoyu.flora.test.bean.UserService;
-import xyz.yanghaoyu.flora.test.test02.Husband;
-import xyz.yanghaoyu.flora.test.test02.Three;
-import xyz.yanghaoyu.flora.test.test02.Wife;
 
 /**
- * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/7 23:07<i/>
+ * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2021/11/11 18:32<i/>
  * @version 1.0
  */
 
-public class TestFlora {
-    @Test
-    public void test() {
-        ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:application.xml");
-        applicationContext.registerShutdownHook();
-        UserService userService = applicationContext.getBean("userServiceImpl", UserService.class);
-        userService.say();
-        userService.doSth();
-    }
 
+public class Test {
     /**
      * 测试循环依赖
      */
-    @Test
+
+    @org.junit.Test
     public void test01() {
         ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:application.xml");
         applicationContext.registerShutdownHook();
@@ -36,4 +24,5 @@ public class TestFlora {
         System.out.println(wife.getThree() == three);
         System.out.println(three.getHusband() == husband);
     }
+
 }

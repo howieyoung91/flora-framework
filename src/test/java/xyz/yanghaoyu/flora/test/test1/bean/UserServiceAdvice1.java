@@ -1,4 +1,4 @@
-package xyz.yanghaoyu.flora.test.bean;
+package xyz.yanghaoyu.flora.test.test1.bean;
 
 import xyz.yanghaoyu.flora.annotation.Component;
 import xyz.yanghaoyu.flora.aop.advice.MethodAroundAdvice;
@@ -14,9 +14,9 @@ import java.lang.reflect.Method;
 public class UserServiceAdvice1 implements MethodAroundAdvice {
     @Override
     public Object around(Method method, Object[] args, Object target) throws Throwable {
-        System.out.println("method before");
+        System.out.println("UserServiceAdvice1 before");
         method.invoke(target, args);
-        System.out.println("method after");
+        System.out.println("UserServiceAdvice1 after");
         return null;
     }
 }
