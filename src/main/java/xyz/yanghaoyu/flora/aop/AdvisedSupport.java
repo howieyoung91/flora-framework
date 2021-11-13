@@ -17,8 +17,6 @@ public class AdvisedSupport {
     private TargetSource targetSource;
     // 方法拦截器
     private MethodInterceptor methodInterceptor;
-    // // 拦截器链
-    // private List<MethodInterceptor> methodInterceptors;
     // 方法匹配器(检查目标方法是否符合通知条件)
     private MethodMatcher methodMatcher;
 

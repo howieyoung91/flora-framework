@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
  * @version 1.0
  */
 
-
 public interface MethodAroundAdvice extends AroundAdvice {
     Object around(Method method, Object[] args, Object target) throws Throwable;
+
 }

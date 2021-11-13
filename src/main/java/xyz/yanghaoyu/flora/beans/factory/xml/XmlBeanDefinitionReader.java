@@ -142,7 +142,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
             Class<?> clazz = null;
             clazz = Class.forName(clazzName);
             BeanDefinition beanDefinition = new BeanDefinition(clazz);
-            // 解析id
+            // 解析 id
             // 优先级 id > name
             if (StringUtil.isEmpty(beanId)) {
                 beanId = StringUtil.lowerFirstChar(clazz.getSimpleName());

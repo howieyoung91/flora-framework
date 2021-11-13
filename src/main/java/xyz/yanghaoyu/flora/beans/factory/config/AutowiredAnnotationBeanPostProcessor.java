@@ -1,10 +1,11 @@
 package xyz.yanghaoyu.flora.beans.factory.config;
 
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.MethodInterceptor;
-import net.sf.cglib.proxy.MethodProxy;
+import xyz.yanghaoyu.flora.annotation.Aop;
 import xyz.yanghaoyu.flora.annotation.Inject;
 import xyz.yanghaoyu.flora.annotation.Value;
+import xyz.yanghaoyu.flora.aop.aspectj.AnnotationAspectJExpressionPointcutAdvisorManager;
+import xyz.yanghaoyu.flora.aop.interceptor.MethodChain;
+import xyz.yanghaoyu.flora.aop.interceptor.MethodPoint;
 import xyz.yanghaoyu.flora.beans.factory.BeanFactory;
 import xyz.yanghaoyu.flora.beans.factory.BeanFactoryAware;
 import xyz.yanghaoyu.flora.beans.factory.ConfigurableListableBeanFactory;
@@ -33,15 +34,49 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
         Field[] declaredFields = clazz.getDeclaredFields();
         for (Field field : declaredFields) {
             // 1. 处理注解 @Value
-            handleValueAnno(bean, field);
+            handleValueAnnotation(bean, field);
             // 2. 处理注解 @Inject.ByType 和 @Inject.ByName
-            handleInjectAnno(bean, beanName, field);
+            handleInjectAnnotation(bean, beanName, field);
+        }
+
+
+        // TODO
+        AnnotationAspectJExpressionPointcutAdvisorManager manager = getAnnotationAdvisorManager();
+        Method[] methods = clazz.getDeclaredMethods();
+        for (Method method : methods) {
+            Aop.Enhance enhanceAnno = method.getAnnotation(Aop.Enhance.class);
+            if (enhanceAnno == null) {
+                continue;
+            }
+            manager.addMethodEnhanceAdvice(enhanceAnno.value(), new MethodPoint() {
+                @Override
+                public int getPriority() {
+                    return enhanceAnno.priority();
+                }
+
+                @Override
+                public Object proceed(MethodChain chain) throws Throwable {
+                    // 调用用户的方法
+                    return method.invoke(bean, chain);
+                }
+            });
         }
 
         return null;
     }
 
-    private void handleInjectAnno(Object bean, String beanName, Field field) {
+    private AnnotationAspectJExpressionPointcutAdvisorManager getAnnotationAdvisorManager() {
+        AnnotationAspectJExpressionPointcutAdvisorManager advisor;
+        try {
+            advisor = beanFactory.getBean(AnnotationAspectJExpressionPointcutAdvisorManager.class.getName(), AnnotationAspectJExpressionPointcutAdvisorManager.class);
+        } catch (BeansException e) {
+            advisor = new AnnotationAspectJExpressionPointcutAdvisorManager();
+            beanFactory.registerSingleton(AnnotationAspectJExpressionPointcutAdvisorManager.class.getName(), advisor);
+        }
+        return advisor;
+    }
+
+    private void handleInjectAnnotation(Object bean, String beanName, Field field) {
         Inject.ByType injectByTypeAnno = field.getAnnotation(Inject.ByType.class);
         Inject.ByName injectByNameAnno = field.getAnnotation(Inject.ByName.class);
         if (injectByNameAnno != null && injectByTypeAnno != null) {
@@ -82,7 +117,7 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
         }
     }
 
-    private void handleValueAnno(Object bean, Field field) {
+    private void handleValueAnnotation(Object bean, Field field) {
         Value valueAnnotation = field.getAnnotation(Value.class);
         if (null != valueAnnotation) {
             String value = valueAnnotation.value();

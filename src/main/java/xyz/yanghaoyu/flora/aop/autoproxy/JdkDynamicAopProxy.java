@@ -24,12 +24,11 @@ public class JdkDynamicAopProxy implements AopProxy, InvocationHandler {
 
     @Override
     public Object getProxy() {
-        return Proxy.newProxyInstance
-                (
-                        Thread.currentThread().getContextClassLoader(),
-                        advisedSupport.getTargetSource().getTargetClass(),
-                        this
-                );
+        return Proxy.newProxyInstance(
+                Thread.currentThread().getContextClassLoader(),
+                advisedSupport.getTargetSource().getTargetClass(),
+                this
+        );
     }
 
     @Override
@@ -49,6 +48,7 @@ public class JdkDynamicAopProxy implements AopProxy, InvocationHandler {
             // 触发增强
             return res;
         }
+        // 调用真实方法
         return method.invoke(advisedSupport.getTargetSource().getTarget(), args);
     }
 }

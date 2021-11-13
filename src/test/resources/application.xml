@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
+
   <component-scan base-package="xyz.yanghaoyu.flora.test"/>
+
+  <enable-aop/>
 
   <enable-property-placeholder-configurer location="classpath:token.properties"/>
 
@@ -23,8 +26,6 @@
   </bean>
 
 
-
-  <enable-aop/>
   <!--
     TODO
     实现 around, 不提供 before

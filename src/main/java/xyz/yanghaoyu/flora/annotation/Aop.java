@@ -14,11 +14,18 @@ public @interface Aop {
 
     // 不实现 @Before @After @AfterThrowing @AfterReturning 了
     // @Around 已经够强大了
+    @Target({ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
+    @Documented
+    @interface Enhance {
+        String value();
 
-    @interface Around {
-        String value() default "";
+        int priority() default 0;
     }
 
+    @interface Enhancer {
+        String value() default "";
+    }
     // @interface Before {
     //     String value() default "";
     // }
@@ -34,3 +41,4 @@ public @interface Aop {
     //     String value() default "";
     // }
 }
+

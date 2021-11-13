@@ -8,7 +8,7 @@ import xyz.yanghaoyu.flora.aop.advice.MethodAroundAdvice;
  * 环绕增强拦截器
  */
 public class MethodAroundAdviceInterceptor implements MethodInterceptor {
-    private MethodAroundAdvice advice;
+    protected MethodAroundAdvice advice;
 
     @Override
     public Object invoke(MethodInvocation methodInvocation) throws Throwable {
