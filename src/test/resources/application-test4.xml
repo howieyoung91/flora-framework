@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+  <enable-aop/>
+  <component-scan base-package="xyz.yanghaoyu.flora.test.test4"/>
+  <!--  <property name="expression" value="execution(* xyz.yanghaoyu.flora.test.TestPointPaser.TestPointParser.*(..))"/>-->
+</beans>

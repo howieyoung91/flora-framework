@@ -13,6 +13,7 @@ public class Wife {
     @Inject.ByName
     private Husband husband;
 
+
     public Husband getHusband() {
         return husband;
     }
@@ -21,4 +22,6 @@ public class Wife {
         this.husband = husband;
         return this;
     }
+
+
 }

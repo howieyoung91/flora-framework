@@ -18,9 +18,9 @@ public @interface Aop {
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @interface Enhance {
-        String value();
+        String pointcut();
 
-        int priority() default 0;
+        int priority();
     }
 
     @interface Enhancer {

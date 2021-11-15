@@ -7,17 +7,17 @@ import xyz.yanghaoyu.flora.structure.Chain;
  * @version 1.0
  */
 
-public interface MethodPoint extends Chain.Point, Comparable<MethodPoint> {
+public interface AdvicePoint extends Chain.Point, Comparable<AdvicePoint> {
 
-    default int compareTo(MethodPoint o) {
+    default int compareTo(AdvicePoint o) {
         return getPriority() - o.getPriority();
     }
 
     default Object proceed(Chain chain) throws Throwable {
-        return proceed((MethodChain) chain);
+        return proceed((AdviceChain) chain);
     }
 
     int getPriority();
 
-    Object proceed(MethodChain chain) throws Throwable;
+    Object proceed(AdviceChain chain) throws Throwable;
 }

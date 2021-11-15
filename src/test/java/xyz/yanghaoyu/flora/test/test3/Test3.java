@@ -2,6 +2,7 @@ package xyz.yanghaoyu.flora.test.test3;
 
 import org.junit.Test;
 import xyz.yanghaoyu.flora.context.support.ClassPathXmlApplicationContext;
+import xyz.yanghaoyu.flora.test.test3.bean.Aspect;
 import xyz.yanghaoyu.flora.test.test3.bean.User;
 
 /**
@@ -17,8 +18,13 @@ public class Test3 {
         ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:application-test3.xml");
         applicationContext.registerShutdownHook();
         User user = applicationContext.getBean("user", User.class);
+        Aspect aspect = applicationContext.getBean("aspect", Aspect.class);
+        user.sleep();
+        user.say();
+        // aspect.getUser().sleep();
         // Object user = applicationContext.getBean("user");
         // System.out.println(user.getClass().getSimpleName());
-        user.say();
+        // user.say();
+        // user.sleep();
     }
 }

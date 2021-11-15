@@ -11,7 +11,7 @@ import java.util.TreeSet;
 
 
 public class MethodEnhanceAdviceInterceptor implements MultiMethodInterceptor {
-    private MethodChain chain = new MethodChain(new TreeSet<>());
+    private AdviceChain chain = new AdviceChain(new TreeSet<>());
 
     @Override
     public Object invoke(MethodInvocation methodInvocation) throws Throwable {
@@ -20,7 +20,12 @@ public class MethodEnhanceAdviceInterceptor implements MultiMethodInterceptor {
     }
 
     @Override
-    public void addAdvice(MethodPoint point) {
+    public void addAdvice(AdvicePoint point) {
         chain.addPoint(point);
+    }
+
+    @Override
+    public AdviceChain getMethodChain() {
+        return chain;
     }
 }

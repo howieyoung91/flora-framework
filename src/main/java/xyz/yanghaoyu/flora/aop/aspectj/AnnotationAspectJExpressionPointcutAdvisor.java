@@ -3,7 +3,7 @@ package xyz.yanghaoyu.flora.aop.aspectj;
 import org.aopalliance.aop.Advice;
 import xyz.yanghaoyu.flora.aop.Pointcut;
 import xyz.yanghaoyu.flora.aop.PointcutAdvisor;
-import xyz.yanghaoyu.flora.aop.interceptor.MethodPoint;
+import xyz.yanghaoyu.flora.aop.interceptor.AdvicePoint;
 import xyz.yanghaoyu.flora.aop.interceptor.MultiMethodInterceptor;
 
 /**
@@ -33,7 +33,7 @@ public class AnnotationAspectJExpressionPointcutAdvisor implements PointcutAdvis
         return pointcut;
     }
 
-    public void addMethodPoint(MethodPoint point) {
+    public void addMethodPoint(AdvicePoint point) {
         this.methodInterceptor.addAdvice(point);
     }
 

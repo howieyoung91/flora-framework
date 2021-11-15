@@ -13,9 +13,11 @@ public class Test2 {
     public void test() {
         ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:application-test2.xml");
         applicationContext.registerShutdownHook();
-        Wife wife = applicationContext.getBean("wife", Wife.class);
         Husband husband = applicationContext.getBean("husband", Husband.class);
-        System.out.println(husband.getWife() == wife);
-        System.out.println(wife.getHusband() == husband);
+        Wife wife = applicationContext.getBean("wife", Wife.class);
+        Wife wife1 = applicationContext.getBean("wife", Wife.class);
+        // Wife wife1 = husband.getWife();
+        System.out.println(wife1 == wife);
+        System.out.println(wife1.getHusband() == wife.getHusband());
     }
 }

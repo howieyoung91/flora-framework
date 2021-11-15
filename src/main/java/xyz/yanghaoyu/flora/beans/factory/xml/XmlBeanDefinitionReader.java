@@ -113,6 +113,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
                     throw new BeansException("The value of " + XmlTagConst.BASE_PACKAGE + " attribute can not be empty or null");
                 }
                 String[] basePaths = basePackage.split(",");
+                // 扫包
                 new ClassPathBeanDefinitionScanner(getRegistry()).doScan(basePaths);
                 // 注入 AutowiredAnnotationProcessor 这样才能在 BeanProcessor 中注入属性
                 IocUtil.enableComponentScan(getRegistry());

@@ -33,12 +33,16 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         // 2. 获取 BeanFactory
         ConfigurableListableBeanFactory beanFactory = getBeanFactory();
 
+        // AnnotationAspectJExpressionPointcutAdvisorManager manager = new AnnotationAspectJExpressionPointcutAdvisorManager();
+        // beanFactory.registerSingleton(AnnotationAspectJExpressionPointcutAdvisorManager.class.getName(), manager);
+
         // 3. 初始化 ApplicationContextAwareProcessor 为框架提供对象感知功能
         initApplicationContextAwareProcessor();
 
+        // TODO Aspect Inject
         // 4. 在 Bean 实例化之前，执行 BeanFactoryPostProcessor
-        invokeBeanFactoryPostProcessors(beanFactory);
 
+        invokeBeanFactoryPostProcessors(beanFactory);
         // 5. 生成并注册 BeanPostProcessor  要在 Bean 实例化之前执行注册操作,
         registerBeanPostProcessors(beanFactory);
 
@@ -101,7 +105,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
      * 触发 BeanFactoryPostProcessors
      */
     private void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
-        Map<String, BeanFactoryPostProcessor> beanFactoryPostProcessorMap = beanFactory.getBeansOfType(BeanFactoryPostProcessor.class);
+        Map<String, BeanFactoryPostProcessor> beanFactoryPostProcessorMap =
+                beanFactory.getBeansOfType(BeanFactoryPostProcessor.class);
         for (BeanFactoryPostProcessor beanFactoryPostProcessor : beanFactoryPostProcessorMap.values()) {
             beanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
         }

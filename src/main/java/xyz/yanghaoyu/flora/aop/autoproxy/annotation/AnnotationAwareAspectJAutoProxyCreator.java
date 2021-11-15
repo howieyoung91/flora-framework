@@ -1,17 +1,20 @@
 package xyz.yanghaoyu.flora.aop.autoproxy.annotation;
 
 import org.aopalliance.aop.Advice;
-import org.aopalliance.intercept.MethodInterceptor;
 import xyz.yanghaoyu.flora.aop.*;
 import xyz.yanghaoyu.flora.aop.aspectj.AnnotationAspectJExpressionPointcutAdvisor;
 import xyz.yanghaoyu.flora.aop.aspectj.AnnotationAspectJExpressionPointcutAdvisorManager;
+import xyz.yanghaoyu.flora.aop.interceptor.MultiMethodInterceptor;
 import xyz.yanghaoyu.flora.beans.factory.BeanFactory;
 import xyz.yanghaoyu.flora.beans.factory.BeanFactoryAware;
 import xyz.yanghaoyu.flora.beans.factory.config.SmartInstantiationAwareBeanPostProcessor;
 import xyz.yanghaoyu.flora.beans.factory.support.DefaultListableBeanFactory;
 import xyz.yanghaoyu.flora.exception.BeansException;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2021/11/11 21:41<i/>
@@ -47,28 +50,17 @@ public class AnnotationAwareAspectJAutoProxyCreator implements SmartInstantiatio
             return bean;
         }
         AnnotationAspectJExpressionPointcutAdvisorManager manager = beanFactory.getBean(AnnotationAspectJExpressionPointcutAdvisorManager.class.getName(), AnnotationAspectJExpressionPointcutAdvisorManager.class);
-        Map<String, AnnotationAspectJExpressionPointcutAdvisor> map = manager.getMap();
-        Collection<AnnotationAspectJExpressionPointcutAdvisor> advisors = map.values();
-        for (AnnotationAspectJExpressionPointcutAdvisor advisor : advisors) {
-            ClassFilter classFilter = advisor.getPointcut().getClassFilter();
-            // 过滤匹配类
-            if (!classFilter.matches(bean.getClass())) {
-                continue;
-            }
-            AdvisedSupport advisedSupport = new AdvisedSupport();
-            TargetSource targetSource = new TargetSource(bean);
-            // 把真实对象注入
-            advisedSupport.setTargetSource(targetSource);
-            // 方法拦截器 怎样增强
-            advisedSupport.setMethodInterceptor((MethodInterceptor) advisor.getAdvice());
-            // 方法匹配器 增强哪个方法
-            advisedSupport.setMethodMatcher(advisor.getPointcut().getMethodMatcher());
-            // false -> JDK代理 true -> cglib
-            advisedSupport.setProxyTargetClass(true);
-            // advisedSupport.setMethodInterceptors(advisor.getAdvices());
-            // 返回代理对象
-            return new ProxyFactory(advisedSupport).getProxy();
+        Collection<AnnotationAspectJExpressionPointcutAdvisor> candidates = manager.getAdvisorCandidates(bean.getClass());
+        TargetSource targetSource = new TargetSource(bean);
+        AnnotationAdvisedSupport support = new AnnotationAdvisedSupport();
+        support.setTargetSource(targetSource);
+        // 默认使用 cglib
+        support.setProxyTargetClass(true);
+        // 把候选的方法拦截器注入
+        for (AnnotationAspectJExpressionPointcutAdvisor advisor : candidates) {
+            support.addMethodInterceptor(advisor.getPointcut().getMethodMatcher(), (MultiMethodInterceptor) advisor.getAdvice());
         }
+        bean = new AnnotationProxyFactory(support).getProxy();
         return bean;
     }
 

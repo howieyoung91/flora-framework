@@ -9,5 +9,7 @@ import org.aopalliance.intercept.MethodInterceptor;
 
 
 public interface MultiMethodInterceptor extends MethodInterceptor {
-    void addAdvice(MethodPoint point);
+    void addAdvice(AdvicePoint point);
+
+    AdviceChain getMethodChain();
 }

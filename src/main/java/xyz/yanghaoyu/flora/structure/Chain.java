@@ -3,6 +3,7 @@ package xyz.yanghaoyu.flora.structure;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.function.Consumer;
 
 /**
  * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2021/11/12 21:46<i/>
@@ -50,5 +51,9 @@ public class Chain {
 
     public void addPoint(Point point) {
         points.add(point);
+    }
+
+    public void forEach(Consumer<? super Point> action) {
+        points.forEach(action);
     }
 }

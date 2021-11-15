@@ -12,4 +12,8 @@ public class User {
     public void say() {
         System.out.println("user say");
     }
+
+    public void sleep() {
+        System.out.println("user sleep");
+    }
 }

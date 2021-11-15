@@ -3,6 +3,7 @@ package xyz.yanghaoyu.flora.util;
 import xyz.yanghaoyu.flora.aop.autoproxy.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import xyz.yanghaoyu.flora.beans.factory.PropertyPlaceholderConfigurer;
 import xyz.yanghaoyu.flora.beans.factory.PropertyValue;
+import xyz.yanghaoyu.flora.beans.factory.config.AnnotationAopSupport;
 import xyz.yanghaoyu.flora.beans.factory.config.AutowiredAnnotationBeanPostProcessor;
 import xyz.yanghaoyu.flora.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.beans.factory.support.BeanDefinitionRegistry;
@@ -19,8 +20,8 @@ public class IocUtil {
         //         DefaultAdvisorAutoProxyCreator.class.getName(),
         //         new BeanDefinition(DefaultAdvisorAutoProxyCreator.class)
         // );
-
         // 注解 AOP
+        registry.registerBeanDefinition(AnnotationAopSupport.class.getName(), new BeanDefinition(AnnotationAopSupport.class));
         registry.registerBeanDefinition(
                 AnnotationAwareAspectJAutoProxyCreator.class.getName(),
                 new BeanDefinition(AnnotationAwareAspectJAutoProxyCreator.class)
