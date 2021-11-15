@@ -1,6 +1,8 @@
 package xyz.yanghaoyu.flora.test.test4;
 
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xyz.yanghaoyu.flora.core.context.support.ClassPathXmlApplicationContext;
 import xyz.yanghaoyu.flora.test.test4.bean.UserDao;
 import xyz.yanghaoyu.flora.test.test4.bean.UserService;
@@ -11,6 +13,8 @@ import xyz.yanghaoyu.flora.test.test4.bean.UserService;
  */
 
 public class Test4 {
+    private static final Logger LOGGER = LoggerFactory.getLogger(Test4.class);
+
     @Test
     public void t() {
         ClassPathXmlApplicationContext ac =
