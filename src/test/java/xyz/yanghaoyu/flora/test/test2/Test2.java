@@ -1,7 +1,7 @@
 package xyz.yanghaoyu.flora.test.test2;
 
 import org.junit.Test;
-import xyz.yanghaoyu.flora.context.support.ClassPathXmlApplicationContext;
+import xyz.yanghaoyu.flora.core.context.support.ClassPathXmlApplicationContext;
 
 /**
  * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2021/11/12 15:40<i/>
@@ -15,8 +15,7 @@ public class Test2 {
         applicationContext.registerShutdownHook();
         Husband husband = applicationContext.getBean("husband", Husband.class);
         Wife wife = applicationContext.getBean("wife", Wife.class);
-        Wife wife1 = applicationContext.getBean("wife", Wife.class);
-        // Wife wife1 = husband.getWife();
+        Wife wife1 = husband.getWife();
         System.out.println(wife1 == wife);
         System.out.println(wife1.getHusband() == wife.getHusband());
     }

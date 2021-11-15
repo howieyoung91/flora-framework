@@ -1,9 +1,9 @@
 package xyz.yanghaoyu.flora.test.test1.bean;
 
 import xyz.yanghaoyu.flora.annotation.Component;
-import xyz.yanghaoyu.flora.beans.factory.BeanNameAware;
-import xyz.yanghaoyu.flora.beans.factory.support.DisposableBean;
-import xyz.yanghaoyu.flora.beans.factory.support.InitializingBean;
+import xyz.yanghaoyu.flora.core.beans.factory.BeanNameAware;
+import xyz.yanghaoyu.flora.core.beans.factory.support.DisposableBean;
+import xyz.yanghaoyu.flora.core.beans.factory.support.InitializingBean;
 import xyz.yanghaoyu.flora.exception.BeansException;
 
 /**

@@ -1,7 +1,7 @@
 package xyz.yanghaoyu.flora.core.io.reader;
 
-import xyz.yanghaoyu.flora.beans.factory.support.BeanDefinitionRegistry;
-import xyz.yanghaoyu.flora.core.io.loader.ResourceLoader;
+import xyz.yanghaoyu.flora.core.beans.factory.support.BeanDefinitionRegistry;
+import xyz.yanghaoyu.flora.core.io.ResourceLoader;
 
 
 public abstract class AbstractBeanDefinitionFileReader extends AbstractBeanDefinitionReader implements BeanDefinitionFileReader {

@@ -1,5 +1,7 @@
 package xyz.yanghaoyu.flora.core.io.resource;
 
+import xyz.yanghaoyu.flora.core.io.Resource;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

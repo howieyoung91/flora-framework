@@ -1,6 +1,6 @@
 package xyz.yanghaoyu.flora.test.test1;
 
-import xyz.yanghaoyu.flora.context.support.ClassPathXmlApplicationContext;
+import xyz.yanghaoyu.flora.core.context.support.ClassPathXmlApplicationContext;
 import xyz.yanghaoyu.flora.test.test1.bean.UserService;
 
 /**

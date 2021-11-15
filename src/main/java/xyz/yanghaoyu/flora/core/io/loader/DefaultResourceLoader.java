@@ -1,8 +1,9 @@
 package xyz.yanghaoyu.flora.core.io.loader;
 
+import xyz.yanghaoyu.flora.core.io.ResourceLoader;
 import xyz.yanghaoyu.flora.core.io.resource.ClassPathResource;
 import xyz.yanghaoyu.flora.core.io.resource.FileSystemResource;
-import xyz.yanghaoyu.flora.core.io.resource.Resource;
+import xyz.yanghaoyu.flora.core.io.Resource;
 import xyz.yanghaoyu.flora.core.io.resource.UrlResource;
 
 import java.net.MalformedURLException;

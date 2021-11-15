@@ -3,7 +3,7 @@ package xyz.yanghaoyu.flora.test.test3.bean;
 import org.aspectj.lang.annotation.Aspect;
 import xyz.yanghaoyu.flora.annotation.Aop;
 import xyz.yanghaoyu.flora.annotation.Component;
-import xyz.yanghaoyu.flora.aop.interceptor.AdviceChain;
+import xyz.yanghaoyu.flora.core.aop.interceptor.AdviceChain;
 
 /**
  * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2021/11/13 14:29<i/>

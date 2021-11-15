@@ -1,7 +1,7 @@
 package xyz.yanghaoyu.flora.test.test4;
 
 import org.junit.Test;
-import xyz.yanghaoyu.flora.context.support.ClassPathXmlApplicationContext;
+import xyz.yanghaoyu.flora.core.context.support.ClassPathXmlApplicationContext;
 import xyz.yanghaoyu.flora.test.test4.bean.UserDao;
 import xyz.yanghaoyu.flora.test.test4.bean.UserService;
 

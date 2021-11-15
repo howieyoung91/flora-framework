@@ -16,8 +16,7 @@ public @interface Inject {
     @interface ByType {
         boolean required() default true;
 
-        // TODO support
-        // 精准地注入 FactoryBean 而不是 FactoryBean 所生产的 Bean
+        // TODO support 精准地注入 FactoryBean 而不是 FactoryBean 所生产的 Bean
         boolean exact() default false;
     }
 
@@ -30,8 +29,7 @@ public @interface Inject {
 
         boolean required() default true;
 
-        // TODO support
-        // 精准地注入 FactoryBean 而不是 FactoryBean 所生产的 Bean
+        // TODO support 精准地注入 FactoryBean 而不是 FactoryBean 所生产的 Bean
         boolean exact() default false;
     }
 }

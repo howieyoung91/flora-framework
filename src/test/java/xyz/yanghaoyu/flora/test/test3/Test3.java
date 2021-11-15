@@ -1,7 +1,7 @@
 package xyz.yanghaoyu.flora.test.test3;
 
 import org.junit.Test;
-import xyz.yanghaoyu.flora.context.support.ClassPathXmlApplicationContext;
+import xyz.yanghaoyu.flora.core.context.support.ClassPathXmlApplicationContext;
 import xyz.yanghaoyu.flora.test.test3.bean.Aspect;
 import xyz.yanghaoyu.flora.test.test3.bean.User;
 

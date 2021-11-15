@@ -1,5 +1,6 @@
 package xyz.yanghaoyu.flora.core.io.resource;
 
+import xyz.yanghaoyu.flora.core.io.Resource;
 import xyz.yanghaoyu.flora.util.ReflectUtil;
 
 import java.io.FileNotFoundException;
