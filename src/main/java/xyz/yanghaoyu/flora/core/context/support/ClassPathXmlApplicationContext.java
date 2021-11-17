@@ -8,9 +8,9 @@ import xyz.yanghaoyu.flora.exception.BeansException;
  */
 
 public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContext {
-    private String[] configLocations;
+    private final String[] configLocations;
 
-    public ClassPathXmlApplicationContext() {}
+    // public ClassPathXmlApplicationContext() {}
 
     /**
      * 从 XML 中加载 BeanDefinition，并刷新上下文

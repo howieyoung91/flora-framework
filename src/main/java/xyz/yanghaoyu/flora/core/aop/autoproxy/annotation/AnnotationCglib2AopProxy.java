@@ -52,10 +52,7 @@ public class AnnotationCglib2AopProxy implements MultiAopProxy, MethodIntercepto
         interceptor = getRealMethodInterceptor(method);
 
         if (interceptor == null) {
-            Object res = method.invoke(advisedSupport.getTargetSource().getTarget(), args);
-            return res;
-            // Object res = invokeRealMethod(args, methodProxy);
-            // return res;
+            return invokeRealMethod(args, methodProxy);
         } else {
             cache.put(method, interceptor);
             return invokeProxyMethod(method, args, methodProxy, interceptor);
@@ -100,6 +97,7 @@ public class AnnotationCglib2AopProxy implements MultiAopProxy, MethodIntercepto
     }
 
     private Object invokeRealMethod(Object[] args, MethodProxy methodProxy) throws Throwable {
+        // return method.invoke(advisedSupport.getTargetSource().getTarget(), args)
         return methodProxy.invoke(advisedSupport.getTargetSource().getTarget(), args);
     }
 }

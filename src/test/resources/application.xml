@@ -5,23 +5,6 @@
 
   <enable-aop/>
 
-  <enable-property-placeholder-configurer location="classpath:token.properties"/>
+  <enable-property-placeholder location="classpath:token.properties"/>
 
-<!--  <bean id="inter" class="xyz.yanghaoyu.flora.aop.interceptor.MethodAroundAdviceInterceptor">-->
-<!--    <property name="advice" ref="userServiceAdvice"/>-->
-<!--  </bean>-->
-
-<!--  <bean id="pointcutAdvisor" class="xyz.yanghaoyu.flora.aop.aspectj.AspectJExpressionPointcutAdvisor">-->
-<!--    <property name="expression" value="execution(* xyz.yanghaoyu.flora.test.test1.bean.UserService.*(..))"/>-->
-<!--    <property name="methodInterceptor" ref="inter"/>-->
-<!--  </bean>-->
-
-<!--  <bean id="inter1" class="xyz.yanghaoyu.flora.aop.interceptor.MethodAroundAdviceInterceptor">-->
-<!--    <property name="advice" ref="userServiceAdvice1"/>-->
-<!--  </bean>-->
-
-<!--  <bean id="pointcutAdvisor1" class="xyz.yanghaoyu.flora.aop.aspectj.AspectJExpressionPointcutAdvisor">-->
-<!--    <property name="expression" value="execution(* xyz.yanghaoyu.flora.test.test1.bean.UserService.*(..))"/>-->
-<!--    <property name="methodInterceptor" ref="inter1"/>-->
-<!--  </bean>-->
 </beans>
