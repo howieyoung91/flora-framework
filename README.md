@@ -1,5 +1,15 @@
 # Flora
 
+## How to use
+
+使用
+`git clone git@github.com:howieyoung91/flora-framework.git`克隆代码
+
+cd 到项目目录
+
+执行
+`mvn install` 安装到本地仓库
+
 ## Feature
 
 ### 1. IOC
@@ -133,6 +143,35 @@ public class UserAspect {
 
 ```
 
-TODO
+AOP 仅支持 Annotation 实现, XML 已经无法实现 AOP 了, 这一段已经写死在代码中,若要XML也支持 AOP 需要修改一下 `IocUtil`
+
+```java
+public class IocUtil {
+    // ...
+    public static void enableAop(BeanDefinitionRegistry registry) {
+        // 把这段代码取消注释即可开启 XML的AOP
+        // registry.registerBeanDefinition(
+        //         DefaultAdvisorAutoProxyCreator.class.getName(),
+        //         new BeanDefinition(DefaultAdvisorAutoProxyCreator.class)
+        // );
+
+        // 注解 AOP
+        registry.registerBeanDefinition(
+                AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor.class.getName(),
+                new BeanDefinition(AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor.class)
+        );
+        registry.registerBeanDefinition(
+                AnnotationAwareAspectJAutoProxyCreator.class.getName(),
+                new BeanDefinition(AnnotationAwareAspectJAutoProxyCreator.class)
+        );
+    }
+    // ...
+}
+```
+
+目前切面类还不支持 自动注入
+
+## TODO
 
 - [ ] Java Class Config
+- [ ] Log Config

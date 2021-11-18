@@ -1,5 +1,7 @@
 package xyz.yanghaoyu.flora.core.context.support;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanFactoryPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanPostProcessor;
@@ -23,10 +25,22 @@ import java.util.Map;
 
 public abstract class AbstractApplicationContext extends DefaultResourceLoader implements ConfigurableApplicationContext {
     public static final String APPLICATION_EVENT_MULTICASTER_BEAN_NAME = "applicationEventMulticaster";
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractApplicationContext.class);
     private ApplicationEventMulticaster applicationEventMulticaster;
+    private static final String banner =
+            "\n" +
+            " _______  __        ______   .______          ___      \n" +
+            "|   ____||  |      /  __  \\  |   _  \\        /   \\     \n" +
+            "|  |__   |  |     |  |  |  | |  |_)  |      /  ^  \\    \n" +
+            "|   __|  |  |     |  |  |  | |      /      /  /_\\  \\   \n" +
+            "|  |     |  `----.|  `--'  | |  |\\  \\----./  _____  \\  \n" +
+            "|__|     |_______| \\______/  | _| `._____/__/     \\__\\ \n";
 
     @Override
     public void refresh() throws BeansException {
+        System.out.println(AbstractApplicationContext.banner);
+
+        // new StringBuilder().append("          _____                    _____           _______                   _____                    _____          \n").append("         /\\    \\                  /\\    \\         /::\\    \\                 /\\    \\                  /\\    \\         \n").append("        /::\\    \\                /::\\____\\       /::::\\    \\               /::\\    \\                /::\\    \\        \n").append("       /::::\\    \\              /:::/    /      /::::::\\    \\             /::::\\    \\              /::::\\    \\       \n").append("      /::::::\\    \\            /:::/    /      /::::::::\\    \\           /::::::\\    \\            /::::::\\    \\      \n").append("     /:::/\\:::\\    \\          /:::/    /      /:::/~~\\:::\\    \\         /:::/\\:::\\    \\          /:::/\\:::\\    \\     \n").append("    /:::/__\\:::\\    \\        /:::/    /      /:::/    \\:::\\    \\       /:::/__\\:::\\    \\        /:::/__\\:::\\    \\    \n").append("   /::::\\   \\:::\\    \\      /:::/    /      /:::/    / \\:::\\    \\     /::::\\   \\:::\\    \\      /::::\\   \\:::\\    \\   \n").append("  /::::::\\   \\:::\\    \\    /:::/    /      /:::/____/   \\:::\\____\\   /::::::\\   \\:::\\    \\    /::::::\\   \\:::\\    \\  \n").append(" /:::/\\:::\\   \\:::\\    \\  /:::/    /      |:::|    |     |:::|    | /:::/\\:::\\   \\:::\\____\\  /:::/\\:::\\   \\:::\\    \\ \n").append("/:::/  \\:::\\   \\:::\\____\\/:::/____/       |:::|____|     |:::|    |/:::/  \\:::\\   \\:::|    |/:::/  \\:::\\   \\:::\\____\\\n").append("\\::/    \\:::\\   \\::/    /\\:::\\    \\        \\:::\\    \\   /:::/    / \\::/   |::::\\  /:::|____|\\::/    \\:::\\  /:::/    /\n").append(" \\/____/ \\:::\\   \\/____/  \\:::\\    \\        \\:::\\    \\ /:::/    /   \\/____|:::::\\/:::/    /  \\/____/ \\:::\\/:::/    / \n").append("          \\:::\\    \\       \\:::\\    \\        \\:::\\    /:::/    /          |:::::::::/    /            \\::::::/    /  \n").append("           \\:::\\____\\       \\:::\\    \\        \\:::\\__/:::/    /           |::|\\::::/    /              \\::::/    /   \n").append("            \\::/    /        \\:::\\    \\        \\::::::::/    /            |::| \\::/____/               /:::/    /    \n").append("             \\/____/          \\:::\\    \\        \\::::::/    /             |::|  ~|                    /:::/    /     \n").append("                               \\:::\\    \\        \\::::/    /              |::|   |                   /:::/    /      \n").append("                                \\:::\\____\\        \\::/____/               \\::|   |                  /:::/    /       \n").append("                                 \\::/    /         ~~                      \\:|   |                  \\::/    /        \n").append("                                  \\/____/                                   \\|___|                   \\/____/         ").toString()
         // 1. 创建 BeanFactory， 并加载 BeanDefinition
         refreshBeanFactory();
 

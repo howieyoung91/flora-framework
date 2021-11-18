@@ -2,6 +2,6 @@
 <beans>
   <enable-aop/>
   <component-scan base-package="xyz.yanghaoyu.flora.test.test4"/>
-  <enable-property-placeholder location="classpath:token.properties"/>
+  <!--  <enable-property-placeholder location="classpath:token.properties"/>-->
   <!--  <property name="expression" value="execution(* xyz.yanghaoyu.flora.test.TestPointPaser.TestPointParser.*(..))"/>-->
 </beans>

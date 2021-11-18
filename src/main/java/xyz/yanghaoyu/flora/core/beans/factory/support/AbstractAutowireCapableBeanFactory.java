@@ -1,5 +1,7 @@
 package xyz.yanghaoyu.flora.core.beans.factory.support;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.*;
 import xyz.yanghaoyu.flora.core.beans.factory.config.*;
 import xyz.yanghaoyu.flora.exception.BeansException;
@@ -28,6 +30,8 @@ import java.util.Objects;
  */
 
 public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory implements AutowireCapableBeanFactory {
+    Class clazz;
+    private static final Logger LOGGER = LoggerFactory.getLogger(AbstractAutowireCapableBeanFactory.class);
     // 实例化策略
     private InstantiationStrategy instantiationStrategy = new JDKInstantiationStrategy();
 
@@ -42,6 +46,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     }
 
     protected Object doCreateBean(String beanName, BeanDefinition beanDefinition, Object[] args) throws BeansException {
+        LOGGER.info("creating bean [{}]", beanName);
         Object bean = null;
         try {
             // 实例化
