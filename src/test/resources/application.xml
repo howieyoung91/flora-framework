@@ -4,7 +4,4 @@
   <component-scan base-package="xyz.yanghaoyu.flora.test.test1"/>
 
   <enable-aop/>
-
-  <enable-property-placeholder location="classpath:token.properties"/>
-
 </beans>
