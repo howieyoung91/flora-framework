@@ -1,11 +1,13 @@
 package xyz.yanghaoyu.flora.core.beans.factory.config;
 
+import cn.hutool.core.util.TypeUtil;
 import xyz.yanghaoyu.flora.annotation.Inject;
 import xyz.yanghaoyu.flora.annotation.Value;
 import xyz.yanghaoyu.flora.core.beans.factory.BeanFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.BeanFactoryAware;
 import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.PropertyValues;
+import xyz.yanghaoyu.flora.core.convert.converter.ConversionService;
 import xyz.yanghaoyu.flora.exception.BeansException;
 import xyz.yanghaoyu.flora.exception.DuplicateDeclarationException;
 import xyz.yanghaoyu.flora.util.ReflectUtil;
@@ -40,8 +42,6 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
     }
 
 
-
-
     private void handleInjectAnnotation(Object bean, String beanName, Field field) {
         Inject.ByType injectByTypeAnno = field.getAnnotation(Inject.ByType.class);
         Inject.ByName injectByNameAnno = field.getAnnotation(Inject.ByName.class);
@@ -60,7 +60,7 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
                     if (candidates.size() > 1) {
                         throw new BeansException("multiple beans are candidate! at: " + beanName + "field: " + field.getName() + ". Please use Inject.ByName");
                     } else {
-                        throw new BeansException("No such Bean which class is  " + field.getType().getName()+" when gen "+beanName);
+                        throw new BeansException("No such Bean which class is  " + field.getType().getName() + " when gen " + beanName);
                     }
                 }
             }
@@ -84,15 +84,22 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
     }
 
     private void handleValueAnnotation(Object bean, Field field) {
-        Value valueAnnotation = field.getAnnotation(Value.class);
-        if (null != valueAnnotation) {
-            String value = valueAnnotation.value();
-            String tempValue = beanFactory.resolveEmbeddedValue(value);
-            if (tempValue == null && valueAnnotation.required()) {
-                throw new NullPointerException();
+        Value valueAnn = field.getAnnotation(Value.class);
+        if (null != valueAnn) {
+            Object value = valueAnn.value();
+            value = beanFactory.resolveEmbeddedValue((String) value);
+
+            // 类型转换
+            Class<?> sourceType = value.getClass();
+            Class<?> targetType = (Class<?>) TypeUtil.getType(field);
+            ConversionService conversionService = beanFactory.getConversionService();
+            if (conversionService != null) {
+                if (conversionService.canConvert(sourceType, targetType)) {
+                    value = conversionService.convert(value, targetType);
+                }
             }
-            value = tempValue;
             ReflectUtil.setFieldValue(bean, field.getName(), value);
+            // BeanUtil.setFieldValue(bean, field.getName(), value);
         }
     }
 }

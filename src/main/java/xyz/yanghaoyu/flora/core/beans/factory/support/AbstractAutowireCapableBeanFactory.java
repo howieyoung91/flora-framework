@@ -1,9 +1,11 @@
 package xyz.yanghaoyu.flora.core.beans.factory.support;
 
+import cn.hutool.core.util.TypeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.*;
 import xyz.yanghaoyu.flora.core.beans.factory.config.*;
+import xyz.yanghaoyu.flora.core.convert.converter.ConversionService;
 import xyz.yanghaoyu.flora.exception.BeansException;
 import xyz.yanghaoyu.flora.util.ReflectUtil;
 import xyz.yanghaoyu.flora.util.StringUtil;
@@ -185,6 +187,15 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
                 Object value = propertyValue.getValue();
                 if (value instanceof BeanReference) {
                     value = getBean(((BeanReference) value).getBeanName());
+                } else {
+                    Class<?> sourceType = value.getClass();
+                    Class<?> targetType = (Class<?>) TypeUtil.getFieldType(bean.getClass(), name);
+                    ConversionService conversionService = getConversionService();
+                    if (conversionService != null) {
+                        if (conversionService.canConvert(sourceType, targetType)) {
+                            value = conversionService.convert(value, targetType);
+                        }
+                    }
                 }
                 ReflectUtil.setFieldValue(bean, name, value);
             }
@@ -237,7 +248,6 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
      * 触发初始化方法
      */
     private void invokeInitMethods(String beanName, Object wrappedBean, BeanDefinition beanDefinition) throws Exception {
-        // 通过实现接口
         if (wrappedBean instanceof InitializingBean) {
             ((InitializingBean) wrappedBean).afterPropertiesSet();
         }

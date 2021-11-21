@@ -30,31 +30,6 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
         return beanDefinition;
     }
 
-    // @Override
-    // public <T> Map<String, T> getBeansOfType(Class<T> type, boolean fromFactoryBean) throws BeansException {
-    //     if (fromFactoryBean) {
-    //         Map<String, T> result = new HashMap<>();
-    //         beanDefinitionMap.forEach((beanName, beanDefinition) -> {
-    //             Class beanClass = beanDefinition.getBeanClass();
-    //             if (type.isAssignableFrom(beanClass)) {
-    //                 result.put(beanName, (T) getBean(beanName));
-    //             }
-    //             if (FactoryBean.class.isAssignableFrom(beanClass)) {
-    //                 Type[] genericInterfaces = beanClass.getGenericInterfaces();
-    //                 for (Type genericInterface : genericInterfaces) {
-    //                     if (type == genericInterface) {
-    //
-    //                     }
-    //                 }
-    //                 result.put(beanName, (T) getBean(beanName));
-    //             }
-    //         });
-    //     }
-    //
-    //
-    //     return result;
-    // }
-
     @Override
     public <T> Map<String, T> getBeansOfType(Class<T> type) throws BeansException {
         Map<String, T> result = new HashMap<>();

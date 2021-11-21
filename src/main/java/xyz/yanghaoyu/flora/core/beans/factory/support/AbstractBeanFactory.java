@@ -5,6 +5,7 @@ import xyz.yanghaoyu.flora.core.beans.factory.StringValueResolver;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.config.ConfigurableBeanFactory;
+import xyz.yanghaoyu.flora.core.convert.converter.ConversionService;
 import xyz.yanghaoyu.flora.exception.BeansException;
 
 import java.util.ArrayList;
@@ -24,6 +25,18 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
      * String resolvers to apply e.g. to annotation attribute values
      */
     private final List<StringValueResolver> embeddedValueResolvers = new ArrayList<>();
+    
+    private ConversionService conversionService;
+
+    @Override
+    public void setConversionService(ConversionService conversionService) {
+        this.conversionService = conversionService;
+    }
+
+    @Override
+    public ConversionService getConversionService() {
+        return conversionService;
+    }
 
     protected <T> T doGetBean(final String name, final Object[] args) {
         Object sharedInstance = getSingleton(name);
@@ -35,6 +48,13 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
         Object bean = createBean(name, beanDefinition, args);
         return (T) getObjectForBeanInstance(bean, name);
     }
+
+    @Override
+    public boolean containsBean(String name) {
+        return containsBeanDefinition(name);
+    }
+
+    protected abstract boolean containsBeanDefinition(String name);
 
     private Object getObjectForBeanInstance(Object beanInstance, String beanName) {
         // 如果不是 FactoryBean,直接返回原对象即可

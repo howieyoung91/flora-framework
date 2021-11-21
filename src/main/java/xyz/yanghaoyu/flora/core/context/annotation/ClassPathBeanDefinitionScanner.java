@@ -22,13 +22,13 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
             Set<Class<?>> candidateClass = findCandidateComponents(basePackage);
             for (Class<?> aClass : candidateClass) {
                 BeanDefinition beanDefinition = new BeanDefinition(aClass);
-                resolveBeanScope(aClass, beanDefinition);
+                determineBeanScope(aClass, beanDefinition);
                 registry.registerBeanDefinition(determineBeanName(beanDefinition), beanDefinition);
             }
         }
     }
 
-    private void resolveBeanScope(Class<?> aClass, BeanDefinition beanDefinition) {
+    private void determineBeanScope(Class<?> aClass, BeanDefinition beanDefinition) {
         Scope.Singleton singletonAnno = aClass.getAnnotation(Scope.Singleton.class);
         Scope.Prototype prototypeAnno = aClass.getAnnotation(Scope.Prototype.class);
         if (singletonAnno == null) {

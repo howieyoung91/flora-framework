@@ -12,6 +12,7 @@ import xyz.yanghaoyu.flora.core.context.event.ApplicationEvent;
 import xyz.yanghaoyu.flora.core.context.event.ApplicationEventMulticaster;
 import xyz.yanghaoyu.flora.core.context.event.ContextRefreshedEvent;
 import xyz.yanghaoyu.flora.core.context.event.SimpleApplicationEventMulticaster;
+import xyz.yanghaoyu.flora.core.convert.converter.ConversionService;
 import xyz.yanghaoyu.flora.core.io.loader.DefaultResourceLoader;
 import xyz.yanghaoyu.flora.exception.BeansException;
 
@@ -64,8 +65,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         initApplicationEvent();
 
         // 7. 提前实例化单例Bean对象
-        beanFactory.preInstantiateSingletons();
-
+        // beanFactory.preInstantiateSingletons();
+        finishBeanFactoryInitialization(beanFactory);
         // 8. 发布容器刷新完成事件
         finishRefresh();
     }
@@ -73,6 +74,22 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     protected abstract void refreshBeanFactory() throws BeansException;
 
     protected abstract ConfigurableListableBeanFactory getBeanFactory();
+
+    // 设置类型转换器、提前实例化单例Bean对象
+    protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
+
+        // TODO 默认开启类型转换器
+        // 设置类型转换器
+        if (beanFactory.containsBean("conversionService")) {
+            Object conversionService = beanFactory.getBean("conversionService");
+            if (conversionService instanceof ConversionService) {
+                beanFactory.setConversionService((ConversionService) conversionService);
+            }
+        }
+
+        // 提前实例化单例Bean对象
+        beanFactory.preInstantiateSingletons();
+    }
 
     private void initApplicationContextAwareProcessor() {
         // 由于 BeanFactory 无法感知 ApplicationContext,
@@ -182,5 +199,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     @Override
     public <T> T getBean(String name, Class<T> requiredType) throws BeansException {
         return getBeanFactory().getBean(name, requiredType);
+    }
+
+    @Override
+    public boolean containsBean(String name) {
+        return getBeanFactory().containsBean(name);
     }
 }

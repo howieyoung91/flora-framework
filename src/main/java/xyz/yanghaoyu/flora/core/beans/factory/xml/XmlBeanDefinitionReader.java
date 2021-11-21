@@ -1,23 +1,26 @@
 package xyz.yanghaoyu.flora.core.beans.factory.xml;
 
-import cn.hutool.core.util.XmlUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import xyz.yanghaoyu.flora.constant.XmlTagConst;
 import xyz.yanghaoyu.flora.core.beans.factory.PropertyValue;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanReference;
 import xyz.yanghaoyu.flora.core.beans.factory.support.BeanDefinitionRegistry;
-import xyz.yanghaoyu.flora.constant.XmlTagConst;
 import xyz.yanghaoyu.flora.core.context.annotation.ClassPathBeanDefinitionScanner;
+import xyz.yanghaoyu.flora.core.io.Resource;
 import xyz.yanghaoyu.flora.core.io.ResourceLoader;
 import xyz.yanghaoyu.flora.core.io.reader.AbstractBeanDefinitionFileReader;
-import xyz.yanghaoyu.flora.core.io.Resource;
 import xyz.yanghaoyu.flora.exception.BeansException;
 import xyz.yanghaoyu.flora.util.IocUtil;
 import xyz.yanghaoyu.flora.util.StringUtil;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
@@ -42,7 +45,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
             try (InputStream inputStream = resource.getInputStream()) {
                 doLoadBeanDefinitions(inputStream);
             }
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException | ParserConfigurationException | SAXException e) {
             throw new BeansException("IOException parsing XML document from " + resource, e);
         }
     }
@@ -67,9 +70,12 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
         }
     }
 
-    protected void doLoadBeanDefinitions(InputStream inputStream) throws ClassNotFoundException {
-        Document doc = XmlUtil.readXML(inputStream);
+    protected void doLoadBeanDefinitions(InputStream inputStream) throws ClassNotFoundException, ParserConfigurationException, IOException, SAXException {
+        DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = builderFactory.newDocumentBuilder();
+        Document doc = builder.parse(inputStream);
         Element root = doc.getDocumentElement();
+
         if (!Objects.equals(root.getNodeName(), XmlTagConst.BEANS)) {
             return;
         }
@@ -113,8 +119,10 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
                     throw new BeansException("The value of " + XmlTagConst.BASE_PACKAGE + " attribute can not be empty or null");
                 }
                 String[] basePaths = basePackage.split(",");
+
                 // 扫包
                 new ClassPathBeanDefinitionScanner(getRegistry()).doScan(basePaths);
+
                 // 注入 AutowiredAnnotationProcessor 这样才能在 BeanProcessor 中注入属性
                 IocUtil.enableComponentScan(getRegistry());
             }
