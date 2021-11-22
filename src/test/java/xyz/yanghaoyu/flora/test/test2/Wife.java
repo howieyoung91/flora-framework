@@ -13,6 +13,7 @@ import xyz.yanghaoyu.flora.annotation.Value;
 public class Wife {
     @Inject.ByName
     private Husband husband;
+
     @Value(value = "${token}", required = false)
     private String name;
 

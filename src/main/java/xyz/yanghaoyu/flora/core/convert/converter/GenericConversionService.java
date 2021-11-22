@@ -78,6 +78,8 @@ public class GenericConversionService implements ConversionService, ConverterReg
     private GenericConverter.ConvertiblePair getRequiredTypeInfo(Object object) {
         // 获取泛型的参数
         Type[] types = object.getClass().getGenericInterfaces();
+        // System.out.println(types[0]);
+        // System.out.println(types[0].getClass());
         ParameterizedType parameterized = (ParameterizedType) types[0];
         Type[] actualTypeArguments = parameterized.getActualTypeArguments();
         Class sourceType = (Class) actualTypeArguments[0];

@@ -1,5 +1,6 @@
 package xyz.yanghaoyu.flora.util;
 
+import xyz.yanghaoyu.flora.constant.BuiltInBean;
 import xyz.yanghaoyu.flora.core.aop.autoproxy.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import xyz.yanghaoyu.flora.core.beans.factory.PropertyPlaceholderConfigurer;
 import xyz.yanghaoyu.flora.core.beans.factory.PropertyValue;
@@ -35,6 +36,13 @@ public class IocUtil {
         registry.registerBeanDefinition(
                 AutowiredAnnotationBeanPostProcessor.class.getName(),
                 new BeanDefinition(AutowiredAnnotationBeanPostProcessor.class)
+        );
+    }
+
+    public static void enableConverter(BeanDefinitionRegistry registry) {
+        registry.registerBeanDefinition(
+                BuiltInBean.ConverterFactoryBean.getName(),
+                new BeanDefinition(BuiltInBean.ConverterFactoryBean)
         );
     }
 

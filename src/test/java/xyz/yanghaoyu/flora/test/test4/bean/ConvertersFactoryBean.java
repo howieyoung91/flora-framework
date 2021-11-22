@@ -1,6 +1,5 @@
 package xyz.yanghaoyu.flora.test.test4.bean;
 
-import xyz.yanghaoyu.flora.annotation.Component;
 import xyz.yanghaoyu.flora.core.beans.factory.FactoryBean;
 
 import java.util.HashSet;
@@ -11,14 +10,14 @@ import java.util.Set;
  * @version 1.0
  */
 
-@Component("converters")
+// @Component("converters")
 public class ConvertersFactoryBean implements FactoryBean<Set<?>> {
 
     @Override
     public Set<?> getObject() throws Exception {
         HashSet<Object> converters = new HashSet<>();
-        StringToLocalDateConverter stringToLocalDateConverter = new StringToLocalDateConverter("yyyy-MM-dd");
-        converters.add(stringToLocalDateConverter);
+        // StringToLocalDateConverter stringToLocalDateConverter = new StringToLocalDateConverter("yyyy-MM-dd");
+        // converters.add(stringToLocalDateConverter);
         return converters;
     }
 

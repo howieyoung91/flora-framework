@@ -49,8 +49,20 @@ public class AnnotationAwareAspectJAutoProxyCreator implements SmartInstantiatio
         if (isInfrastructureClass(bean.getClass())) {
             return bean;
         }
-        AnnotationAspectJExpressionPointcutAdvisorManager manager = beanFactory.getBean(AnnotationAspectJExpressionPointcutAdvisorManager.class.getName(), AnnotationAspectJExpressionPointcutAdvisorManager.class);
+
+        AnnotationAspectJExpressionPointcutAdvisorManager manager = beanFactory.getBean(
+                AnnotationAspectJExpressionPointcutAdvisorManager.class.getName(),
+                AnnotationAspectJExpressionPointcutAdvisorManager.class
+        );
+
         Collection<AnnotationAspectJExpressionPointcutAdvisor> candidates = manager.getAdvisorCandidates(bean.getClass());
+
+        // 没有找到
+        if (!shouldProxy(candidates)) {
+            return bean;
+        }
+
+        // 代理
         TargetSource targetSource = new TargetSource(bean);
         AnnotationAdvisedSupport support = new AnnotationAdvisedSupport();
         support.setTargetSource(targetSource);
@@ -62,6 +74,10 @@ public class AnnotationAwareAspectJAutoProxyCreator implements SmartInstantiatio
         }
         bean = new AnnotationProxyFactory(support).getProxy();
         return bean;
+    }
+
+    private boolean shouldProxy(Collection<AnnotationAspectJExpressionPointcutAdvisor> candidates) {
+        return candidates.size() != 0;
     }
 
     @Override

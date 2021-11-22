@@ -2,6 +2,7 @@ package xyz.yanghaoyu.flora.core.context.support;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xyz.yanghaoyu.flora.constant.BuiltInBean;
 import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanFactoryPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanPostProcessor;
@@ -12,7 +13,9 @@ import xyz.yanghaoyu.flora.core.context.event.ApplicationEvent;
 import xyz.yanghaoyu.flora.core.context.event.ApplicationEventMulticaster;
 import xyz.yanghaoyu.flora.core.context.event.ContextRefreshedEvent;
 import xyz.yanghaoyu.flora.core.context.event.SimpleApplicationEventMulticaster;
-import xyz.yanghaoyu.flora.core.convert.converter.ConversionService;
+import xyz.yanghaoyu.flora.core.convert.converter.Converter;
+import xyz.yanghaoyu.flora.core.convert.converter.ConverterFactory;
+import xyz.yanghaoyu.flora.core.convert.converter.DefaultConversionService;
 import xyz.yanghaoyu.flora.core.io.loader.DefaultResourceLoader;
 import xyz.yanghaoyu.flora.exception.BeansException;
 
@@ -28,7 +31,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     public static final String APPLICATION_EVENT_MULTICASTER_BEAN_NAME = "applicationEventMulticaster";
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractApplicationContext.class);
     private ApplicationEventMulticaster applicationEventMulticaster;
-    private static final String banner =
+    private static final String BANNER =
             "\n" +
             " _______  __        ______   .______          ___      \n" +
             "|   ____||  |      /  __  \\  |   _  \\        /   \\     \n" +
@@ -39,9 +42,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
     @Override
     public void refresh() throws BeansException {
-        System.out.println(AbstractApplicationContext.banner);
+        System.out.println(AbstractApplicationContext.BANNER);
 
-        // new StringBuilder().append("          _____                    _____           _______                   _____                    _____          \n").append("         /\\    \\                  /\\    \\         /::\\    \\                 /\\    \\                  /\\    \\         \n").append("        /::\\    \\                /::\\____\\       /::::\\    \\               /::\\    \\                /::\\    \\        \n").append("       /::::\\    \\              /:::/    /      /::::::\\    \\             /::::\\    \\              /::::\\    \\       \n").append("      /::::::\\    \\            /:::/    /      /::::::::\\    \\           /::::::\\    \\            /::::::\\    \\      \n").append("     /:::/\\:::\\    \\          /:::/    /      /:::/~~\\:::\\    \\         /:::/\\:::\\    \\          /:::/\\:::\\    \\     \n").append("    /:::/__\\:::\\    \\        /:::/    /      /:::/    \\:::\\    \\       /:::/__\\:::\\    \\        /:::/__\\:::\\    \\    \n").append("   /::::\\   \\:::\\    \\      /:::/    /      /:::/    / \\:::\\    \\     /::::\\   \\:::\\    \\      /::::\\   \\:::\\    \\   \n").append("  /::::::\\   \\:::\\    \\    /:::/    /      /:::/____/   \\:::\\____\\   /::::::\\   \\:::\\    \\    /::::::\\   \\:::\\    \\  \n").append(" /:::/\\:::\\   \\:::\\    \\  /:::/    /      |:::|    |     |:::|    | /:::/\\:::\\   \\:::\\____\\  /:::/\\:::\\   \\:::\\    \\ \n").append("/:::/  \\:::\\   \\:::\\____\\/:::/____/       |:::|____|     |:::|    |/:::/  \\:::\\   \\:::|    |/:::/  \\:::\\   \\:::\\____\\\n").append("\\::/    \\:::\\   \\::/    /\\:::\\    \\        \\:::\\    \\   /:::/    / \\::/   |::::\\  /:::|____|\\::/    \\:::\\  /:::/    /\n").append(" \\/____/ \\:::\\   \\/____/  \\:::\\    \\        \\:::\\    \\ /:::/    /   \\/____|:::::\\/:::/    /  \\/____/ \\:::\\/:::/    / \n").append("          \\:::\\    \\       \\:::\\    \\        \\:::\\    /:::/    /          |:::::::::/    /            \\::::::/    /  \n").append("           \\:::\\____\\       \\:::\\    \\        \\:::\\__/:::/    /           |::|\\::::/    /              \\::::/    /   \n").append("            \\::/    /        \\:::\\    \\        \\::::::::/    /            |::| \\::/____/               /:::/    /    \n").append("             \\/____/          \\:::\\    \\        \\::::::/    /             |::|  ~|                    /:::/    /     \n").append("                               \\:::\\    \\        \\::::/    /              |::|   |                   /:::/    /      \n").append("                                \\:::\\____\\        \\::/____/               \\::|   |                  /:::/    /       \n").append("                                 \\::/    /         ~~                      \\:|   |                  \\::/    /        \n").append("                                  \\/____/                                   \\|___|                   \\/____/         ").toString()
         // 1. 创建 BeanFactory， 并加载 BeanDefinition
         refreshBeanFactory();
 
@@ -78,17 +80,47 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     // 设置类型转换器、提前实例化单例Bean对象
     protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
 
-        // TODO 默认开启类型转换器
-        // 设置类型转换器
-        if (beanFactory.containsBean("conversionService")) {
-            Object conversionService = beanFactory.getBean("conversionService");
-            if (conversionService instanceof ConversionService) {
-                beanFactory.setConversionService((ConversionService) conversionService);
+        // ((BeanDefinitionRegistry) beanFactory)
+        //         .registerBeanDefinition(
+        //                 BuiltInBean.DefaultConverter,
+        //                 new BeanDefinition(DefaultConversionService.class)
+        //         );
+
+        //  默认开启类型转换器
+        if (beanFactory.containsBean(BuiltInBean.ConverterFactoryBean.getName())) {
+
+            DefaultConversionService conversionService = beanFactory.getBean(
+                    BuiltInBean.ConverterFactoryBean.getName(),
+                    DefaultConversionService.class
+            );
+
+            if (conversionService != null) {
+                beanFactory.setConversionService(conversionService);
             }
+
+            // HashSet<Object> set = new HashSet<>();
+            String[] beanDefinitionNames = beanFactory.getBeanDefinitionNames();
+            for (String beanDefinitionName : beanDefinitionNames) {
+                Class beanClass = beanFactory.getBeanDefinition(beanDefinitionName).getBeanClass();
+                Class<?>[] interfaces = beanClass.getInterfaces();
+                for (Class<?> anInterface : interfaces) {
+                    if (anInterface.equals(Converter.class)) {
+                        // cglib
+                        Converter bean = (Converter) beanFactory.getBean(beanDefinitionName);
+                        conversionService.addConverter(bean);
+                    } else if (anInterface.equals(ConverterFactory.class)) {
+                        Object bean = beanFactory.getBean(beanDefinitionName);
+                        conversionService.addConverterFactory((ConverterFactory) bean);
+                    }
+                }
+            }
+
         }
 
-        // 提前实例化单例Bean对象
+        // 提前实例化单例 Bean 对象
         beanFactory.preInstantiateSingletons();
+
+
     }
 
     private void initApplicationContextAwareProcessor() {

@@ -6,7 +6,7 @@ package xyz.yanghaoyu.flora.constant;
  */
 
 
-public interface XmlTagConst {
+public interface XmlTag {
     String BEANS = "beans";
     String BEAN = "bean";
     String PROPERTY = "property";

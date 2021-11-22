@@ -5,7 +5,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
-import xyz.yanghaoyu.flora.constant.XmlTagConst;
+import xyz.yanghaoyu.flora.constant.XmlTag;
 import xyz.yanghaoyu.flora.core.beans.factory.PropertyValue;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanReference;
@@ -76,17 +76,19 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
         Document doc = builder.parse(inputStream);
         Element root = doc.getDocumentElement();
 
-        if (!Objects.equals(root.getNodeName(), XmlTagConst.BEANS)) {
+        if (!Objects.equals(root.getNodeName(), XmlTag.BEANS)) {
             return;
         }
         parseComponentScan(root);
         parseEnableAop(root);
         parsePropertyPlaceholderConfigurer(root);
         parseBeans(root);
+        IocUtil.enableConverter(getRegistry());
     }
 
+
     private void parsePropertyPlaceholderConfigurer(Element root) {
-        NodeList enablePropertyPlaceholderConfigurerList = root.getElementsByTagName(XmlTagConst.ENABLE_PROPERTY_PLACEHOLDER_CONFIGURER);
+        NodeList enablePropertyPlaceholderConfigurerList = root.getElementsByTagName(XmlTag.ENABLE_PROPERTY_PLACEHOLDER_CONFIGURER);
         if (enablePropertyPlaceholderConfigurerList.getLength() == 1) {
             Node tag = enablePropertyPlaceholderConfigurerList.item(0);
             String location = ((Element) tag).getAttribute("location");
@@ -94,29 +96,29 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
             IocUtil.enablePropertyPlaceholderConfigurer(getRegistry(), location);
         } else if (enablePropertyPlaceholderConfigurerList.getLength() > 1) {
             // 一个xml中只能出现一个 <enable-property-placeholder-configurer/>
-            throw new BeansException("duplicate declaration <" + XmlTagConst.ENABLE_PROPERTY_PLACEHOLDER_CONFIGURER + "/> !");
+            throw new BeansException("duplicate declaration <" + XmlTag.ENABLE_PROPERTY_PLACEHOLDER_CONFIGURER + "/> !");
         }
     }
 
     private void parseEnableAop(Element root) {
-        NodeList aopNodeList = root.getElementsByTagName(XmlTagConst.ENABLE_AOP);
+        NodeList aopNodeList = root.getElementsByTagName(XmlTag.ENABLE_AOP);
         if (aopNodeList.getLength() == 1) {
             IocUtil.enableAop(getRegistry());
         } else if (aopNodeList.getLength() > 1) {
             // 一个xml中只能出现一个 <enable-aop/>
-            throw new BeansException("duplicate declaration <" + XmlTagConst.ENABLE_AOP + "/> !");
+            throw new BeansException("duplicate declaration <" + XmlTag.ENABLE_AOP + "/> !");
         }
     }
 
     private void parseComponentScan(Element root) {
-        NodeList componentScanNodeList = root.getElementsByTagName(XmlTagConst.COMPONENT_SCAN);
+        NodeList componentScanNodeList = root.getElementsByTagName(XmlTag.COMPONENT_SCAN);
         if (componentScanNodeList.getLength() == 1) {
             // do scanPackage
             Node componentScan = componentScanNodeList.item(0);
             if (componentScan instanceof Element) {
-                String basePackage = ((Element) componentScan).getAttribute(XmlTagConst.BASE_PACKAGE);
+                String basePackage = ((Element) componentScan).getAttribute(XmlTag.BASE_PACKAGE);
                 if (StringUtil.isEmpty(basePackage)) {
-                    throw new BeansException("The value of " + XmlTagConst.BASE_PACKAGE + " attribute can not be empty or null");
+                    throw new BeansException("The value of " + XmlTag.BASE_PACKAGE + " attribute can not be empty or null");
                 }
                 String[] basePaths = basePackage.split(",");
 
@@ -136,17 +138,17 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
         NodeList childNodes = root.getChildNodes();
         for (int i = 0; i < childNodes.getLength(); i++) {
             Node item = childNodes.item(i);
-            if (!(item instanceof Element) || !Objects.equals(XmlTagConst.BEAN, childNodes.item(i).getNodeName())) {
+            if (!(item instanceof Element) || !Objects.equals(XmlTag.BEAN, childNodes.item(i).getNodeName())) {
                 continue;
             }
             // 解析bean标签
             Element bean = (Element) childNodes.item(i);
-            String clazzName = bean.getAttribute(XmlTagConst.CLASS);
+            String clazzName = bean.getAttribute(XmlTag.CLASS);
             // String name = bean.getAttribute("name");
-            String beanId = bean.getAttribute(XmlTagConst.ID);
-            String initMethodName = bean.getAttribute(XmlTagConst.INIT_METHOD);
-            String destroyMethodName = bean.getAttribute(XmlTagConst.DESTROY_METHOD);
-            String beanScope = bean.getAttribute(XmlTagConst.SCOPE);
+            String beanId = bean.getAttribute(XmlTag.ID);
+            String initMethodName = bean.getAttribute(XmlTag.INIT_METHOD);
+            String destroyMethodName = bean.getAttribute(XmlTag.DESTROY_METHOD);
+            String beanScope = bean.getAttribute(XmlTag.SCOPE);
             // 解析 类
             Class<?> clazz = null;
             clazz = Class.forName(clazzName);
@@ -170,14 +172,14 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
                 if (!(bean.getChildNodes().item(j) instanceof Element)) {
                     continue;
                 }
-                if (!XmlTagConst.PROPERTY.equals(bean.getChildNodes().item(j).getNodeName())) {
+                if (!XmlTag.PROPERTY.equals(bean.getChildNodes().item(j).getNodeName())) {
                     continue;
                 }
                 // 解析标签：property
                 Element property = (Element) bean.getChildNodes().item(j);
-                String attrName = property.getAttribute(XmlTagConst.NAME);
-                String attrValue = property.getAttribute(XmlTagConst.VALUE);
-                String attrRef = property.getAttribute(XmlTagConst.REF);
+                String attrName = property.getAttribute(XmlTag.NAME);
+                String attrValue = property.getAttribute(XmlTag.VALUE);
+                String attrRef = property.getAttribute(XmlTag.REF);
                 // 获取属性值：引入对象、值对象
                 Object value = StringUtil.isNotEmpty(attrRef)
                         ? new BeanReference(attrRef)

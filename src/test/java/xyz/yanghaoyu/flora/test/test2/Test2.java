@@ -14,9 +14,13 @@ public class Test2 {
         ClassPathXmlApplicationContext applicationContext = new ClassPathXmlApplicationContext("classpath:application-test2.xml");
         applicationContext.registerShutdownHook();
         Husband husband = applicationContext.getBean("husband", Husband.class);
+
         Wife wife = applicationContext.getBean("wife", Wife.class);
+
         Wife wife1 = husband.getWife();
+
         System.out.println(wife1 == wife);
-        System.out.println(wife1.getHusband() == wife.getHusband());
+
+        System.out.println(wife.getHusband() == husband);
     }
 }

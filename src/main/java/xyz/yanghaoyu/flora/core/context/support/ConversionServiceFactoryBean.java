@@ -16,7 +16,6 @@ import java.util.Set;
 public class ConversionServiceFactoryBean implements FactoryBean<ConversionService>, InitializingBean {
     private Set<?> converters;
     private GenericConversionService conversionService;
-
     @Override
     public ConversionService getObject() throws Exception {
         return conversionService;
