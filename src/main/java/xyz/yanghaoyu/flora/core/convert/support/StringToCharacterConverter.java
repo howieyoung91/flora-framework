@@ -1,4 +1,4 @@
-package xyz.yanghaoyu.flora.core.convert.converter.support;
+package xyz.yanghaoyu.flora.core.convert.support;
 
 import xyz.yanghaoyu.flora.core.convert.converter.Converter;
 
@@ -8,7 +8,7 @@ import xyz.yanghaoyu.flora.core.convert.converter.Converter;
  */
 
 
-public class StringToCharacterConverter implements Converter<String, Character> {
+class StringToCharacterConverter implements Converter<String, Character> {
     @Override
     public Character convert(String source) {
         if (source.isEmpty()) {

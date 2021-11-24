@@ -17,4 +17,6 @@ public interface ConversionService {
      * Convert the given {@code source} to the specified {@code targetType}.
      */
     <T> T convert(Object source, Class<T> targetType);
+
+    // Object convert(Object source, Class<?> sourceType, Class<?> targetType);
 }

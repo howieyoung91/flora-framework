@@ -1,4 +1,4 @@
-package xyz.yanghaoyu.flora.core.convert.converter.support;
+package xyz.yanghaoyu.flora.core.convert.support;
 
 import xyz.yanghaoyu.flora.core.convert.converter.Converter;
 
@@ -7,7 +7,7 @@ import xyz.yanghaoyu.flora.core.convert.converter.Converter;
  * @version 1.0
  */
 
-public class ObjectToStringConverter implements Converter<Object, String> {
+ class ObjectToStringConverter implements Converter<Object, String> {
     @Override
     public String convert(Object source) {
         return source.toString();

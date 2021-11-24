@@ -12,9 +12,7 @@ import java.lang.reflect.InvocationTargetException;
  */
 
 
-public class ReflectUtil {
-    private ReflectUtil() { }
-
+public abstract class ReflectUtil {
     public static Object newInstanceByDefaultCtor(Class clazz) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
         return clazz.getConstructor().newInstance();
     }

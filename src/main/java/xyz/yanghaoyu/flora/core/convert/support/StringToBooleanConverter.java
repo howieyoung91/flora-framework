@@ -1,4 +1,4 @@
-package xyz.yanghaoyu.flora.core.convert.converter.support;
+package xyz.yanghaoyu.flora.core.convert.support;
 
 import xyz.yanghaoyu.flora.core.convert.converter.Converter;
 
@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 
-public class StringToBooleanConverter implements Converter<String, Boolean> {
+ class StringToBooleanConverter implements Converter<String, Boolean> {
     private static final Set<String> trueValues = new HashSet<>(8);
 
     private static final Set<String> falseValues = new HashSet<>(8);

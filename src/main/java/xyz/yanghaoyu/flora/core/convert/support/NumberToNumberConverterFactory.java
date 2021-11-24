@@ -1,4 +1,4 @@
-package xyz.yanghaoyu.flora.core.convert.converter.support;
+package xyz.yanghaoyu.flora.core.convert.support;
 
 import xyz.yanghaoyu.flora.core.convert.converter.Converter;
 import xyz.yanghaoyu.flora.core.convert.converter.ConverterFactory;
@@ -9,7 +9,7 @@ import xyz.yanghaoyu.flora.util.NumberUtil;
  * @version 1.0
  */
 
-public class NumberToNumberConverterFactory implements ConverterFactory<Number, Number> {
+ class NumberToNumberConverterFactory implements ConverterFactory<Number, Number> {
     @Override
     public <T extends Number> Converter<Number, T> getConverter(Class<T> targetType) {
         return source -> NumberUtil.convertNumberToTargetClass(source, targetType);

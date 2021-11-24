@@ -9,7 +9,7 @@ import xyz.yanghaoyu.flora.core.beans.factory.config.AutowiredAnnotationBeanPost
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.core.beans.factory.support.BeanDefinitionRegistry;
 
-public class IocUtil {
+public abstract class IocUtil {
     private IocUtil() {}
 
     /**

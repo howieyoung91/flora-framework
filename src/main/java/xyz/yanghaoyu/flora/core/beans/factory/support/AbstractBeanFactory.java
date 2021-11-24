@@ -25,7 +25,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
      * String resolvers to apply e.g. to annotation attribute values
      */
     private final List<StringValueResolver> embeddedValueResolvers = new ArrayList<>();
-    
+
     private ConversionService conversionService;
 
     @Override
@@ -39,14 +39,28 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
     }
 
     protected <T> T doGetBean(final String name, final Object[] args) {
-        Object sharedInstance = getSingleton(name);
+
+        String beanName = determineBeanName(name);
+
+        Object sharedInstance = getSingleton(beanName);
+
         // 处理 FactoryBean
         if (sharedInstance != null) {
             return (T) getObjectForBeanInstance(sharedInstance, name);
         }
         BeanDefinition beanDefinition = getBeanDefinition(name);
+
         Object bean = createBean(name, beanDefinition, args);
+
         return (T) getObjectForBeanInstance(bean, name);
+    }
+
+    private String determineBeanName(String name) {
+        if (name.charAt(0) == '&') {
+            // &beanName
+            return name.substring(1);
+        }
+        return name;
     }
 
     @Override
@@ -58,9 +72,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
     private Object getObjectForBeanInstance(Object beanInstance, String beanName) {
         // 如果不是 FactoryBean,直接返回原对象即可
-        if (!(beanInstance instanceof FactoryBean)) {
+        // &beanName 表示要获取 FactoryBean 对象 那就不调用 FactoryBean#getObject 了
+        if (!(beanInstance instanceof FactoryBean) || beanName.charAt(0) == '&') {
             return beanInstance;
         }
+
         // 先看看缓存中是否存在
         Object object = getCachedObjectForFactoryBean(beanName);
 

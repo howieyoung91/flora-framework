@@ -1,4 +1,4 @@
-package xyz.yanghaoyu.flora.core.convert.converter.support;
+package xyz.yanghaoyu.flora.core.convert.support;
 
 import xyz.yanghaoyu.flora.core.convert.converter.Converter;
 import xyz.yanghaoyu.flora.core.convert.converter.ConverterFactory;
@@ -10,7 +10,7 @@ import xyz.yanghaoyu.flora.util.ConversionUtil;
  */
 
 
-public class StringToEnumConverterFactory implements ConverterFactory<String, Enum> {
+ class StringToEnumConverterFactory implements ConverterFactory<String, Enum> {
     @Override
     public <T extends Enum> Converter<String, T> getConverter(Class<T> targetType) {
         return source -> source.isEmpty()

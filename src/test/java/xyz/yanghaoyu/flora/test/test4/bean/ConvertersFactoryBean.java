@@ -1,5 +1,6 @@
 package xyz.yanghaoyu.flora.test.test4.bean;
 
+import xyz.yanghaoyu.flora.annotation.Inject;
 import xyz.yanghaoyu.flora.core.beans.factory.FactoryBean;
 
 import java.util.HashSet;
@@ -12,6 +13,7 @@ import java.util.Set;
 
 // @Component("converters")
 public class ConvertersFactoryBean implements FactoryBean<Set<?>> {
+
 
     @Override
     public Set<?> getObject() throws Exception {

@@ -1,4 +1,4 @@
-package xyz.yanghaoyu.flora.core.convert.converter.support;
+package xyz.yanghaoyu.flora.core.convert.support;
 
 import xyz.yanghaoyu.flora.core.convert.converter.Converter;
 
@@ -8,9 +8,9 @@ import xyz.yanghaoyu.flora.core.convert.converter.Converter;
  */
 
 
-public class EnumToStringConverter implements Converter<Enum, String> {
+class EnumToStringConverter implements Converter<Enum, String> {
     @Override
     public String convert(Enum source) {
-        return source.toString();
+        return source.name();
     }
 }
