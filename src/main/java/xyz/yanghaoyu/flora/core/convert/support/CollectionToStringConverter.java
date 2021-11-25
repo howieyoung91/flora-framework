@@ -22,7 +22,6 @@ class CollectionToStringConverter implements GenericConverter {
 
     @Override
     public Set<ConvertiblePair> getConvertibleTypes() {
-        // 先实现 AbstractCollection TODO Collection
         return Collections.singleton(new ConvertiblePair(Collection.class, String.class));
     }
 

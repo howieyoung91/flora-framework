@@ -4,8 +4,6 @@ import xyz.yanghaoyu.flora.core.convert.converter.ConversionService;
 import xyz.yanghaoyu.flora.core.convert.converter.ConverterRegistry;
 import xyz.yanghaoyu.flora.core.convert.converter.GenericConversionService;
 
-import java.util.*;
-
 /**
  * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2021/11/21 17:37<i/>
  * @version 1.0
@@ -15,25 +13,6 @@ public class DefaultConversionService extends GenericConversionService {
 
     public DefaultConversionService() {
         addDefaultConverters(this);
-    }
-
-    public static void main(String[] args) {
-        Object[] temp = {5484.0, 25.0, true, false};
-        ArrayList<Object> ls = new ArrayList<Object>() {{
-            add(1);
-            add(1.2);
-            add(1556.5);
-            add(true);
-            add(false);
-        }};
-
-        Set<Object> set = new HashSet<>(ls);
-        DefaultConversionService service = new DefaultConversionService();
-        HashMap<String, Boolean> src = new HashMap<>();
-        src.put("true", true);
-        src.put("false", false);
-        Map convert = service.convert(src, LinkedHashMap.class);
-        System.out.println(convert);
     }
 
     public static void addDefaultConverters(ConverterRegistry converterRegistry) {
@@ -57,7 +36,6 @@ public class DefaultConversionService extends GenericConversionService {
 
         converterRegistry.addConverter(new CollectionToCollectionConverter());
 
-        // fixme
         converterRegistry.addConverter(new MapToMapConverter());
     }
 

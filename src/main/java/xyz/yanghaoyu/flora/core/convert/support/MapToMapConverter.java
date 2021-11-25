@@ -18,23 +18,23 @@ class MapToMapConverter implements GenericConverter {
         return Collections.singleton(new ConvertiblePair(Map.class, Map.class));
     }
 
+    // FIXME
     @Override
     public Object convert(Object source, Class sourceType, Class targetType) {
         if (source == null) {
             return null;
         }
+
         Map sourceMap = (Map) source;
+
         int size = sourceMap.size();
         if (size == 0) {
             return sourceMap;
         }
 
-        // Class<EnumMap> enumMapClass = EnumMap.class;
-        // ArrayList<MapEntry> targetEntries = new ArrayList<>(sourceMap.size());
-
         Map<Object, Object> target = CollectionUtil.createMap(targetType, size);
-        //    TODO convert key, converter value
         target.putAll(sourceMap);
+
         return target;
     }
 

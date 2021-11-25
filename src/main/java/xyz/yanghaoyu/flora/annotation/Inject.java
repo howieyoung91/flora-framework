@@ -15,9 +15,6 @@ public @interface Inject {
     @Retention(RetentionPolicy.RUNTIME)
     @interface ByType {
         boolean required() default true;
-
-        // TODO support 精准地注入 FactoryBean 而不是 FactoryBean 所生产的 Bean
-        boolean exact() default false;
     }
 
     @Target({ElementType.FIELD})
@@ -28,8 +25,5 @@ public @interface Inject {
         String id() default "";
 
         boolean required() default true;
-
-        // TODO support 精准地注入 FactoryBean 而不是 FactoryBean 所生产的 Bean
-        boolean exact() default false;
     }
 }
