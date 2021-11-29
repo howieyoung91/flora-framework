@@ -42,17 +42,24 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
     @Override
     public void refresh() throws BeansException {
-        System.out.println(AbstractApplicationContext.BANNER);
+        // 0. 打印 Banner
+        printBanner();
 
+        ConfigurableListableBeanFactory beanFactory = createBeanFactoryAndLoadBeanDefinition();
+
+        initBeanFactory(beanFactory);
+    }
+
+    protected final ConfigurableListableBeanFactory createBeanFactoryAndLoadBeanDefinition() {
         // 1. 创建 BeanFactory， 并加载 BeanDefinition
         refreshBeanFactory();
 
         // 2. 获取 BeanFactory
         ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+        return beanFactory;
+    }
 
-        // AnnotationAspectJExpressionPointcutAdvisorManager manager = new AnnotationAspectJExpressionPointcutAdvisorManager();
-        // beanFactory.registerSingleton(AnnotationAspectJExpressionPointcutAdvisorManager.class.getName(), manager);
-
+    protected final void initBeanFactory(ConfigurableListableBeanFactory beanFactory) {
         // 3. 初始化 ApplicationContextAwareProcessor 为框架提供对象感知功能
         initApplicationContextAwareProcessor();
 
@@ -73,6 +80,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         finishRefresh();
     }
 
+
+    protected final void printBanner() {
+        System.out.println(AbstractApplicationContext.BANNER);
+    }
+
     protected abstract void refreshBeanFactory() throws BeansException;
 
     protected abstract ConfigurableListableBeanFactory getBeanFactory();
@@ -87,10 +99,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         //         );
 
         //  默认开启类型转换器
-        if (beanFactory.containsBean(BuiltInBean.ConverterFactoryBean.getName())) {
+        if (beanFactory.containsBean(BuiltInBean.CONVERTER_FACTORY_BEAN.getName())) {
 
             DefaultConversionService conversionService = beanFactory.getBean(
-                    BuiltInBean.ConverterFactoryBean.getName(),
+                    BuiltInBean.CONVERTER_FACTORY_BEAN.getName(),
                     DefaultConversionService.class
             );
 
@@ -105,7 +117,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
                 Class<?>[] interfaces = beanClass.getInterfaces();
                 for (Class<?> anInterface : interfaces) {
                     if (anInterface.equals(Converter.class)) {
-                        // cglib
                         Converter bean = (Converter) beanFactory.getBean(beanDefinitionName);
                         conversionService.addConverter(bean);
                     } else if (anInterface.equals(ConverterFactory.class)) {
@@ -114,7 +125,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
                     }
                 }
             }
-
         }
 
         // 提前实例化单例 Bean 对象

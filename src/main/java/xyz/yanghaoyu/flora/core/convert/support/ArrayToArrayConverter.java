@@ -14,7 +14,7 @@ import java.util.Set;
  */
 
 
-public class ArrayToArrayConverter implements GenericConverter {
+class ArrayToArrayConverter implements GenericConverter {
     private ConversionService conversionService;
 
     public ArrayToArrayConverter(ConversionService conversionService) {

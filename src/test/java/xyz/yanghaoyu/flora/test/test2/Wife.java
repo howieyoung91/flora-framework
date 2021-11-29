@@ -35,5 +35,4 @@ public class Wife {
         return this;
     }
 
-
 }

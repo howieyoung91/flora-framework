@@ -23,5 +23,7 @@ public interface XmlTag {
     String NAME = "name";
     String ENABLE_PROPERTY_PLACEHOLDER_CONFIGURER = "enable-property-placeholder";
     String ENABLE_AOP = "enable-aop";
-    String AOP_CONFIG = "aop-config";
+
+    // TODO 支持手动开启 类型转换功能
+    String ENABLE_TYPE_CONVERT = "enable-type-convert";
 }

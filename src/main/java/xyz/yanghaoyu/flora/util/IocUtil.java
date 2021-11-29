@@ -1,17 +1,12 @@
 package xyz.yanghaoyu.flora.util;
 
 import xyz.yanghaoyu.flora.constant.BuiltInBean;
-import xyz.yanghaoyu.flora.core.aop.autoproxy.annotation.AnnotationAwareAspectJAutoProxyCreator;
-import xyz.yanghaoyu.flora.core.beans.factory.PropertyPlaceholderConfigurer;
 import xyz.yanghaoyu.flora.core.beans.factory.PropertyValue;
 import xyz.yanghaoyu.flora.core.beans.factory.config.AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor;
-import xyz.yanghaoyu.flora.core.beans.factory.config.AutowiredAnnotationBeanPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.core.beans.factory.support.BeanDefinitionRegistry;
 
 public abstract class IocUtil {
-    private IocUtil() {}
-
     /**
      * 开启aop
      */
@@ -24,8 +19,8 @@ public abstract class IocUtil {
         // 注解 AOP
         registry.registerBeanDefinition(AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor.class.getName(), new BeanDefinition(AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor.class));
         registry.registerBeanDefinition(
-                AnnotationAwareAspectJAutoProxyCreator.class.getName(),
-                new BeanDefinition(AnnotationAwareAspectJAutoProxyCreator.class)
+                BuiltInBean.ANNOTATION_AWARE_ASPECT_J_AUTO_PROXY_CREATOR.getName(),
+                new BeanDefinition(BuiltInBean.ANNOTATION_AWARE_ASPECT_J_AUTO_PROXY_CREATOR)
         );
     }
 
@@ -34,15 +29,15 @@ public abstract class IocUtil {
      */
     public static void enableComponentScan(BeanDefinitionRegistry registry) {
         registry.registerBeanDefinition(
-                AutowiredAnnotationBeanPostProcessor.class.getName(),
-                new BeanDefinition(AutowiredAnnotationBeanPostProcessor.class)
+                BuiltInBean.AUTOWIRED_ANNOTATION_BEAN_POST_PROCESSOR.getName(),
+                new BeanDefinition(BuiltInBean.AUTOWIRED_ANNOTATION_BEAN_POST_PROCESSOR)
         );
     }
 
-    public static void enableConverter(BeanDefinitionRegistry registry) {
+    public static void enableTypeConvert(BeanDefinitionRegistry registry) {
         registry.registerBeanDefinition(
-                BuiltInBean.ConverterFactoryBean.getName(),
-                new BeanDefinition(BuiltInBean.ConverterFactoryBean)
+                BuiltInBean.CONVERTER_FACTORY_BEAN.getName(),
+                new BeanDefinition(BuiltInBean.CONVERTER_FACTORY_BEAN)
         );
     }
 
@@ -51,12 +46,12 @@ public abstract class IocUtil {
      */
     public static void enablePropertyPlaceholderConfigurer(BeanDefinitionRegistry registry, String location) {
         BeanDefinition propertyPlaceholderConfigurerBeanDefinition =
-                new BeanDefinition(PropertyPlaceholderConfigurer.class);
+                new BeanDefinition(BuiltInBean.PROPERTY_PLACEHOLDER_CONFIGURER);
         propertyPlaceholderConfigurerBeanDefinition
                 .getPropertyValues()
                 .addPropertyValue(new PropertyValue("location", location));
         registry.registerBeanDefinition(
-                PropertyPlaceholderConfigurer.class.getName(),
+                BuiltInBean.PROPERTY_PLACEHOLDER_CONFIGURER.getName(),
                 propertyPlaceholderConfigurerBeanDefinition
         );
     }

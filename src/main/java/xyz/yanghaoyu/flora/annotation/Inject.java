@@ -11,9 +11,17 @@ import java.lang.annotation.Target;
  */
 @Target({})
 public @interface Inject {
+
     @Target({ElementType.FIELD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface ByType {
+        Class DEFAULT_CLASS = Object.class;
+
+        // 默认注入与 field 匹配的 bean, 使用 value可以指定注入类型
+        Class value() default Object.class;
+
+        Class clazz() default Object.class;
+
         boolean required() default true;
     }
 
@@ -27,3 +35,4 @@ public @interface Inject {
         boolean required() default true;
     }
 }
+

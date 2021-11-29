@@ -13,7 +13,7 @@ import java.util.Set;
  */
 
 
-public class CollectionToCollectionConverter implements GenericConverter {
+class CollectionToCollectionConverter implements GenericConverter {
     @Override
     public Set<ConvertiblePair> getConvertibleTypes() {
         return Collections.singleton(new ConvertiblePair(Collection.class, Collection.class));

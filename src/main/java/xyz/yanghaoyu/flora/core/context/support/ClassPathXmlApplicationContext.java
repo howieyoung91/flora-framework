@@ -8,10 +8,6 @@ import xyz.yanghaoyu.flora.exception.BeansException;
  */
 
 public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContext {
-    private final String[] configLocations;
-
-    // public ClassPathXmlApplicationContext() {}
-
     /**
      * 从 XML 中加载 BeanDefinition，并刷新上下文
      *
@@ -29,13 +25,7 @@ public class ClassPathXmlApplicationContext extends AbstractXmlApplicationContex
      * @throws BeansException
      */
     public ClassPathXmlApplicationContext(String[] configLocations) throws BeansException {
-        this.configLocations = configLocations;
+        super(configLocations);
         refresh();
     }
-
-    @Override
-    protected String[] getConfigLocations() {
-        return configLocations;
-    }
-
 }

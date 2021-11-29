@@ -83,7 +83,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
         parseEnableAop(root);
         parsePropertyPlaceholderConfigurer(root);
         parseBeans(root);
-        IocUtil.enableConverter(getRegistry());
+        IocUtil.enableTypeConvert(getRegistry());
     }
 
 

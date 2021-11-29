@@ -41,6 +41,8 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
         return null;
     }
 
+    @Inject.ByType(clazz = String.class, required = false)
+    private String temp;
 
     private void handleInjectAnnotation(Object bean, String beanName, Field field) {
         Inject.ByType injectByTypeAnno = field.getAnnotation(Inject.ByType.class);
@@ -50,7 +52,19 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
         }
         // 处理 Inject.ByType
         if (injectByTypeAnno != null) {
-            Map<String, ?> candidates = beanFactory.getBeansOfType(field.getType());
+            // determine the clazz
+            Class value = injectByTypeAnno.value();
+            Class clz = injectByTypeAnno.clazz();
+
+            Class clazz = value == clz
+                    ? value
+                    : clz == Inject.ByType.DEFAULT_CLASS ? value : clz;
+
+            if (clazz == Inject.ByType.DEFAULT_CLASS) {
+                clazz = field.getType();
+            }
+
+            Map<String, ?> candidates = beanFactory.getBeansOfType(clazz);
             if (candidates.size() == 1) {
                 for (Object dependOnBean : candidates.values()) {
                     ReflectUtil.setFieldValue(bean, field.getName(), dependOnBean);
@@ -88,8 +102,14 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
         if (null != valueAnn) {
             Object value = valueAnn.value();
             value = beanFactory.resolveEmbeddedValue((String) value);
-
+            if (value == null) {
+                if (valueAnn.required()) {
+                    throw new BeansException("Fail to find the value [" + valueAnn.value() + "]");
+                }
+            }
             // 类型转换
+
+
             Class<?> sourceType = value.getClass();
             Class<?> targetType = (Class<?>) TypeUtil.getType(field);
             ConversionService conversionService = beanFactory.getConversionService();
@@ -103,3 +123,4 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
         }
     }
 }
+

@@ -12,7 +12,9 @@ public class Test5 {
     public static void main(String[] args) throws Exception {
         ClassPathXmlApplicationContext ac =
                 new ClassPathXmlApplicationContext("classpath:application-test5.xml");
-        MyFactoryBean myFactoryBean = ac.getBean("&myFactoryBean", MyFactoryBean.class);
-        System.out.println(myFactoryBean.getObject());
+        Bean bean = ac.getBean("bean", Bean.class);
+        System.out.println(bean);
+        // MyFactoryBean myFactoryBean = ac.getBean("&myFactoryBean", MyFactoryBean.class);
+        // System.out.println(myFactoryBean.getObject());
     }
 }

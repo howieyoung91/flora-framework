@@ -108,7 +108,7 @@ public abstract class ClassScanner {
         // 加载类
         Class<?> cls = ReflectUtil.loadClass(className, false);
         // 判断是否可以添加类
-        if (checkAddClass(cls)) {
+        if (canAdd(cls)) {
             classSet.add(cls);
         }
     }
@@ -116,5 +116,5 @@ public abstract class ClassScanner {
     /**
      * 验证是否允许添加类
      */
-    public abstract boolean checkAddClass(Class<?> cls);
+    public abstract boolean canAdd(Class<?> cls);
 }

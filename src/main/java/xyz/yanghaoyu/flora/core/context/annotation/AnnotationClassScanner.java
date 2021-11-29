@@ -21,7 +21,7 @@ public class AnnotationClassScanner extends ClassScanner {
     }
 
     @Override
-    public boolean checkAddClass(Class<?> clazz) {
+    public boolean canAdd(Class<?> clazz) {
         return clazz.isAnnotationPresent(targetAnnotationClass);
     }
 }
