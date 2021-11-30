@@ -17,42 +17,50 @@ public abstract class IocUtil {
         //         new BeanDefinition(DefaultAdvisorAutoProxyCreator.class)
         // );
         // 注解 AOP
-        registry.registerBeanDefinition(AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor.class.getName(), new BeanDefinition(AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor.class));
-        registry.registerBeanDefinition(
-                BuiltInBean.ANNOTATION_AWARE_ASPECT_J_AUTO_PROXY_CREATOR.getName(),
-                new BeanDefinition(BuiltInBean.ANNOTATION_AWARE_ASPECT_J_AUTO_PROXY_CREATOR)
-        );
+        if (!registry.containsBeanDefinition(AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor.class.getName())) {
+            registry.registerBeanDefinition(AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor.class.getName(), new BeanDefinition(AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor.class));
+            registry.registerBeanDefinition(
+                    BuiltInBean.ANNOTATION_AWARE_ASPECT_J_AUTO_PROXY_CREATOR.getName(),
+                    new BeanDefinition(BuiltInBean.ANNOTATION_AWARE_ASPECT_J_AUTO_PROXY_CREATOR)
+            );
+        }
     }
 
     /**
      * 开启组件扫描
      */
     public static void enableComponentScan(BeanDefinitionRegistry registry) {
-        registry.registerBeanDefinition(
-                BuiltInBean.AUTOWIRED_ANNOTATION_BEAN_POST_PROCESSOR.getName(),
-                new BeanDefinition(BuiltInBean.AUTOWIRED_ANNOTATION_BEAN_POST_PROCESSOR)
-        );
+        if (!registry.containsBeanDefinition(BuiltInBean.AUTOWIRED_ANNOTATION_BEAN_POST_PROCESSOR.getName())) {
+            registry.registerBeanDefinition(
+                    BuiltInBean.AUTOWIRED_ANNOTATION_BEAN_POST_PROCESSOR.getName(),
+                    new BeanDefinition(BuiltInBean.AUTOWIRED_ANNOTATION_BEAN_POST_PROCESSOR)
+            );
+        }
     }
 
     public static void enableTypeConvert(BeanDefinitionRegistry registry) {
-        registry.registerBeanDefinition(
-                BuiltInBean.CONVERTER_FACTORY_BEAN.getName(),
-                new BeanDefinition(BuiltInBean.CONVERTER_FACTORY_BEAN)
-        );
+        if (!registry.containsBeanDefinition(BuiltInBean.CONVERTER_FACTORY_BEAN.getName())) {
+            registry.registerBeanDefinition(
+                    BuiltInBean.CONVERTER_FACTORY_BEAN.getName(),
+                    new BeanDefinition(BuiltInBean.CONVERTER_FACTORY_BEAN)
+            );
+        }
     }
 
     /**
      * 开启占位符替换
      */
     public static void enablePropertyPlaceholderConfigurer(BeanDefinitionRegistry registry, String location) {
-        BeanDefinition propertyPlaceholderConfigurerBeanDefinition =
-                new BeanDefinition(BuiltInBean.PROPERTY_PLACEHOLDER_CONFIGURER);
-        propertyPlaceholderConfigurerBeanDefinition
-                .getPropertyValues()
-                .addPropertyValue(new PropertyValue("location", location));
-        registry.registerBeanDefinition(
-                BuiltInBean.PROPERTY_PLACEHOLDER_CONFIGURER.getName(),
-                propertyPlaceholderConfigurerBeanDefinition
-        );
+        if (!registry.containsBeanDefinition(BuiltInBean.PROPERTY_PLACEHOLDER_CONFIGURER.getName())) {
+            BeanDefinition propertyPlaceholderConfigurerBeanDefinition =
+                    new BeanDefinition(BuiltInBean.PROPERTY_PLACEHOLDER_CONFIGURER);
+            propertyPlaceholderConfigurerBeanDefinition
+                    .getPropertyValues()
+                    .addPropertyValue(new PropertyValue("location", location));
+            registry.registerBeanDefinition(
+                    BuiltInBean.PROPERTY_PLACEHOLDER_CONFIGURER.getName(),
+                    propertyPlaceholderConfigurerBeanDefinition
+            );
+        }
     }
 }
