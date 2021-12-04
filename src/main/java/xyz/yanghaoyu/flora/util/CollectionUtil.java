@@ -1,12 +1,13 @@
 package xyz.yanghaoyu.flora.util;
 
+import xyz.yanghaoyu.flora.structure.MultiValueMap;
+
 import java.util.*;
 
 /**
  * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2021/11/20 16:31<i/>
  * @version 1.0
  */
-
 
 public abstract class CollectionUtil {
     public static boolean isEmpty(Collection<?> collection) {
@@ -129,5 +130,10 @@ public abstract class CollectionUtil {
 
         // 类型窄化
         return enumType.asSubclass(Enum.class);
+    }
+
+    public static <K, V> MultiValueMap<K, V> toMultiValueMap(Map<K, List<V>> targetMap) {
+        // Assert.notNull(targetMap, "'targetMap' must not be null");
+        return new MultiValueMapAdapter<>(targetMap);
     }
 }

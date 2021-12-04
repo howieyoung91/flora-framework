@@ -7,7 +7,6 @@ import java.util.Objects;
  * @version 1.0
  */
 
-
 public abstract class ConversionUtil {
     public static Class<?> getEnumType(Class<?> targetType) {
         Class<?> enumType = targetType;

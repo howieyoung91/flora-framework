@@ -7,7 +7,6 @@ import java.util.*;
  * @version 1.0
  */
 
-
 public abstract class StringUtil {
     public static final String EMPTY = "";
 
@@ -113,4 +112,68 @@ public abstract class StringUtil {
         return new String(result, 0, lastCharIndex);
     }
 
+    public static boolean hasText(String str) {
+        return (str != null && !str.isEmpty() && containsText(str));
+    }
+
+    private static boolean containsText(CharSequence str) {
+        int strLen = str.length();
+        for (int i = 0; i < strLen; i++) {
+            if (!Character.isWhitespace(str.charAt(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static String collectionToDelimitedString(
+            Collection<?> coll, String delim, String prefix, String suffix) {
+        if (CollectionUtil.isEmpty(coll)) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        Iterator<?> it = coll.iterator();
+        while (it.hasNext()) {
+            sb.append(prefix).append(it.next()).append(suffix);
+            if (it.hasNext()) {
+                sb.append(delim);
+            }
+        }
+        return sb.toString();
+    }
+
+
+    public static String collectionToDelimitedString(Collection<?> coll, String delim) {
+        return collectionToDelimitedString(coll, delim, "", "");
+    }
+
+    public static String collectionToCommaDelimitedString(Collection<?> coll) {
+        return collectionToDelimitedString(coll, ",");
+    }
+
+    public static String[] tokenizeToStringArray(String str, String delimiters) {
+        return tokenizeToStringArray(str, delimiters, true, true);
+    }
+
+    public static String[] tokenizeToStringArray(
+            String str, String delimiters, boolean trimTokens, boolean ignoreEmptyTokens) {
+
+        if (str == null) {
+            return EMPTY_STRING_ARRAY;
+        }
+
+        StringTokenizer st = new StringTokenizer(str, delimiters);
+        List<String> tokens = new ArrayList<>();
+        while (st.hasMoreTokens()) {
+            String token = st.nextToken();
+            if (trimTokens) {
+                token = token.trim();
+            }
+            if (!ignoreEmptyTokens || token.length() > 0) {
+                tokens.add(token);
+            }
+        }
+        return toStringArray(tokens);
+    }
 }

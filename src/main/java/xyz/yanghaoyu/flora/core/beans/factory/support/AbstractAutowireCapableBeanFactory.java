@@ -48,7 +48,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     }
 
     protected Object doCreateBean(String beanName, BeanDefinition beanDefinition, Object[] args) throws BeansException {
-        LOGGER.info("creating bean [{}]", beanName);
+        LOGGER.trace("creating bean [{}]", beanName);
         Object bean = null;
         try {
             // 实例化
