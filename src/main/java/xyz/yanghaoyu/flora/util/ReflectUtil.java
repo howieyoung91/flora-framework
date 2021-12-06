@@ -1,7 +1,6 @@
 package xyz.yanghaoyu.flora.util;
 
-import javax.annotation.*;
-import java.lang.annotation.*;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -87,18 +86,18 @@ public abstract class ReflectUtil {
     private static Set<Class> ANNS = new HashSet<>();
 
     static {
-        ANNS.add(Deprecated.class);
-        ANNS.add(SuppressWarnings.class);
-        ANNS.add(Override.class);
-        ANNS.add(PostConstruct.class);
-        ANNS.add(PreDestroy.class);
-        ANNS.add(Resource.class);
-        ANNS.add(Resources.class);
-        ANNS.add(Generated.class);
-        ANNS.add(Target.class);
-        ANNS.add(Retention.class);
-        ANNS.add(Documented.class);
-        ANNS.add(Inherited.class);
+        // ANNS.add(Deprecated.class);
+        // ANNS.add(SuppressWarnings.class);
+        // ANNS.add(Override.class);
+        // ANNS.add(PostConstruct.class);
+        // ANNS.add(PreDestroy.class);
+        // ANNS.add(Resource.class);
+        // ANNS.add(Resources.class);
+        // ANNS.add(Generated.class);
+        // ANNS.add(Target.class);
+        // ANNS.add(Retention.class);
+        // ANNS.add(Documented.class);
+        // ANNS.add(Inherited.class);
     }
 
     public static Annotation getAnnotation(Class clazz, Class<? extends Annotation> targetAnn) {

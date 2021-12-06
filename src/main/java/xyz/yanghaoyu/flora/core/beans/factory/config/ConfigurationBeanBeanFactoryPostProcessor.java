@@ -8,11 +8,16 @@ import xyz.yanghaoyu.flora.annotation.Configuration;
 import xyz.yanghaoyu.flora.annotation.Inject;
 import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.support.DefaultListableBeanFactory;
+import xyz.yanghaoyu.flora.exception.BeanCandidatesException;
 import xyz.yanghaoyu.flora.exception.BeansException;
+import xyz.yanghaoyu.flora.exception.DuplicateDeclarationException;
 import xyz.yanghaoyu.flora.util.StringUtil;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 对 @Configuration @Bean 做支持
@@ -22,20 +27,41 @@ import java.lang.reflect.Parameter;
  */
 
 public class ConfigurationBeanBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
-
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory configBeanFactory) throws BeansException {
         DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) configBeanFactory;
         String[] names = beanFactory.getBeanDefinitionNames();
-        for (String configBeanDefName : names) {
+        HashSet<String> classes = new HashSet<>();
 
-            BeanDefinition configBeanDef = beanFactory.getBeanDefinition(configBeanDefName);
+
+        for (String name : names) {
+            BeanDefinition configBeanDef = beanFactory.getBeanDefinition(name);
             Class<?> configBeanClass = configBeanDef.getBeanClass();
+            Configuration configAnn = configBeanClass.getAnnotation(Configuration.class);
+            if (configAnn == null) {
+                continue;
+            }
+            classes.add(name);
+        }
+
+        ConfigurationClassParser configurationClassParser = new ConfigurationClassParser(beanFactory, classes);
+        Set<String> configBeanNames = configurationClassParser.parse();
+
+        for (String configBeanDefName : configBeanNames) {
+
+            Class<?> configBeanClass = beanFactory.getBeanDefinition(configBeanDefName).getBeanClass();
 
             Configuration configAnn = configBeanClass.getAnnotation(Configuration.class);
             if (configAnn == null) {
                 continue;
             }
+
+            // 生成代理 config bean def
+            Object configurationProxyClass
+                    = new ConfigurationClassEnhanceClassProxy(configBeanClass, beanFactory).getConfigurationProxyClass();
+            //
+
+            beanFactory.registerSingleton(configBeanDefName, configurationProxyClass);
 
             // TODO modify the configuration beanDefinition
             for (Method method : configBeanClass.getMethods()) {
@@ -54,18 +80,10 @@ public class ConfigurationBeanBeanFactoryPostProcessor implements BeanFactoryPos
                 beanDef.setFactoryMethodName(method.getName());
                 beanDef.setFactoryMethod(method);
                 if (beanFactory.containsBeanDefinition(beanName)) {
-                    throw new BeansException("Duplicate beanId [" + beanName + "] is not allowed");
+                    throw new BeansException("Duplicate beanName [" + beanName + "] is not allowed");
                 }
                 beanFactory.registerBeanDefinition(beanName, beanDef);
             }
-
-            // 生成代理 config bean def
-            Object configurationProxyClass
-                    = new ConfigurationClassEnhanceClassProxy(configBeanClass, beanFactory).getConfigurationProxyClass();
-            //
-
-            beanFactory.registerSingleton(configBeanDefName, configurationProxyClass);
-            // configBeanDef.setBeanClass(configurationProxyClass);
         }
     }
 
@@ -86,12 +104,10 @@ public class ConfigurationBeanBeanFactoryPostProcessor implements BeanFactoryPos
             this.beanFactory = (DefaultListableBeanFactory) beanFactory;
         }
 
-
         public Object getConfigurationProxyClass() {
             Enhancer enhancer = new Enhancer();
             enhancer.setSuperclass(realConfigClass);
             enhancer.setInterfaces(realConfigClass.getInterfaces());
-            // enhancer.setCallbackType(ConfigurationClassEnhanceClassProxy.class);
             enhancer.setCallback(this);
             return enhancer.create();
         }
@@ -102,25 +118,53 @@ public class ConfigurationBeanBeanFactoryPostProcessor implements BeanFactoryPos
             if (!beanFactory.isCurrentlyCreating(beanName)) {
                 return beanFactory.getBean(beanName);
             }
-            Parameter[] parameters = method.getParameters();
+
             int i = 0;
+            Parameter[] parameters = method.getParameters();
             for (Parameter parameter : parameters) {
                 Inject.ByName byNameAnn = parameter.getAnnotation(Inject.ByName.class);
-                if (byNameAnn == null) {
-                    // byType
-                    Class<?> type = parameter.getType();
-                    args[i] = beanFactory.getBeansOfType(type).values().iterator().next();
-                } else {
-                    String dependOnBeanName = byNameAnn.value();
-                    if (dependOnBeanName.equals("")) {
-                        dependOnBeanName = parameter.getName();
-                    }
-                    args[i] = beanFactory.getBean(dependOnBeanName);
+                Inject.ByType byTypeAnn = parameter.getAnnotation(Inject.ByType.class);
+                if (byNameAnn != null && byTypeAnn != null) {
+                    throw new DuplicateDeclarationException(
+                            "duplicate declaration [@Inject.ByName],[@Inject.ByType] on "
+                            + parameter.getName()
+                            + " when creating bean [" + beanName + "]"
+                    );
                 }
+                Object bean = getBeanFromBeanFactory(beanName, parameter, byNameAnn, byTypeAnn);
+                args[i] = bean;
                 i++;
             }
             // 使用真实对象生成
             return methodProxy.invokeSuper(o, args);
+        }
+
+        private Object getBeanFromBeanFactory(String beanName, Parameter parameter, Inject.ByName byNameAnn, Inject.ByType byTypeAnn) {
+            Object bean;
+            if (byTypeAnn != null) {
+                Class<?> type = parameter.getType();
+                // FIXME 依赖于和Bean相同的类型 这里就会出现循环依赖
+                Map<String, ?> candidate = beanFactory.getBeansOfType(type);
+                if (candidate.size() == 0) {
+                    throw new BeanCandidatesException("find no candidate when creating bean [" + beanName + "]");
+                }
+                if (candidate.size() > 1) {
+                    throw new BeanCandidatesException("find too many candidates class is" + type + " when creating bean [" + beanName + "]");
+                }
+                bean = candidate.values().iterator().next();
+            } else {
+                String dependOnBeanName = "";
+                if (byNameAnn == null) {
+                    dependOnBeanName = parameter.getName();
+                } else {
+                    dependOnBeanName = byNameAnn.value();
+                    if (dependOnBeanName.equals("")) {
+                        dependOnBeanName = parameter.getName();
+                    }
+                }
+                bean = beanFactory.getBean(dependOnBeanName);
+            }
+            return bean;
         }
     }
 }

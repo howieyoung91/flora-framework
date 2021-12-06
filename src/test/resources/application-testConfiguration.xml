@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans>
-  <enable-aop/>
-  <component-scan base-package="xyz.yanghaoyu.flora.test.testConfiguration.bean"/>
+  <!--  <enable-aop/>-->
+  <component-scan base-package="xyz.yanghaoyu.flora.test.testConfiguration.config"/>
   <!--  <enable-property-placeholder location="classpath:token.properties"/>-->
 
   <!--  <bean id="conversionService" class="xyz.yanghaoyu.flora.core.context.support.ConversionServiceFactoryBean">-->

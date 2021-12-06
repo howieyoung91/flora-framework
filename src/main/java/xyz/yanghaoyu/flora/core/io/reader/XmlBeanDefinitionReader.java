@@ -13,8 +13,8 @@ import xyz.yanghaoyu.flora.core.beans.factory.support.BeanDefinitionRegistry;
 import xyz.yanghaoyu.flora.core.context.annotation.ClassPathBeanDefinitionScanner;
 import xyz.yanghaoyu.flora.core.io.Resource;
 import xyz.yanghaoyu.flora.core.io.ResourceLoader;
-import xyz.yanghaoyu.flora.core.io.reader.AbstractBeanDefinitionFileReader;
 import xyz.yanghaoyu.flora.exception.BeansException;
+import xyz.yanghaoyu.flora.util.ComponentUtil;
 import xyz.yanghaoyu.flora.util.IocUtil;
 import xyz.yanghaoyu.flora.util.StringUtil;
 
@@ -24,6 +24,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/8 11:12<i/>
@@ -121,12 +122,15 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
                     throw new BeansException("The value of " + XmlTag.BASE_PACKAGE + " attribute can not be empty or null");
                 }
                 String[] basePaths = basePackage.split(",");
-
-                // 扫包
-                new ClassPathBeanDefinitionScanner(getRegistry()).doScan(basePaths);
-
                 // 注入 AutowiredAnnotationProcessor 这样才能在 BeanProcessor 中注入属性
                 IocUtil.enableComponentScan(getRegistry());
+                // 扫包
+                Set<BeanDefinition> beanDefinitions = new ClassPathBeanDefinitionScanner().doScan(basePaths);
+                for (BeanDefinition beanDefinition : beanDefinitions) {
+                    String beanName = ComponentUtil.determineComponentAnnBeanName(beanDefinition);
+                    getRegistry().registerBeanDefinition(beanName, beanDefinition);
+                }
+
             }
         } else if (componentScanNodeList.getLength() > 1) {
             // 一个xml中只能出现一个 <component-scan/>
@@ -190,7 +194,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
             }
             // 如果已经存在
             if (getRegistry().containsBeanDefinition(beanId)) {
-                throw new BeansException("Duplicate beanId [" + beanId + "] is not allowed");
+                throw new BeansException("Duplicate beanName [" + beanId + "] is not allowed");
             }
             // 注册 BeanDefinition
             getRegistry().registerBeanDefinition(beanId, beanDefinition);

@@ -26,6 +26,7 @@ public @interface Enable {
     @Retention(RetentionPolicy.RUNTIME)
     @interface Aop {}
 
+    // TODO support
     @Target({ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @interface TypeConvert {}
