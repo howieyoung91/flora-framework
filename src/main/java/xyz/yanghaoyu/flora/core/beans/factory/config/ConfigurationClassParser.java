@@ -50,6 +50,7 @@ public class ConfigurationClassParser {
             Set<BeanDefinition> newBeanDefs = new ClassPathBeanDefinitionScanner().doScan(basePackages);
 
             for (BeanDefinition newBeanDef : newBeanDefs) {
+                
                 String newBeanName = ComponentUtil.determineComponentAnnBeanName(newBeanDef);
                 Configuration configAnn = (Configuration) newBeanDef.getBeanClass().getAnnotation(Configuration.class);
                 if (configAnn != null) {
@@ -71,6 +72,23 @@ public class ConfigurationClassParser {
             String location = propertyPlaceholderAnn.location();
             IocUtil.enablePropertyPlaceholderConfigurer(beanFactory, location);
         }
+
+        // todo support @Enable.TypeConvert
+        // todo support @Import.Configuration
+        // todo support @Import.Resource
+
+        // Import.Configuration importConfigAnn = clazz.getAnnotation(Import.Configuration.class);
+        // if (importConfigAnn != null) {
+        //     Class[] classes = importConfigAnn.configClasses();
+        //     for (Class aClass : classes) {
+        //         Annotation configAnn = aClass.getAnnotation(Configuration.class);
+        //         if (configAnn == null) {
+        //             continue;
+        //         }
+        //
+        //
+        //     }
+        // }
 
         current.remove(beanDefName);
         already.add(beanDefName);

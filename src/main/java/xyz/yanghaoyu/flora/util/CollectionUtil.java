@@ -118,10 +118,6 @@ public abstract class CollectionUtil {
         f;
     }
 
-    public static void main(String[] args) {
-        System.out.println(asEnumType(Sex.class));
-    }
-
     private static Class<? extends Enum> asEnumType(Class<?> enumType) {
         Objects.requireNonNull(enumType, "Enum type must not be null");
         if (!Enum.class.isAssignableFrom(enumType)) {

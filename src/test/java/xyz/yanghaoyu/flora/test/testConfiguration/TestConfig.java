@@ -1,10 +1,8 @@
 package xyz.yanghaoyu.flora.test.testConfiguration;
 
 import org.junit.Test;
-import xyz.yanghaoyu.flora.core.beans.factory.config.ConfigurationClassParser;
 import xyz.yanghaoyu.flora.core.context.support.ClassPathXmlApplicationContext;
-import xyz.yanghaoyu.flora.test.testConfiguration.bean.Husband;
-import xyz.yanghaoyu.flora.test.testConfiguration.config.Config;
+import xyz.yanghaoyu.flora.test.testConfiguration.config.Husband;
 
 /**
  * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2021/12/5 17:07<i/>

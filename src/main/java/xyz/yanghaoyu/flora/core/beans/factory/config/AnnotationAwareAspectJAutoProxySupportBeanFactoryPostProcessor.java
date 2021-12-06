@@ -1,6 +1,8 @@
 package xyz.yanghaoyu.flora.core.beans.factory.config;
 
 import org.aspectj.lang.annotation.Aspect;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xyz.yanghaoyu.flora.annotation.Aop;
 import xyz.yanghaoyu.flora.core.aop.aspectj.AnnotationAspectJExpressionPointcutAdvisorManager;
 import xyz.yanghaoyu.flora.core.aop.interceptor.AdviceChain;
@@ -19,11 +21,13 @@ import java.lang.reflect.Method;
  * @version 1.0
  */
 
-
 public class AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor
         implements BeanFactoryPostProcessor {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor.class);
+
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+        LOGGER.trace("init Aspect Bean in [AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor]");
         AnnotationAspectJExpressionPointcutAdvisorManager manager;
         try {
             manager = beanFactory.getBean(AnnotationAspectJExpressionPointcutAdvisorManager.class.getName(), AnnotationAspectJExpressionPointcutAdvisorManager.class);

@@ -52,6 +52,4 @@ public class AnnotationAspectJExpressionPointcutAdvisorManager implements BeanFa
         }
         return candidate;
     }
-
-
 }

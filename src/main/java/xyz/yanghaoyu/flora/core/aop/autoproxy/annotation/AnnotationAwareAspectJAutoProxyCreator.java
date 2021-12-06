@@ -55,7 +55,8 @@ public class AnnotationAwareAspectJAutoProxyCreator implements SmartInstantiatio
                 AnnotationAspectJExpressionPointcutAdvisorManager.class
         );
 
-        Collection<AnnotationAspectJExpressionPointcutAdvisor> candidates = manager.getAdvisorCandidates(bean.getClass());
+        Collection<AnnotationAspectJExpressionPointcutAdvisor> candidates
+                = manager.getAdvisorCandidates(bean.getClass());
 
         // 没有找到
         if (!shouldProxy(candidates)) {

@@ -4,8 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.yanghaoyu.flora.constant.BuiltInBean;
 import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
+import xyz.yanghaoyu.flora.core.beans.factory.config.AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanFactoryPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanPostProcessor;
+import xyz.yanghaoyu.flora.core.beans.factory.config.ConfigurationClassParser;
 import xyz.yanghaoyu.flora.core.beans.factory.support.ApplicationContextAwareProcessor;
 import xyz.yanghaoyu.flora.core.context.ApplicationListener;
 import xyz.yanghaoyu.flora.core.context.ConfigurableApplicationContext;
@@ -180,8 +182,27 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     private void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
         Map<String, BeanFactoryPostProcessor> beanFactoryPostProcessorMap =
                 beanFactory.getBeansOfType(BeanFactoryPostProcessor.class);
+        BeanFactoryPostProcessor proxyBeanFactoryPostProcessor = null;
+        BeanFactoryPostProcessor configurationClassBeanFactoryProcessor = null;
         for (BeanFactoryPostProcessor beanFactoryPostProcessor : beanFactoryPostProcessorMap.values()) {
+            if (beanFactoryPostProcessor instanceof AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor) {
+                proxyBeanFactoryPostProcessor = beanFactoryPostProcessor;
+                continue;
+            }
+            if (beanFactoryPostProcessor instanceof ConfigurationClassParser) {
+                configurationClassBeanFactoryProcessor = beanFactoryPostProcessor;
+                continue;
+            }
             beanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
+        }
+
+        // 先把所有 bean 获取到
+        if (configurationClassBeanFactoryProcessor != null) {
+            configurationClassBeanFactoryProcessor.postProcessBeanFactory(beanFactory);
+        }
+        // 再生成切面
+        if (proxyBeanFactoryPostProcessor != null) {
+            proxyBeanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
         }
     }
 
@@ -194,6 +215,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         for (BeanPostProcessor beanPostProcessor : beanPostProcessorMap.values()) {
             beanFactory.addBeanPostProcessor(beanPostProcessor);
         }
+
     }
 
     @Override

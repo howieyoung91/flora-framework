@@ -3,6 +3,8 @@ package xyz.yanghaoyu.flora.core.beans.factory.config;
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xyz.yanghaoyu.flora.annotation.Bean;
 import xyz.yanghaoyu.flora.annotation.Configuration;
 import xyz.yanghaoyu.flora.annotation.Inject;
@@ -27,6 +29,8 @@ import java.util.Set;
  */
 
 public class ConfigurationBeanBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationBeanBeanFactoryPostProcessor.class);
+
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory configBeanFactory) throws BeansException {
         DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) configBeanFactory;
@@ -48,9 +52,9 @@ public class ConfigurationBeanBeanFactoryPostProcessor implements BeanFactoryPos
         Set<String> configBeanNames = configurationClassParser.parse();
 
         for (String configBeanDefName : configBeanNames) {
+            LOGGER.trace("scan Configuration Bean [{}]", configBeanDefName);
 
             Class<?> configBeanClass = beanFactory.getBeanDefinition(configBeanDefName).getBeanClass();
-
             Configuration configAnn = configBeanClass.getAnnotation(Configuration.class);
             if (configAnn == null) {
                 continue;
