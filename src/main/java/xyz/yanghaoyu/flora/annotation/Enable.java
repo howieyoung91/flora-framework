@@ -9,6 +9,7 @@ import java.lang.annotation.Target;
  * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2021/12/4 21:39<i/>
  * @version 1.0
  */
+@Target({})
 public @interface Enable {
     @Target({ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)

@@ -1,4 +1,4 @@
-package xyz.yanghaoyu.flora.test.testConfiguration.config;
+package xyz.yanghaoyu.flora.test.testAnnotationConfigAppCtx.config;
 
 import xyz.yanghaoyu.flora.annotation.*;
 
@@ -9,6 +9,7 @@ import xyz.yanghaoyu.flora.annotation.*;
 
 @Configuration
 @Enable.Aop
+@Import.Configuration(configClasses = Config.class)
 @Enable.PropertyPlaceholder(location = "classpath:token.properties")
 public class MyConfig {
     @Bean
@@ -21,10 +22,5 @@ public class MyConfig {
         System.out.println(wife);
         System.out.println(wife1);
         return new Husband(wife);
-    }
-
-    @Bean
-    public Wife wife() {
-        return new Wife();
     }
 }

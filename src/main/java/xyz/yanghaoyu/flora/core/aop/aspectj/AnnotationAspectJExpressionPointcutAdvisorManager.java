@@ -16,7 +16,7 @@ import java.util.Map;
  * @version 1.0
  */
 public class AnnotationAspectJExpressionPointcutAdvisorManager implements BeanFactoryAware {
-    private Map<String, AnnotationAspectJExpressionPointcutAdvisor> map = new HashMap<>();
+    private Map<String, AnnotationAspectJExpressionPointcutAdvisor> map = new HashMap<>(8);
     Collection<AnnotationAspectJExpressionPointcutAdvisor> advisorsCache = map.values();
     BeanFactory beanFactory;
 

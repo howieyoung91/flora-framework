@@ -15,8 +15,9 @@ public class TestConfig {
     public void testconfig() {
         ClassPathXmlApplicationContext ac =
                 new ClassPathXmlApplicationContext("classpath:application-testConfiguration.xml");
-        ac.registerShutdownHook();
+        // ac.registerShutdownHook();
         Husband bean = ac.getBean("husband", Husband.class);
+        System.out.println(bean.getWife());
         // System.out.println(bean.getWife());
         // Husband husband1 = ac.getBean("husband1", Husband.class);
         // System.out.println(husband1.getWife());

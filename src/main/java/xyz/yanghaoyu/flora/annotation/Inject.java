@@ -9,6 +9,7 @@ import java.lang.annotation.Target;
  * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/8 22:20<i/>
  * @version 1.0
  */
+@Target({})
 public @interface Inject {
     String DEFAULT_BEAN_NAME = "";
 

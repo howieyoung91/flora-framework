@@ -2,6 +2,7 @@ package xyz.yanghaoyu.flora.core.beans.factory.config;
 
 import xyz.yanghaoyu.flora.annotation.Configuration;
 import xyz.yanghaoyu.flora.annotation.Enable;
+import xyz.yanghaoyu.flora.annotation.Import;
 import xyz.yanghaoyu.flora.core.beans.factory.support.DefaultListableBeanFactory;
 import xyz.yanghaoyu.flora.core.context.annotation.ClassPathBeanDefinitionScanner;
 import xyz.yanghaoyu.flora.exception.BeansException;
@@ -43,30 +44,54 @@ public class ConfigurationClassParser {
         }
         current.add(beanDefName);
         Class<?> clazz = configBeanDef.getBeanClass();
+
         parseComponentScan(clazz);
 
         parseAop(clazz);
 
         parserPropertyPlaceholder(clazz);
 
-        // todo support @Import.Configuration
-        // todo support @Import.Resource
+        parseImportConfiguration(clazz);
 
-        // Import.Configuration importConfigAnn = clazz.getAnnotation(Import.Configuration.class);
-        // if (importConfigAnn != null) {
-        //     Class[] classes = importConfigAnn.configClasses();
-        //     for (Class aClass : classes) {
-        //         Annotation configAnn = aClass.getAnnotation(Configuration.class);
-        //         if (configAnn == null) {
-        //             continue;
-        //         }
-        //
-        //
-        //     }
-        // }
+        // TODO support
+        // parseImportResources(clazz);
 
         current.remove(beanDefName);
         already.add(beanDefName);
+    }
+
+    // private void parseImportResources(Class<?> clazz) {
+    //     Import.Resource importResourceAnn = clazz.getAnnotation(Import.Resource.class);
+    //     if (importResourceAnn != null) {
+    //         String[] resource = importResourceAnn.resources();
+    //         DefaultResourceLoader loader = new DefaultResourceLoader();
+    //         new XmlBeanDefinitionReader(beanFactory, loader).loadBeanDefinitions(resource);
+    //     }
+    // }
+
+    private void parseImportConfiguration(Class<?> clazz) {
+        Import.Configuration importConfigAnn = clazz.getAnnotation(Import.Configuration.class);
+        if (importConfigAnn != null) {
+            for (Class aClass : importConfigAnn.configClasses()) {
+                if (!aClass.isAnnotationPresent(Configuration.class)) {
+                    continue;
+                }
+                BeanDefinition newBeanDef = ComponentUtil.parse(aClass);
+                if (newBeanDef == null) {
+                    continue;
+                }
+                String newBeanName = ComponentUtil.determineBeanName(newBeanDef);
+                if (already.contains(newBeanName) || current.contains(newBeanName) || startBeanNames.contains(newBeanName)) {
+                    continue;
+                }
+                parse(newBeanName, newBeanDef);
+
+                if (beanFactory.containsBeanDefinition(newBeanName)) {
+                    throw new BeansException("Duplicate beanName [" + newBeanName + "] is not allowed");
+                }
+                beanFactory.registerBeanDefinition(newBeanName, newBeanDef);
+            }
+        }
     }
 
     private void parserPropertyPlaceholder(Class<?> clazz) {

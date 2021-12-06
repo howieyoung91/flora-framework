@@ -4,7 +4,8 @@ import xyz.yanghaoyu.flora.core.beans.factory.support.BeanDefinitionRegistry;
 import xyz.yanghaoyu.flora.core.io.ResourceLoader;
 
 
-public abstract class AbstractBeanDefinitionFileReader extends AbstractBeanDefinitionReader implements BeanDefinitionFileReader {
+public abstract class AbstractBeanDefinitionFileReader extends AbstractBeanDefinitionReader
+        implements BeanDefinitionFileReader {
     private ResourceLoader resourceLoader;
 
     public AbstractBeanDefinitionFileReader(BeanDefinitionRegistry registry) {

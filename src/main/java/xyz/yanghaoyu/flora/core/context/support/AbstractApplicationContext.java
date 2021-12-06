@@ -7,7 +7,7 @@ import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.config.AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanFactoryPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanPostProcessor;
-import xyz.yanghaoyu.flora.core.beans.factory.config.ConfigurationClassParser;
+import xyz.yanghaoyu.flora.core.beans.factory.config.ConfigurationBeanBeanFactoryPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.support.ApplicationContextAwareProcessor;
 import xyz.yanghaoyu.flora.core.context.ApplicationListener;
 import xyz.yanghaoyu.flora.core.context.ConfigurableApplicationContext;
@@ -180,27 +180,28 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
      * 触发 BeanFactoryPostProcessors
      */
     private void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
-        Map<String, BeanFactoryPostProcessor> beanFactoryPostProcessorMap =
-                beanFactory.getBeansOfType(BeanFactoryPostProcessor.class);
+        // 先处理 @Configuration
+        Collection<ConfigurationBeanBeanFactoryPostProcessor> configBeanFactoryPostProcesses = beanFactory.getBeansOfType(ConfigurationBeanBeanFactoryPostProcessor.class).values();
+        for (ConfigurationBeanBeanFactoryPostProcessor configBeanFactoryPostProcess : configBeanFactoryPostProcesses) {
+            configBeanFactoryPostProcess.postProcessBeanFactory(beanFactory);
+        }
+
+        // 调用处理器
+        Map<String, BeanFactoryPostProcessor> beanFactoryPostProcessorMap = beanFactory.getBeansOfType(BeanFactoryPostProcessor.class);
         BeanFactoryPostProcessor proxyBeanFactoryPostProcessor = null;
-        BeanFactoryPostProcessor configurationClassBeanFactoryProcessor = null;
         for (BeanFactoryPostProcessor beanFactoryPostProcessor : beanFactoryPostProcessorMap.values()) {
+            // 支持 aop 的 处理 最后再调用 防止 aop 丢失
             if (beanFactoryPostProcessor instanceof AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor) {
                 proxyBeanFactoryPostProcessor = beanFactoryPostProcessor;
                 continue;
             }
-            if (beanFactoryPostProcessor instanceof ConfigurationClassParser) {
-                configurationClassBeanFactoryProcessor = beanFactoryPostProcessor;
+            // 跳过 @Configuration 的处理器 已经调用过了
+            if (beanFactoryPostProcessor instanceof ConfigurationBeanBeanFactoryPostProcessor) {
                 continue;
             }
             beanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
         }
 
-        // 先把所有 bean 获取到
-        if (configurationClassBeanFactoryProcessor != null) {
-            configurationClassBeanFactoryProcessor.postProcessBeanFactory(beanFactory);
-        }
-        // 再生成切面
         if (proxyBeanFactoryPostProcessor != null) {
             proxyBeanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
         }

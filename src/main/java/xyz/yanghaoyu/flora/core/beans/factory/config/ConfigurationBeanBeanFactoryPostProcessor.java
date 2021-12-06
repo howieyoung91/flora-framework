@@ -38,7 +38,6 @@ public class ConfigurationBeanBeanFactoryPostProcessor implements BeanFactoryPos
         String[] names = beanFactory.getBeanDefinitionNames();
         HashSet<String> classes = new HashSet<>();
 
-
         for (String name : names) {
             BeanDefinition configBeanDef = beanFactory.getBeanDefinition(name);
             Class<?> configBeanClass = configBeanDef.getBeanClass();
@@ -83,7 +82,7 @@ public class ConfigurationBeanBeanFactoryPostProcessor implements BeanFactoryPos
 
                 ComponentUtil.determineBeanScope(method, beanDef);
                 ComponentUtil.determineBeanInitMethodAndDestroyMethod(beanDef);
-                
+
                 if (beanFactory.containsBeanDefinition(beanName)) {
                     throw new BeansException("Duplicate beanName [" + beanName + "] is not allowed");
                 }

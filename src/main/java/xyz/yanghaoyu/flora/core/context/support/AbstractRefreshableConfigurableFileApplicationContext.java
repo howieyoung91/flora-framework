@@ -6,7 +6,7 @@ package xyz.yanghaoyu.flora.core.context.support;
  */
 
 
-public abstract class AbstractRefreshableConfigurableApplicationContext extends AbstractRefreshableApplicationContext {
+public abstract class AbstractRefreshableConfigurableFileApplicationContext extends AbstractRefreshableApplicationContext {
     private String[] configLocations;
 
     public void setConfigLocations(String... configLocations) {

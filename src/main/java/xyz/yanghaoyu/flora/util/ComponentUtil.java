@@ -16,6 +16,21 @@ import java.util.Objects;
 
 
 public abstract class ComponentUtil {
+    public static BeanDefinition parse(Class<?> clazz) {
+        if (!clazz.isAnnotationPresent(Component.class) && !clazz.isAnnotationPresent(Configuration.class)) {
+            return null;
+        }
+        Component componentAnn = clazz.getAnnotation(Component.class);
+        Configuration configAnn = clazz.getAnnotation(Configuration.class);
+        if (componentAnn != null && configAnn != null) {
+            throw new DuplicateDeclarationException("the duplicate declaration [@Component] and [@Configuration] on class [" + clazz.getSimpleName() + "]");
+        }
+        BeanDefinition beanDefinition = new BeanDefinition(clazz);
+        determineBeanScope(beanDefinition);
+        determineBeanInitMethodAndDestroyMethod(beanDefinition);
+        return beanDefinition;
+    }
+
     public static String determineBeanName(BeanDefinition beanDefinition) {
         Class<?> beanClass = beanDefinition.getBeanClass();
         Component componentAnn = beanClass.getAnnotation(Component.class);
@@ -117,7 +132,8 @@ public abstract class ComponentUtil {
         }
     }
 
-    public static void determineBeanScope(Class<?> aClass, BeanDefinition beanDefinition) {
+    public static void determineBeanScope(BeanDefinition beanDefinition) {
+        Class<?> aClass = beanDefinition.getBeanClass();
         Scope.Singleton singletonAnno = aClass.getAnnotation(Scope.Singleton.class);
         Scope.Prototype prototypeAnno = aClass.getAnnotation(Scope.Prototype.class);
         if (singletonAnno == null) {
