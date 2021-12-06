@@ -1,6 +1,7 @@
 package xyz.yanghaoyu.flora.core.context.annotation;
 
 import xyz.yanghaoyu.flora.annotation.Component;
+import xyz.yanghaoyu.flora.annotation.Configuration;
 
 import java.util.Set;
 
@@ -12,7 +13,11 @@ import java.util.Set;
 
 public class ClassPathScanningCandidateComponentProvider {
     public Set<Class<?>> findCandidateComponents(String basePath) {
-        AnnotationClassScanner scanner = new AnnotationClassScanner(basePath, Component.class);
+        AnnotationClassScanner scanner =
+                new AnnotationClassScanner(
+                        basePath,
+                        Component.class, Configuration.class
+                );
         scanner.scan();
         return scanner.getClassSet();
     }

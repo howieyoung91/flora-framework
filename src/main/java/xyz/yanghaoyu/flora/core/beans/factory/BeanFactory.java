@@ -11,4 +11,6 @@ public interface BeanFactory {
     <T> T getBean(String name, Class<T> requiredType);
 
     boolean containsBean(String name);
+
+    boolean containsSingletonBean(String name);
 }

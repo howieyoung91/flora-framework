@@ -18,7 +18,6 @@ class MapToMapConverter implements GenericConverter {
         return Collections.singleton(new ConvertiblePair(Map.class, Map.class));
     }
 
-    // FIXME
     @Override
     public Object convert(Object source, Class sourceType, Class targetType) {
         if (source == null) {
@@ -36,22 +35,5 @@ class MapToMapConverter implements GenericConverter {
         target.putAll(sourceMap);
 
         return target;
-    }
-
-    private static class MapEntry {
-
-
-        private final Object key;
-
-        private final Object value;
-
-        public MapEntry(Object key, Object value) {
-            this.key = key;
-            this.value = value;
-        }
-
-        public void addToMap(Map<Object, Object> map) {
-            map.put(this.key, this.value);
-        }
     }
 }

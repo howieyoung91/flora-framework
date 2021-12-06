@@ -117,4 +117,5 @@ public abstract class ClassScanner {
      * 验证是否允许添加类
      */
     public abstract boolean canAdd(Class<?> cls);
+
 }

@@ -1,7 +1,7 @@
 package xyz.yanghaoyu.flora.core.context.support;
 
 import xyz.yanghaoyu.flora.core.beans.factory.support.DefaultListableBeanFactory;
-import xyz.yanghaoyu.flora.core.beans.factory.xml.XmlBeanDefinitionReader;
+import xyz.yanghaoyu.flora.core.io.reader.XmlBeanDefinitionReader;
 import xyz.yanghaoyu.flora.exception.BeansException;
 
 /**

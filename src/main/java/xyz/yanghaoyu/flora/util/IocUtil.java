@@ -36,6 +36,12 @@ public abstract class IocUtil {
                     new BeanDefinition(BuiltInBean.AUTOWIRED_ANNOTATION_BEAN_POST_PROCESSOR)
             );
         }
+        if (!registry.containsBeanDefinition(BuiltInBean.CONFIGURATION_BEAN_BEAN_FACTORY_POST_PROCESSOR.getName())) {
+            registry.registerBeanDefinition(
+                    BuiltInBean.CONFIGURATION_BEAN_BEAN_FACTORY_POST_PROCESSOR.getName(),
+                    new BeanDefinition(BuiltInBean.CONFIGURATION_BEAN_BEAN_FACTORY_POST_PROCESSOR)
+            );
+        }
     }
 
     public static void enableTypeConvert(BeanDefinitionRegistry registry) {

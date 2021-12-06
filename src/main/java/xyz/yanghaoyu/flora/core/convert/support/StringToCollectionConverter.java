@@ -35,7 +35,6 @@ class StringToCollectionConverter implements GenericConverter {
             return null;
         }
 
-        // TODO 指定长度
         String sourceString = (String) source;
         String[] fields = StringUtil.commaDelimitedListToStringArray(sourceString);
         int length = fields.length;

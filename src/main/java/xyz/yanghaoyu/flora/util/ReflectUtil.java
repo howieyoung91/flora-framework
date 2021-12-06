@@ -5,6 +5,8 @@ import java.lang.annotation.*;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/7 22:40<i/>
@@ -17,7 +19,7 @@ public abstract class ReflectUtil {
         return clazz.getConstructor().newInstance();
     }
 
-    public static Constructor selectCtorByArgsType(Class clazz, Object[] args) throws NoSuchMethodException {
+    public static Constructor selectConstructorByArgsType(Class clazz, Object[] args) throws NoSuchMethodException {
         if (args == null || args.length == 0) {
             return clazz.getDeclaredConstructor();
         }
@@ -82,30 +84,34 @@ public abstract class ReflectUtil {
         return clazz;
     }
 
-    public static Annotation getAnnotation(Class clazz, Class<? extends Annotation> targetAnno) {
+    private static Set<Class> ANNS = new HashSet<>();
+
+    static {
+        ANNS.add(Deprecated.class);
+        ANNS.add(SuppressWarnings.class);
+        ANNS.add(Override.class);
+        ANNS.add(PostConstruct.class);
+        ANNS.add(PreDestroy.class);
+        ANNS.add(Resource.class);
+        ANNS.add(Resources.class);
+        ANNS.add(Generated.class);
+        ANNS.add(Target.class);
+        ANNS.add(Retention.class);
+        ANNS.add(Documented.class);
+        ANNS.add(Inherited.class);
+    }
+
+    public static Annotation getAnnotation(Class clazz, Class<? extends Annotation> targetAnn) {
         Annotation[] annotations = clazz.getAnnotations();
+
         for (Annotation annotation : annotations) {
-            if (
-                    annotation.annotationType() != Deprecated.class &&
-                    annotation.annotationType() != SuppressWarnings.class &&
-                    annotation.annotationType() != Override.class &&
-                    annotation.annotationType() != PostConstruct.class &&
-                    annotation.annotationType() != PreDestroy.class &&
-                    annotation.annotationType() != Resource.class &&
-                    annotation.annotationType() != Resources.class &&
-                    annotation.annotationType() != Generated.class &&
-                    annotation.annotationType() != Target.class &&
-                    annotation.annotationType() != Retention.class &&
-                    annotation.annotationType() != Documented.class &&
-                    annotation.annotationType() != Inherited.class
-            ) {
-                if (
-                        annotation.annotationType() == targetAnno
-                ) {
-                    return annotation;
-                } else {
-                    getAnnotation(annotation.annotationType(), targetAnno);
-                }
+            if (ANNS.contains(annotation.annotationType())) {
+                continue;
+            }
+            if (annotation.annotationType() == targetAnn) {
+                return annotation;
+            } else {
+                getAnnotation(annotation.annotationType(), targetAnn);
             }
         }
         return null;

@@ -1,5 +1,6 @@
 package xyz.yanghaoyu.flora.core.beans.factory.support;
 
+import cn.hutool.core.collection.ConcurrentHashSet;
 import xyz.yanghaoyu.flora.core.beans.factory.FactoryBean;
 import xyz.yanghaoyu.flora.core.beans.factory.StringValueResolver;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
@@ -7,9 +8,11 @@ import xyz.yanghaoyu.flora.core.beans.factory.config.BeanPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.config.ConfigurableBeanFactory;
 import xyz.yanghaoyu.flora.core.convert.converter.ConversionService;
 import xyz.yanghaoyu.flora.exception.BeansException;
+import xyz.yanghaoyu.flora.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 基本实现 BeanFactory 的流程
@@ -17,14 +20,11 @@ import java.util.List;
  */
 public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport implements ConfigurableBeanFactory {
 
-    /**
-     * BeanPostProcessors to apply in createBean
-     */
     private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
-    /**
-     * String resolvers to apply e.g. to annotation attribute values
-     */
+
     private final List<StringValueResolver> embeddedValueResolvers = new ArrayList<>();
+
+    private Set<String> currentlyCreatingBeans = new ConcurrentHashSet<>();
 
     private ConversionService conversionService;
 
@@ -48,6 +48,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
         if (sharedInstance != null) {
             return (T) getObjectForBeanInstance(sharedInstance, name);
         }
+
         BeanDefinition beanDefinition = getBeanDefinition(name);
 
         Object bean = createBean(name, beanDefinition, args);
@@ -56,6 +57,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
     }
 
     private String determineBeanName(String name) {
+        if (!StringUtil.hasLength(name)) {
+            return "";
+        }
         if (name.charAt(0) == '&') {
             // &beanName
             return name.substring(1);
@@ -67,6 +71,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
     public boolean containsBean(String name) {
         return containsBeanDefinition(name);
     }
+
 
     protected abstract boolean containsBeanDefinition(String name);
 
@@ -130,5 +135,17 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
     public List<BeanPostProcessor> getBeanPostProcessors() {
         return this.beanPostProcessors;
+    }
+
+    public boolean isCurrentlyCreating(String beanName) {
+        return this.currentlyCreatingBeans.contains(beanName);
+    }
+
+    protected void addCurrentlyCreatingBean(String beanName) {
+        this.currentlyCreatingBeans.add(beanName);
+    }
+
+    protected void removeCurrentlyCreatingBean(String beanName) {
+        this.currentlyCreatingBeans.remove(beanName);
     }
 }

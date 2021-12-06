@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
 @Target({})
 public @interface Inject {
 
-    @Target({ElementType.FIELD})
+    @Target({ElementType.FIELD, ElementType.PARAMETER})
     @Retention(RetentionPolicy.RUNTIME)
     @interface ByType {
         Class DEFAULT_CLASS = Object.class;
@@ -25,7 +25,7 @@ public @interface Inject {
         boolean required() default true;
     }
 
-    @Target({ElementType.FIELD})
+    @Target({ElementType.FIELD, ElementType.PARAMETER})
     @Retention(RetentionPolicy.RUNTIME)
     @interface ByName {
         String value() default "";

@@ -1,4 +1,4 @@
-package xyz.yanghaoyu.flora.core.beans.factory.xml;
+package xyz.yanghaoyu.flora.core.io.reader;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -190,7 +190,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
             }
             // 如果已经存在
             if (getRegistry().containsBeanDefinition(beanId)) {
-                throw new BeansException("Duplicate beanId[" + beanId + "] is not allowed");
+                throw new BeansException("Duplicate beanId [" + beanId + "] is not allowed");
             }
             // 注册 BeanDefinition
             getRegistry().registerBeanDefinition(beanId, beanDefinition);

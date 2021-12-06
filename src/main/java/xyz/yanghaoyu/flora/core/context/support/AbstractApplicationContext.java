@@ -247,4 +247,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     public boolean containsBean(String name) {
         return getBeanFactory().containsBean(name);
     }
+
+    @Override
+    public boolean containsSingletonBean(String name) {
+        return getBeanFactory().containsSingletonBean(name);
+    }
 }

@@ -2,8 +2,8 @@ package xyz.yanghaoyu.flora.core.beans.factory;
 
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanFactoryPostProcessor;
-import xyz.yanghaoyu.flora.core.io.loader.DefaultResourceLoader;
 import xyz.yanghaoyu.flora.core.io.Resource;
+import xyz.yanghaoyu.flora.core.io.loader.DefaultResourceLoader;
 import xyz.yanghaoyu.flora.exception.BeansException;
 
 import java.io.IOException;

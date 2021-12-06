@@ -11,6 +11,7 @@ import xyz.yanghaoyu.flora.util.ReflectUtil;
 import xyz.yanghaoyu.flora.util.StringUtil;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
@@ -32,7 +33,6 @@ import java.util.Objects;
  */
 
 public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory implements AutowireCapableBeanFactory {
-    Class clazz;
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractAutowireCapableBeanFactory.class);
     // 实例化策略
     private InstantiationStrategy instantiationStrategy = new JDKInstantiationStrategy();
@@ -52,6 +52,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         Object bean = null;
         try {
             // 实例化
+            addCurrentlyCreatingBean(beanName);
+
             bean = createBeanInstance(beanDefinition, beanName, args);
 
             // 先把 bean 暴露在三级缓存中, 解决循环依赖
@@ -83,11 +85,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         }
         registerDisposableBeanIfNecessary(beanName, bean, beanDefinition);
         Object exposedObject = bean;
-
         // 注册进入单例容器
         if (beanDefinition.isSingleton()) {
             registerSingleton(beanName, exposedObject);
         }
+        removeCurrentlyCreatingBean(beanName);
         return exposedObject;
     }
 
@@ -133,14 +135,26 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     /**
      * 实例化
      */
-    protected Object createBeanInstance(BeanDefinition beanDefinition, String beanName, Object[] args) {
-        Constructor ctorToUse = null;
+    protected Object createBeanInstance(BeanDefinition beanDefinition, String beanName, Object[] args) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+
+        if (beanDefinition.getFactoryMethod() != null) {
+            String configurationClassBeanName = beanDefinition.getConfigurationClassBeanName();
+            Object configProxyBean = getBean(configurationClassBeanName);
+
+            Method factoryMethod = beanDefinition.getFactoryMethod();
+            Class<?>[] parameterTypes = factoryMethod.getParameterTypes();
+            Method method = configProxyBean.getClass().getMethod(factoryMethod.getName(), parameterTypes);
+            
+            return method.invoke(configProxyBean, new Object[parameterTypes.length]);
+        }
+
+        Constructor constructor = null;
         try {
-            ctorToUse = ReflectUtil.selectCtorByArgsType(beanDefinition.getBeanClass(), args);
+            constructor = ReflectUtil.selectConstructorByArgsType(beanDefinition.getBeanClass(), args);
         } catch (NoSuchMethodException e) {
             throw new BeansException("Error creating bean instance " + beanName);
         }
-        return instantiationStrategy.instantiate(beanDefinition, ctorToUse, args);
+        return instantiationStrategy.instantiate(beanDefinition, constructor, args);
     }
 
     /**

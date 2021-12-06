@@ -4,7 +4,6 @@ import xyz.yanghaoyu.flora.core.beans.factory.ObjectFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.config.SingletonBeanRegistry;
 import xyz.yanghaoyu.flora.exception.BeansException;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,14 +12,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
     protected static final Object NULL_OBJECT = new Object();
     // 成品
-    private Map<String, Object> singletonObjects = new ConcurrentHashMap<>();
+    protected Map<String, Object> singletonObjects = new ConcurrentHashMap<>();
     // 半成品
-    protected final Map<String, Object> earlySingletonObjects = new HashMap<>();
+    protected final Map<String, Object> earlySingletonObjects = new ConcurrentHashMap<>();
     // 代理对象
-    protected final Map<String, ObjectFactory<?>> singletonFactories = new HashMap<>();
+    protected final Map<String, ObjectFactory<?>> singletonFactories = new ConcurrentHashMap<>();
 
+    private Map<String, DisposableBean> disposableBeans = new ConcurrentHashMap<>();
 
-    private Map<String, DisposableBean> disposableBeans = new HashMap<>();
 
     @Override
     public Object getSingleton(String beanName) {

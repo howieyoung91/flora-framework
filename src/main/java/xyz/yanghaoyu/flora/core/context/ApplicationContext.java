@@ -9,5 +9,6 @@ import xyz.yanghaoyu.flora.core.io.ResourceLoader;
  */
 
 
-public interface ApplicationContext extends ListableBeanFactory, ResourceLoader, ApplicationEventPublisher {
+public interface ApplicationContext
+        extends ListableBeanFactory, ResourceLoader, ApplicationEventPublisher {
 }

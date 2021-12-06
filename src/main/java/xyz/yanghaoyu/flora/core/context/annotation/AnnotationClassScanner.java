@@ -1,6 +1,9 @@
 package xyz.yanghaoyu.flora.core.context.annotation;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 注解类扫描器
@@ -10,18 +13,24 @@ import java.lang.annotation.Annotation;
  */
 
 public class AnnotationClassScanner extends ClassScanner {
-    protected Class<? extends Annotation> targetAnnotationClass;
+    protected Set<Class<? extends Annotation>> set = new HashSet<>(3);
 
-    public AnnotationClassScanner(String targetPackage, Class<? extends Annotation> annotationClass) {
+    public AnnotationClassScanner(String targetPackage, Class<? extends Annotation>... annotationClass) {
         super(targetPackage);
         if (annotationClass == null) {
             throw new NullPointerException();
         }
-        this.targetAnnotationClass = annotationClass;
+        this.set.addAll(Arrays.asList(annotationClass));
     }
 
     @Override
     public boolean canAdd(Class<?> clazz) {
-        return clazz.isAnnotationPresent(targetAnnotationClass);
+        for (Class<? extends Annotation> annClass : set) {
+            boolean isPresent = clazz.isAnnotationPresent(annClass);
+            if (isPresent) {
+                return true;
+            }
+        }
+        return false;
     }
 }

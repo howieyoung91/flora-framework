@@ -3,6 +3,8 @@ package xyz.yanghaoyu.flora.core.beans.factory.config;
 import xyz.yanghaoyu.flora.annotation.Scope;
 import xyz.yanghaoyu.flora.core.beans.factory.PropertyValues;
 
+import java.lang.reflect.Method;
+
 public class BeanDefinition {
     private Class beanClass;
     private PropertyValues propertyValues;
@@ -10,6 +12,11 @@ public class BeanDefinition {
     private String destroyMethodName;
     private boolean singleton = true;
     private boolean prototype = false;
+
+    // @Bean @Configuration support
+    private String configurationClassBeanName = null;
+    private String factoryMethodName = null;
+    private Method factoryMethod = null;
 
     public BeanDefinition(Class beanClass) {
         this.beanClass = beanClass;
@@ -19,6 +26,11 @@ public class BeanDefinition {
     public BeanDefinition(Class beanClass, PropertyValues propertyValues) {
         this.beanClass = beanClass;
         this.propertyValues = propertyValues == null ? new PropertyValues() : propertyValues;
+    }
+
+    public BeanDefinition setBeanClass(Class beanClass) {
+        this.beanClass = beanClass;
+        return this;
     }
 
     public Class getBeanClass() {
@@ -66,7 +78,34 @@ public class BeanDefinition {
         }
     }
 
+    public String getFactoryMethodName() {
+        return factoryMethodName;
+    }
+
+    public BeanDefinition setFactoryMethodName(String factoryMethodName) {
+        this.factoryMethodName = factoryMethodName;
+        return this;
+    }
+
+    public String getConfigurationClassBeanName() {
+        return configurationClassBeanName;
+    }
+
+    public BeanDefinition setConfigurationClassBeanName(String configurationClassBeanName) {
+        this.configurationClassBeanName = configurationClassBeanName;
+        return this;
+    }
+
     public boolean isPrototype() {
         return prototype;
+    }
+
+    public Method getFactoryMethod() {
+        return factoryMethod;
+    }
+
+    public BeanDefinition setFactoryMethod(Method factoryMethod) {
+        this.factoryMethod = factoryMethod;
+        return this;
     }
 }
