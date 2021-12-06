@@ -3,6 +3,7 @@ package xyz.yanghaoyu.flora.constant;
 import xyz.yanghaoyu.flora.core.aop.autoproxy.DefaultAdvisorAutoProxyCreator;
 import xyz.yanghaoyu.flora.core.aop.autoproxy.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import xyz.yanghaoyu.flora.core.beans.factory.PropertyPlaceholderConfigurer;
+import xyz.yanghaoyu.flora.core.beans.factory.config.AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.config.AutowiredAnnotationBeanPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.config.ConfigurationBeanBeanFactoryPostProcessor;
 import xyz.yanghaoyu.flora.core.context.support.ConversionServiceFactoryBean;
@@ -16,6 +17,7 @@ import xyz.yanghaoyu.flora.core.context.support.ConversionServiceFactoryBean;
 public interface BuiltInBean {
     Class CONVERTER_FACTORY_BEAN = ConversionServiceFactoryBean.class;
     Class DEFAULT_ADVISOR_AUTO_PROXY_CREATOR = DefaultAdvisorAutoProxyCreator.class;
+    Class ANNOTATION_AWARE_ASPECT_J_AUTO_PROXY_SUPPORT_BEAN_FACTORY_POST_PROCESSOR = AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor.class;
     Class AUTOWIRED_ANNOTATION_BEAN_POST_PROCESSOR = AutowiredAnnotationBeanPostProcessor.class;
     Class ANNOTATION_AWARE_ASPECT_J_AUTO_PROXY_CREATOR = AnnotationAwareAspectJAutoProxyCreator.class;
     Class PROPERTY_PLACEHOLDER_CONFIGURER = PropertyPlaceholderConfigurer.class;

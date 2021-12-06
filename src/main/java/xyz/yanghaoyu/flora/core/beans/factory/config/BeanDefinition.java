@@ -15,7 +15,6 @@ public class BeanDefinition {
 
     // @Bean @Configuration support
     private String configurationClassBeanName = null;
-    private String factoryMethodName = null;
     private Method factoryMethod = null;
 
     public BeanDefinition(Class beanClass) {
@@ -78,22 +77,13 @@ public class BeanDefinition {
         }
     }
 
-    public String getFactoryMethodName() {
-        return factoryMethodName;
-    }
-
-    public BeanDefinition setFactoryMethodName(String factoryMethodName) {
-        this.factoryMethodName = factoryMethodName;
-        return this;
-    }
 
     public String getConfigurationClassBeanName() {
         return configurationClassBeanName;
     }
 
-    public BeanDefinition setConfigurationClassBeanName(String configurationClassBeanName) {
+    public void setConfigurationClassBeanName(String configurationClassBeanName) {
         this.configurationClassBeanName = configurationClassBeanName;
-        return this;
     }
 
     public boolean isPrototype() {
@@ -104,8 +94,7 @@ public class BeanDefinition {
         return factoryMethod;
     }
 
-    public BeanDefinition setFactoryMethod(Method factoryMethod) {
+    public void setFactoryMethod(Method factoryMethod) {
         this.factoryMethod = factoryMethod;
-        return this;
     }
 }

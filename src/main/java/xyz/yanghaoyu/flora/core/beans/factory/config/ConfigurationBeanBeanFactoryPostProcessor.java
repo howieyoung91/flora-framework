@@ -13,12 +13,13 @@ import xyz.yanghaoyu.flora.core.beans.factory.support.DefaultListableBeanFactory
 import xyz.yanghaoyu.flora.exception.BeanCandidatesException;
 import xyz.yanghaoyu.flora.exception.BeansException;
 import xyz.yanghaoyu.flora.exception.DuplicateDeclarationException;
-import xyz.yanghaoyu.flora.util.StringUtil;
+import xyz.yanghaoyu.flora.util.ComponentUtil;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -67,7 +68,6 @@ public class ConfigurationBeanBeanFactoryPostProcessor implements BeanFactoryPos
 
             beanFactory.registerSingleton(configBeanDefName, configurationProxyClass);
 
-            // TODO modify the configuration beanDefinition
             for (Method method : configBeanClass.getMethods()) {
                 Bean beanAnn = method.getAnnotation(Bean.class);
                 if (beanAnn == null) {
@@ -76,27 +76,20 @@ public class ConfigurationBeanBeanFactoryPostProcessor implements BeanFactoryPos
 
                 Class<?> beanClass = method.getReturnType();
                 BeanDefinition beanDef = new BeanDefinition(beanClass);
-
-                String beanName = determineBeanName(method, beanAnn);
-                // TODO @scope
-
                 beanDef.setConfigurationClassBeanName(configBeanDefName);
-                beanDef.setFactoryMethodName(method.getName());
                 beanDef.setFactoryMethod(method);
+
+                String beanName = ComponentUtil.determineBeanName(method, beanAnn);
+
+                ComponentUtil.determineBeanScope(method, beanDef);
+                ComponentUtil.determineBeanInitMethodAndDestroyMethod(beanDef);
+                
                 if (beanFactory.containsBeanDefinition(beanName)) {
                     throw new BeansException("Duplicate beanName [" + beanName + "] is not allowed");
                 }
                 beanFactory.registerBeanDefinition(beanName, beanDef);
             }
         }
-    }
-
-    private static String determineBeanName(Method method, Bean beanAnn) {
-        String beanName = beanAnn.value();
-        if (beanName.equals("")) {
-            beanName = StringUtil.lowerFirstChar(method.getName());
-        }
-        return beanName;
     }
 
     private static class ConfigurationClassEnhanceClassProxy implements MethodInterceptor {
@@ -118,7 +111,7 @@ public class ConfigurationBeanBeanFactoryPostProcessor implements BeanFactoryPos
 
         @Override
         public Object intercept(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
-            String beanName = determineBeanName(method, method.getAnnotation(Bean.class));
+            String beanName = ComponentUtil.determineBeanName(method, method.getAnnotation(Bean.class));
             if (!beanFactory.isCurrentlyCreating(beanName)) {
                 return beanFactory.getBean(beanName);
             }
@@ -147,22 +140,22 @@ public class ConfigurationBeanBeanFactoryPostProcessor implements BeanFactoryPos
             Object bean;
             if (byTypeAnn != null) {
                 Class<?> type = parameter.getType();
-                // FIXME 依赖于和Bean相同的类型 这里就会出现循环依赖
+                // FIXME 依赖于和 Bean 相同的类型 这里就会出现循环依赖
                 Map<String, ?> candidate = beanFactory.getBeansOfType(type);
                 if (candidate.size() == 0) {
                     throw new BeanCandidatesException("find no candidate when creating bean [" + beanName + "]");
                 }
                 if (candidate.size() > 1) {
-                    throw new BeanCandidatesException("find too many candidates class is" + type + " when creating bean [" + beanName + "]");
+                    throw new BeanCandidatesException("find too many candidates whose class is " + type + " when creating bean [" + beanName + "]");
                 }
                 bean = candidate.values().iterator().next();
             } else {
-                String dependOnBeanName = "";
+                String dependOnBeanName = Inject.DEFAULT_BEAN_NAME;
                 if (byNameAnn == null) {
                     dependOnBeanName = parameter.getName();
                 } else {
                     dependOnBeanName = byNameAnn.value();
-                    if (dependOnBeanName.equals("")) {
+                    if (Objects.equals(Inject.DEFAULT_BEAN_NAME, dependOnBeanName)) {
                         dependOnBeanName = parameter.getName();
                     }
                 }

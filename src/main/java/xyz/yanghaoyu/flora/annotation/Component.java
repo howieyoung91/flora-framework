@@ -9,5 +9,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Component {
-    String value() default "";
+    String DEFAULT_BEAN_NAME = "";
+
+    String value() default DEFAULT_BEAN_NAME;
 }

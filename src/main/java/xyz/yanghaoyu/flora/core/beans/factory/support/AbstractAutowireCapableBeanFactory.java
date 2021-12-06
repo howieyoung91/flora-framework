@@ -69,6 +69,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             if (!applyBeanPostProcessorsAfterInstantiation(beanName, bean)) {
                 return bean;
             }
+
             // 在设置 Bean 属性之前，允许 BeanPostProcessor 修改属性值
 
             // 注解在这里被解析
@@ -144,7 +145,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             Method factoryMethod = beanDefinition.getFactoryMethod();
             Class<?>[] parameterTypes = factoryMethod.getParameterTypes();
             Method method = configProxyBean.getClass().getMethod(factoryMethod.getName(), parameterTypes);
-            
+
             return method.invoke(configProxyBean, new Object[parameterTypes.length]);
         }
 
@@ -267,7 +268,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         }
         // beanDefinition
         String initMethodName = beanDefinition.getInitMethodName();
-        // initMethodName 不为空
+
         if (StringUtil.isNotEmpty(initMethodName)) {
             // 避免二次执行
             if (wrappedBean instanceof InitializingBean && Objects.equals("afterPropertiesSet", initMethodName)) {
@@ -276,7 +277,6 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             Method initMethod = beanDefinition.getBeanClass().getMethod(initMethodName);
             initMethod.invoke(wrappedBean);
         }
-
     }
 
     /**

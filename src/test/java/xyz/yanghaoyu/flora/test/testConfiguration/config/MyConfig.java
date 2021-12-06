@@ -16,9 +16,11 @@ public class MyConfig {
     }
 
     // @Bean
-    // public Husband husband() {
-    //     return new Husband(wife());
-    // }
+    public Husband husband(Wife wife, Wife wife1) {
+        System.out.println(wife);
+        System.out.println(wife1);
+        return new Husband(wife);
+    }
 
     @Bean
     public Wife wife() {

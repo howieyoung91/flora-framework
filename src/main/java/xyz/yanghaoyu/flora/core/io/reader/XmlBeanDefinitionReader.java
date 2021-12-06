@@ -126,8 +126,13 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
                 IocUtil.enableComponentScan(getRegistry());
                 // 扫包
                 Set<BeanDefinition> beanDefinitions = new ClassPathBeanDefinitionScanner().doScan(basePaths);
+
+                BeanDefinitionRegistry registry = getRegistry();
                 for (BeanDefinition beanDefinition : beanDefinitions) {
-                    String beanName = ComponentUtil.determineComponentAnnBeanName(beanDefinition);
+                    String beanName = ComponentUtil.determineBeanName(beanDefinition);
+                    if (registry.containsBeanDefinition(beanName)) {
+                        throw new BeansException("Duplicate beanName [" + beanName + "] is not allowed");
+                    }
                     getRegistry().registerBeanDefinition(beanName, beanDefinition);
                 }
 

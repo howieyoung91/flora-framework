@@ -21,6 +21,7 @@ public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
      */
     public static final String DEFAULT_PLACEHOLDER_SUFFIX = "}";
 
+    // TODO 多文件的支持
     private String location;
 
     @Override

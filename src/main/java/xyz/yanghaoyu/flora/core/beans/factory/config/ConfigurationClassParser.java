@@ -17,10 +17,10 @@ import java.util.Set;
  */
 
 public class ConfigurationClassParser {
-    private DefaultListableBeanFactory beanFactory;
+    private final DefaultListableBeanFactory beanFactory;
     private final Set<String> startBeanNames;
-    private Set<String> current = new HashSet<>(6);
-    private Set<String> already = new HashSet<>(6);
+    private final Set<String> current = new HashSet<>(6);
+    private final Set<String> already = new HashSet<>(6);
 
     public ConfigurationClassParser(DefaultListableBeanFactory beanFactory, Set<String> startClasses) {
         this.beanFactory = beanFactory;
@@ -43,37 +43,12 @@ public class ConfigurationClassParser {
         }
         current.add(beanDefName);
         Class<?> clazz = configBeanDef.getBeanClass();
-        Enable.ComponentScan componentScanAnn = clazz.getAnnotation(Enable.ComponentScan.class);
-        if (componentScanAnn != null) {
-            String[] basePackages = componentScanAnn.basePackages();
-            // 扫包
-            Set<BeanDefinition> newBeanDefs = new ClassPathBeanDefinitionScanner().doScan(basePackages);
+        parseComponentScan(clazz);
 
-            for (BeanDefinition newBeanDef : newBeanDefs) {
-                
-                String newBeanName = ComponentUtil.determineComponentAnnBeanName(newBeanDef);
-                Configuration configAnn = (Configuration) newBeanDef.getBeanClass().getAnnotation(Configuration.class);
-                if (configAnn != null) {
-                    parse(newBeanName, newBeanDef);
-                }
-                if (beanFactory.containsBeanDefinition(newBeanName)) {
-                    throw new BeansException("Duplicate beanName [" + newBeanName + "] is not allowed");
-                }
-                beanFactory.registerBeanDefinition(newBeanName, newBeanDef);
-            }
-        }
+        parseAop(clazz);
 
-        if (clazz.isAnnotationPresent(Enable.Aop.class)) {
-            IocUtil.enableAop(beanFactory);
-        }
+        parserPropertyPlaceholder(clazz);
 
-        Enable.PropertyPlaceholder propertyPlaceholderAnn = clazz.getAnnotation(Enable.PropertyPlaceholder.class);
-        if (propertyPlaceholderAnn != null) {
-            String location = propertyPlaceholderAnn.location();
-            IocUtil.enablePropertyPlaceholderConfigurer(beanFactory, location);
-        }
-
-        // todo support @Enable.TypeConvert
         // todo support @Import.Configuration
         // todo support @Import.Resource
 
@@ -92,5 +67,41 @@ public class ConfigurationClassParser {
 
         current.remove(beanDefName);
         already.add(beanDefName);
+    }
+
+    private void parserPropertyPlaceholder(Class<?> clazz) {
+        Enable.PropertyPlaceholder propertyPlaceholderAnn = clazz.getAnnotation(Enable.PropertyPlaceholder.class);
+        if (propertyPlaceholderAnn != null) {
+            String location = propertyPlaceholderAnn.location();
+            IocUtil.enablePropertyPlaceholderConfigurer(beanFactory, location);
+        }
+    }
+
+    private void parseAop(Class<?> clazz) {
+        if (clazz.isAnnotationPresent(Enable.Aop.class)) {
+            IocUtil.enableAop(beanFactory);
+        }
+    }
+
+    private void parseComponentScan(Class<?> clazz) {
+        Enable.ComponentScan componentScanAnn = clazz.getAnnotation(Enable.ComponentScan.class);
+        if (componentScanAnn != null) {
+            String[] basePackages = componentScanAnn.basePackages();
+            // 扫包
+            Set<BeanDefinition> newBeanDefs = new ClassPathBeanDefinitionScanner().doScan(basePackages);
+
+            for (BeanDefinition newBeanDef : newBeanDefs) {
+
+                String newBeanName = ComponentUtil.determineBeanName(newBeanDef);
+                Configuration configAnn = (Configuration) newBeanDef.getBeanClass().getAnnotation(Configuration.class);
+                if (configAnn != null) {
+                    parse(newBeanName, newBeanDef);
+                }
+                if (beanFactory.containsBeanDefinition(newBeanName)) {
+                    throw new BeansException("Duplicate beanName [" + newBeanName + "] is not allowed");
+                }
+                beanFactory.registerBeanDefinition(newBeanName, newBeanDef);
+            }
+        }
     }
 }

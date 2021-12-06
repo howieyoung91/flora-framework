@@ -15,10 +15,7 @@ class MultiValueMapAdapter<K, V> implements MultiValueMap<K, V>, Serializable {
     }
 
 
-    // MultiValueMap implementation
-
     @Override
-
     public V getFirst(K key) {
         List<V> values = this.targetMap.get(key);
         return (values != null && !values.isEmpty() ? values.get(0) : null);
