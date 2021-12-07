@@ -150,7 +150,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
             if (!(item instanceof Element) || !Objects.equals(XmlTag.BEAN, childNodes.item(i).getNodeName())) {
                 continue;
             }
-            // 解析bean标签
+            // 解析 bean 标签
             Element bean = (Element) childNodes.item(i);
             String clazzName = bean.getAttribute(XmlTag.CLASS);
             // String name = bean.getAttribute("name");

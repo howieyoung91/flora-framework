@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans>
+<!--  <bean id="wife" class="xyz.yanghaoyu.flora.test.md.ioc.beans.Wife">-->
+  <!--    <property name="name" value="wife's name"/>-->
+  <!--    <property name="husband" ref="husband"/>-->
+  <!--  </bean>-->
+  <!--  <bean id="husband" class="xyz.yanghaoyu.flora.test.md.ioc.beans.Husband">-->
+  <!--    <property name="name" value="husband's name"/>-->
+  <!--    <property name="wife" ref="wife"/>-->
+  <!--  </bean>-->
+  <component-scan base-package="xyz.yanghaoyu.flora.test.md.ioc.beans"/>
+
+</beans>
