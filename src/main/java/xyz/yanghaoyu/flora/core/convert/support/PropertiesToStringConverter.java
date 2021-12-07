@@ -1,6 +1,5 @@
 package xyz.yanghaoyu.flora.core.convert.support;
 
-import xyz.yanghaoyu.flora.core.convert.converter.ConversionService;
 import xyz.yanghaoyu.flora.core.convert.converter.Converter;
 
 import java.io.ByteArrayOutputStream;
@@ -12,9 +11,7 @@ import java.util.Properties;
  * @version 1.0
  */
 
- class PropertiesToStringConverter implements Converter<Properties, String> {
-
-
+class PropertiesToStringConverter implements Converter<Properties, String> {
     @Override
     public String convert(Properties source) {
         try {

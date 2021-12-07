@@ -183,7 +183,6 @@ public class GenericConversionService implements ConversionService, ConverterReg
             return hierarchy;
         }
 
-        // hierarchy = getClassHierarchyFromClass(clazz);
 
         while (clazz != Object.class) {
             hierarchy.add(clazz);
@@ -218,16 +217,8 @@ public class GenericConversionService implements ConversionService, ConverterReg
 
 
         hierarchy.add(Object.class);
-        // System.out.println(hierarchy);
         return hierarchy;
     }
-
-    // private void in(Class<?> aInterface) {
-    //     Class<?>[] interfaces = aInterface.getInterfaces();
-    //     for (Class anInterface : interfaces) {
-    //
-    //     }
-    // }
 
     private GenericConverter.ConvertiblePair getRequiredTypeInfo(Object object) {
         // 获取泛型的参数
@@ -241,7 +232,7 @@ public class GenericConversionService implements ConversionService, ConverterReg
     }
 
     // 把 Converter 适配成 GenericConverter
-    private final class ConverterAdapter implements GenericConverter {
+    private static final class ConverterAdapter implements GenericConverter {
 
         private final ConvertiblePair typeInfo;
 
@@ -264,7 +255,7 @@ public class GenericConversionService implements ConversionService, ConverterReg
     }
 
     // 把 ConverterFactory 适配成 GenericConverter
-    private final class ConverterFactoryAdapter implements GenericConverter {
+    private static final class ConverterFactoryAdapter implements GenericConverter {
 
         private final ConvertiblePair typeInfo;
 

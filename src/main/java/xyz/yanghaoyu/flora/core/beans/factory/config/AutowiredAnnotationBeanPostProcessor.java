@@ -119,7 +119,6 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
                 }
             }
             ReflectUtil.setFieldValue(bean, field.getName(), value);
-            // BeanUtil.setFieldValue(bean, field.getName(), value);
         }
     }
 }
