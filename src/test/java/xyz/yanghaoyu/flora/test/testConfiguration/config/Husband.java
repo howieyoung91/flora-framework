@@ -1,7 +1,5 @@
 package xyz.yanghaoyu.flora.test.testConfiguration.config;
 
-import xyz.yanghaoyu.flora.annotation.Inject;
-import xyz.yanghaoyu.flora.annotation.Life;
 import xyz.yanghaoyu.flora.annotation.Value;
 
 /**

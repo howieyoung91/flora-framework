@@ -1,6 +1,6 @@
 # Converter 类型转换
 
-Flora 已经内置了类型转换服务,它依赖于 `Converter`
+flora 已经内置了类型转换服务,它依赖于 `Converter`
 目前已经内置了以下 `Converter`
 
 1. `ArrayToArrayConverter`
