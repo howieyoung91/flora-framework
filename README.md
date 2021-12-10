@@ -12,6 +12,14 @@ cd 到项目目录
 
 ## Feature
 
+- [x] Ioc
+    - [x] xml
+    - [x] java config
+    - [x] component-scan
+- [x] Aop
+    - [x] 环绕增强
+- [x] TypeConvert
+
 ### 1. IOC
 
 [查看具体用法](/md/ioc.md)
@@ -19,6 +27,10 @@ cd 到项目目录
 ### 2. AOP
 
 [查看具体用法](/md/aop.md)
+
+### 3. TypeConvert
+
+[查看具体用法](/md/converter.md)
 
 ## TODO
 

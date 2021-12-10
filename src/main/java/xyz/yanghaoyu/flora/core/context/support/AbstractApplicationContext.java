@@ -3,6 +3,7 @@ package xyz.yanghaoyu.flora.core.context.support;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.yanghaoyu.flora.constant.BuiltInBean;
+import xyz.yanghaoyu.flora.core.aop.autoproxy.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.config.AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanFactoryPostProcessor;
@@ -62,15 +63,18 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     }
 
     protected final void initBeanFactory(ConfigurableListableBeanFactory beanFactory) {
+
+        // 处理 @Configuration
+        additionallyLoadBeanDefinition(beanFactory);
+
         // 3. 初始化 ApplicationContextAwareProcessor 为框架提供对象感知功能
         initApplicationContextAwareProcessor();
 
-        // TODO Aspect Inject
-        // 4. 在 Bean 实例化之前，执行 BeanFactoryPostProcessor
-        invokeBeanFactoryPostProcessors(beanFactory);
-
         // 5. 生成并注册 BeanPostProcessor  要在 Bean 实例化之前执行注册操作,
         registerBeanPostProcessors(beanFactory);
+
+        // 4. 在 Bean 实例化之前，执行 BeanFactoryPostProcessor
+        invokeBeanFactoryPostProcessors(beanFactory);
 
         // 6. 初始化与事件相关的组件
         initApplicationEvent();
@@ -78,6 +82,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         // 7. 提前实例化单例Bean对象
         // beanFactory.preInstantiateSingletons();
         finishBeanFactoryInitialization(beanFactory);
+
         // 8. 发布容器刷新完成事件
         finishRefresh();
     }
@@ -141,7 +146,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         // 在 执行 BeanPostProcessorBeforeInit 时 将会判断 是否实现 ApplicationContextAware
         // 如果实现,将会把 Context 注入
         ApplicationContextAwareProcessor acp = new ApplicationContextAwareProcessor(this);
-        // getBeanFactory().registerSingleton("applicationContextAwareProcessor", acp);
         getBeanFactory().addBeanPostProcessor(acp);
     }
 
@@ -176,16 +180,17 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         }
     }
 
-    /**
-     * 触发 BeanFactoryPostProcessors
-     */
-    private void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
-        // 先处理 @Configuration
+    private void additionallyLoadBeanDefinition(ConfigurableListableBeanFactory beanFactory) {
         Collection<ConfigurationBeanBeanFactoryPostProcessor> configBeanFactoryPostProcesses = beanFactory.getBeansOfType(ConfigurationBeanBeanFactoryPostProcessor.class).values();
         for (ConfigurationBeanBeanFactoryPostProcessor configBeanFactoryPostProcess : configBeanFactoryPostProcesses) {
             configBeanFactoryPostProcess.postProcessBeanFactory(beanFactory);
         }
+    }
 
+    /**
+     * 触发 BeanFactoryPostProcessors
+     */
+    private void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
         // 调用处理器
         Map<String, BeanFactoryPostProcessor> beanFactoryPostProcessorMap = beanFactory.getBeansOfType(BeanFactoryPostProcessor.class);
         BeanFactoryPostProcessor proxyBeanFactoryPostProcessor = null;
@@ -203,9 +208,16 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         }
 
         if (proxyBeanFactoryPostProcessor != null) {
+            // 先 BeanFactoryPostProcessor 获取到 enhance 信息
             proxyBeanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
+            // 添加 对 aop 支持的 bean post processor
+            Collection<AnnotationAwareAspectJAutoProxyCreator> values = beanFactory.getBeansOfType(AnnotationAwareAspectJAutoProxyCreator.class).values();
+            for (BeanPostProcessor value : values) {
+                beanFactory.addBeanPostProcessor(value);
+            }
         }
     }
+
 
     /**
      * 把 BeanPostProcessors 添加到 BeanFactory 中
@@ -214,6 +226,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         Map<String, BeanPostProcessor> beanPostProcessorMap = beanFactory.getBeansOfType(BeanPostProcessor.class);
         // 从 声明的 bean 中挑选出 BeanPostProcessor 进行注册
         for (BeanPostProcessor beanPostProcessor : beanPostProcessorMap.values()) {
+            // 延迟加载
+            if (beanPostProcessor instanceof AnnotationAwareAspectJAutoProxyCreator) {
+                continue;
+            }
             beanFactory.addBeanPostProcessor(beanPostProcessor);
         }
 

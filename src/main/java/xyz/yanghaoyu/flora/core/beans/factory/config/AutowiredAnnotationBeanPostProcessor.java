@@ -27,47 +27,46 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
     @Override
     public PropertyValues postProcessPropertyValues(PropertyValues pvs, Object bean, String beanName) throws BeansException {
         Class<?> clazz = bean.getClass();
+
         clazz = ReflectUtil.isCglibProxyClass(clazz) ? clazz.getSuperclass() : clazz;
 
         Field[] declaredFields = clazz.getDeclaredFields();
 
         for (Field field : declaredFields) {
             // 1. 处理注解 @Value
-            handleValueAnnotation(bean, field);
+            handleValueAnnotation(bean, field, clazz);
             // 2. 处理注解 @Inject.ByType 和 @Inject.ByName
-            handleInjectAnnotation(bean, beanName, field);
+            handleInjectAnnotation(bean, beanName, field, clazz);
         }
 
         return null;
     }
 
-    @Inject.ByType(clazz = String.class, required = false)
-    private String temp;
-
-    private void handleInjectAnnotation(Object bean, String beanName, Field field) {
+    private void handleInjectAnnotation(Object bean, String beanName, Field field, Class actualClass) {
         Inject.ByType injectByTypeAnno = field.getAnnotation(Inject.ByType.class);
         Inject.ByName injectByNameAnno = field.getAnnotation(Inject.ByName.class);
         if (injectByNameAnno != null && injectByTypeAnno != null) {
             throw new DuplicateDeclarationException("the [@Inject.ByType] and [@Inject.ByName] are duplicate!");
         }
-        // 处理 Inject.ByType
+        // handle Inject.ByType
         if (injectByTypeAnno != null) {
-            // determine the clazz
+            // determine the dependOnBeanClass
             Class value = injectByTypeAnno.value();
             Class clz = injectByTypeAnno.clazz();
 
-            Class clazz = value == clz
+            Class dependOnBeanClass = value == clz
                     ? value
                     : clz == Inject.ByType.DEFAULT_CLASS ? value : clz;
 
-            if (clazz == Inject.ByType.DEFAULT_CLASS) {
-                clazz = field.getType();
+            if (dependOnBeanClass == Inject.ByType.DEFAULT_CLASS) {
+                dependOnBeanClass = field.getType();
             }
 
-            Map<String, ?> candidates = beanFactory.getBeansOfType(clazz);
+            // pick candidates
+            Map<String, ?> candidates = beanFactory.getBeansOfType(dependOnBeanClass);
             if (candidates.size() == 1) {
                 for (Object dependOnBean : candidates.values()) {
-                    ReflectUtil.setFieldValue(bean, field.getName(), dependOnBean);
+                    ReflectUtil.setFieldValue(bean, actualClass, field.getName(), dependOnBean);
                 }
             } else {
                 if (injectByTypeAnno.required()) {
@@ -93,33 +92,38 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
             if (dependOnBean == null && injectByNameAnno.required()) {
                 throw new BeansException("No such Bean which id is  " + id);
             }
-            ReflectUtil.setFieldValue(bean, field.getName(), dependOnBean);
+            ReflectUtil.setFieldValue(bean, actualClass, field.getName(), dependOnBean);
         }
     }
 
-    private void handleValueAnnotation(Object bean, Field field) {
+    private void handleValueAnnotation(Object bean, Field field, Class<?> clazz) {
         Value valueAnn = field.getAnnotation(Value.class);
         if (null != valueAnn) {
             Object value = valueAnn.value();
             value = beanFactory.resolveEmbeddedValue((String) value);
+
             if (value == null) {
                 if (valueAnn.required()) {
                     throw new BeansException("Fail to find the value [" + valueAnn.value() + "]");
                 }
+            } else {
+                // 类型转换
+                value = convert(field, value);
             }
-            // 类型转换
-
-
-            Class<?> sourceType = value.getClass();
-            Class<?> targetType = (Class<?>) TypeUtil.getType(field);
-            ConversionService conversionService = beanFactory.getConversionService();
-            if (conversionService != null) {
-                if (conversionService.canConvert(sourceType, targetType)) {
-                    value = conversionService.convert(value, targetType);
-                }
-            }
-            ReflectUtil.setFieldValue(bean, field.getName(), value);
+            ReflectUtil.setFieldValue(bean, clazz, field.getName(), value);
         }
+    }
+
+    private Object convert(Field field, Object value) {
+        Class<?> sourceType = value.getClass();
+        Class<?> targetType = (Class<?>) TypeUtil.getType(field);
+        ConversionService conversionService = beanFactory.getConversionService();
+        if (conversionService != null) {
+            if (conversionService.canConvert(sourceType, targetType)) {
+                value = conversionService.convert(value, targetType);
+            }
+        }
+        return value;
     }
 }
 

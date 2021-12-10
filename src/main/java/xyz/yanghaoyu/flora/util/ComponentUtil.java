@@ -111,7 +111,7 @@ public abstract class ComponentUtil {
     public static String determineBeanName(Method method, Bean beanAnn) {
         String beanName = beanAnn.value();
         if (Objects.equals(beanName, Component.DEFAULT_BEAN_NAME)) {
-            beanName = StringUtil.lowerFirstChar(method.getName());
+            beanName = StringUtil.lowerFirstChar(method.getReturnType().getSimpleName());
         }
         return beanName;
     }

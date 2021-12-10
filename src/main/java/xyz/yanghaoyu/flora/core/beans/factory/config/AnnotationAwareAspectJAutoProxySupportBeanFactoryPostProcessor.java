@@ -43,6 +43,7 @@ public class AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor
             if (annotation != null) {
                 Object bean = beanFactory.getBean(name);
                 Method[] methods = clazz.getDeclaredMethods();
+
                 for (Method method : methods) {
                     Aop.Enhance enhanceAnno = method.getAnnotation(Aop.Enhance.class);
                     if (enhanceAnno == null) {

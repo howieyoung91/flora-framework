@@ -1,11 +1,15 @@
-package xyz.yanghaoyu.flora.test.testConfiguration.config;
+package xyz.yanghaoyu.flora.test.testaop.beans;
+
+import xyz.yanghaoyu.flora.annotation.Component;
 
 /**
  * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2021/12/5 17:31<i/>
  * @version 1.0
  */
-// @Component
+@Component
 public class Wife {
+    public Wife() {}
+
     public void say() {
         System.out.println("say");
     }

@@ -18,6 +18,18 @@ public class HusbandAspect {
     public Object enhance(AdviceChain chain) throws Throwable {
         System.out.println("advice before");
         Object proceed = chain.proceed();
+        System.out.println(proceed);
+        System.out.println("advice after");
+        return proceed;
+    }
+
+    @Aop.Enhance(
+            pointcut = "execution(public * xyz.yanghaoyu.flora.test.testConfiguration.config.Wife.*(..))",
+            priority = -1
+    )
+    public Object enhance1(AdviceChain chain) throws Throwable {
+        System.out.println("advice before");
+        Object proceed = chain.proceed();
         System.out.println("advice after");
         return proceed;
     }

@@ -14,4 +14,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Bean {
     String value() default Component.DEFAULT_BEAN_NAME;
+
+    String test() default "";
 }

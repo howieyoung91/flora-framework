@@ -1,6 +1,5 @@
 package xyz.yanghaoyu.flora.test.testConfiguration.config;
 
-import xyz.yanghaoyu.flora.annotation.Aop;
 import xyz.yanghaoyu.flora.annotation.Inject;
 import xyz.yanghaoyu.flora.annotation.Life;
 import xyz.yanghaoyu.flora.annotation.Value;
@@ -11,25 +10,19 @@ import xyz.yanghaoyu.flora.annotation.Value;
  */
 // @Component
 public class Husband {
-    @Inject.ByName
+    // @Inject.ByName
     Wife wife;
 
     @Value("${username}")
     private String username;
 
     public Husband() {}
+
     public Husband(Wife wife) {
         this.wife = wife;
     }
 
     public Wife getWife() {
-        System.out.println(username);
         return wife;
-    }
-
-    @Life.Initialize
-    @Life.Destroy
-    public void afterPropertiesSet() throws Exception {
-        System.out.println("afterPropertiesSet");
     }
 }

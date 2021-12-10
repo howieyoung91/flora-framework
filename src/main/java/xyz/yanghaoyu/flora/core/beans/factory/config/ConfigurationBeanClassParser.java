@@ -13,17 +13,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * 这个类用 解析 被 @Configuration 标记的类
+ *
  * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2021/12/6 13:55<i/>
  * @version 1.0
  */
 
-public class ConfigurationClassParser {
+public class ConfigurationBeanClassParser {
     private final DefaultListableBeanFactory beanFactory;
     private final Set<String> startBeanNames;
     private final Set<String> current = new HashSet<>(6);
     private final Set<String> already = new HashSet<>(6);
 
-    public ConfigurationClassParser(DefaultListableBeanFactory beanFactory, Set<String> startClasses) {
+    public ConfigurationBeanClassParser(DefaultListableBeanFactory beanFactory, Set<String> startClasses) {
         this.beanFactory = beanFactory;
         this.startBeanNames = startClasses;
     }
@@ -85,7 +87,6 @@ public class ConfigurationClassParser {
                     continue;
                 }
                 parse(newBeanName, newBeanDef);
-
                 if (beanFactory.containsBeanDefinition(newBeanName)) {
                     throw new BeansException("Duplicate beanName [" + newBeanName + "] is not allowed");
                 }
@@ -120,12 +121,15 @@ public class ConfigurationClassParser {
                 String newBeanName = ComponentUtil.determineBeanName(newBeanDef);
                 Configuration configAnn = (Configuration) newBeanDef.getBeanClass().getAnnotation(Configuration.class);
                 if (configAnn != null) {
-                    parse(newBeanName, newBeanDef);
+                    if (!startBeanNames.contains(newBeanName)) {
+                        parse(newBeanName, newBeanDef);
+                    }
+                } else {
+                    // if (beanFactory.containsBeanDefinition(newBeanName)) {
+                    //     throw new BeansException("Duplicate beanName [" + newBeanName + "] is not allowed");
+                    // }
+                    beanFactory.registerBeanDefinition(newBeanName, newBeanDef);
                 }
-                if (beanFactory.containsBeanDefinition(newBeanName)) {
-                    throw new BeansException("Duplicate beanName [" + newBeanName + "] is not allowed");
-                }
-                beanFactory.registerBeanDefinition(newBeanName, newBeanDef);
             }
         }
     }

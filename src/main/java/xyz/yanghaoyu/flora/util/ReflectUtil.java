@@ -39,6 +39,16 @@ public abstract class ReflectUtil {
         throw new NoSuchMethodException("no such constructor!");
     }
 
+    public static void setFieldValue(Object bean, Class<?> clazz, String name, Object value) {
+        Field field = null;
+        try {
+            field = clazz.getDeclaredField(name);
+            field.setAccessible(true);
+            field.set(bean, value);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void setFieldValue(Object bean, String name, Object value) {
         Field field = null;

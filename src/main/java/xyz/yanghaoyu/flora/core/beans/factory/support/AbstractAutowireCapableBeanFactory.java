@@ -16,9 +16,6 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 
 /**
- * <h1>
- * 对实例化bean,自动注入提供支持
- * </h1>
  * <pre style="color:orange;font-size:13px">
  * 主要流程:
  * ① createBeanInstance
