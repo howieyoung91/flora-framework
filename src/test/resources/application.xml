@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<beans>
-
-  <component-scan base-package="xyz.yanghaoyu.flora.test.test1"/>
-  <enable-property-placeholder location="classpath:token.properties"/>
-  <enable-aop/>
-</beans>
