@@ -96,9 +96,9 @@ public class ConfigurationBeanClassParser {
     }
 
     private void parserPropertyPlaceholder(Class<?> clazz) {
-        Enable.PropertyPlaceholder propertyPlaceholderAnn = clazz.getAnnotation(Enable.PropertyPlaceholder.class);
+        Enable.PropertySource propertyPlaceholderAnn = clazz.getAnnotation(Enable.PropertySource.class);
         if (propertyPlaceholderAnn != null) {
-            String location = propertyPlaceholderAnn.location();
+            String[] location = propertyPlaceholderAnn.location();
             IocUtil.enablePropertyPlaceholderConfigurer(beanFactory, location);
         }
     }

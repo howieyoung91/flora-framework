@@ -2,10 +2,7 @@ package xyz.yanghaoyu.flora.core.io.resource;
 
 import xyz.yanghaoyu.flora.core.io.Resource;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 
 public class FileSystemResource implements Resource {
     private final File file;
@@ -23,7 +20,7 @@ public class FileSystemResource implements Resource {
 
     @Override
     public InputStream getInputStream() throws IOException {
-        return new FileInputStream(this.file);
+        return new BufferedInputStream(new FileInputStream(this.file));
     }
 
     public final String getPath() {

@@ -3,6 +3,7 @@ package xyz.yanghaoyu.flora.core.beans.factory.support;
 import cn.hutool.core.util.TypeUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 import xyz.yanghaoyu.flora.core.beans.factory.*;
 import xyz.yanghaoyu.flora.core.beans.factory.config.*;
 import xyz.yanghaoyu.flora.core.convert.converter.ConversionService;
@@ -13,6 +14,7 @@ import xyz.yanghaoyu.flora.util.StringUtil;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Type;
 import java.util.Objects;
 
 /**
@@ -45,7 +47,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     }
 
     protected Object doCreateBean(String beanName, BeanDefinition beanDefinition, Object[] args) throws BeansException {
-        LOGGER.trace("creating bean [{}]", beanName);
+        LOGGER.trace("create [Bean] [{}]", beanName);
         Object bean = null;
         try {
             // 实例化
@@ -201,7 +203,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
                     value = getBean(((BeanReference) value).getBeanName());
                 } else {
                     Class<?> sourceType = value.getClass();
-                    Class<?> targetType = (Class<?>) TypeUtil.getFieldType(bean.getClass(), name);
+                    Class<?> targetType = null;
+                    Type fieldType = TypeUtil.getFieldType(bean.getClass(), name);
+                    if (fieldType instanceof ParameterizedTypeImpl) {
+                        targetType = ((ParameterizedTypeImpl) fieldType).getRawType();
+                    } else {
+                        targetType = ((Class<?>) fieldType);
+                    }
                     ConversionService conversionService = getConversionService();
                     if (conversionService != null) {
                         if (conversionService.canConvert(sourceType, targetType)) {
@@ -212,6 +220,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
                 ReflectUtil.setFieldValue(bean, name, value);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BeansException("Error setting property values：" + beanName);
         }
     }

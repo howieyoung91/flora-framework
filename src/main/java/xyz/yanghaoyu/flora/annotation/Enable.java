@@ -19,8 +19,8 @@ public @interface Enable {
 
     @Target({ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
-    @interface PropertyPlaceholder {
-        String location() default "";
+    @interface PropertySource {
+        String[] location() default {};
     }
 
     @Target({ElementType.TYPE})

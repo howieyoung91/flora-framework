@@ -2,8 +2,14 @@ package xyz.yanghaoyu.flora.util;
 
 import xyz.yanghaoyu.flora.constant.BuiltInBean;
 import xyz.yanghaoyu.flora.core.beans.factory.PropertyValue;
+import xyz.yanghaoyu.flora.core.beans.factory.PropertyValues;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.core.beans.factory.support.BeanDefinitionRegistry;
+import xyz.yanghaoyu.flora.core.beans.factory.support.DefaultListableBeanFactory;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public abstract class IocUtil {
     /**
@@ -59,17 +65,22 @@ public abstract class IocUtil {
     /**
      * 开启占位符替换
      */
-    public static void enablePropertyPlaceholderConfigurer(BeanDefinitionRegistry registry, String location) {
-        if (!registry.containsBeanDefinition(BuiltInBean.PROPERTY_PLACEHOLDER_CONFIGURER.getName())) {
-            BeanDefinition propertyPlaceholderConfigurerBeanDefinition =
-                    new BeanDefinition(BuiltInBean.PROPERTY_PLACEHOLDER_CONFIGURER);
-            propertyPlaceholderConfigurerBeanDefinition
-                    .getPropertyValues()
-                    .addPropertyValue(new PropertyValue("location", location));
-            registry.registerBeanDefinition(
-                    BuiltInBean.PROPERTY_PLACEHOLDER_CONFIGURER.getName(),
-                    propertyPlaceholderConfigurerBeanDefinition
-            );
+    public static void enablePropertyPlaceholderConfigurer(BeanDefinitionRegistry registry, String... locations) {
+        BeanDefinition beanDef = null;
+        Class beanClass = BuiltInBean.PROPERTY_PLACEHOLDER_CONFIGURER;
+        String beanName = beanClass.getName();
+
+        if (!registry.containsBeanDefinition(beanName)) {
+            beanDef = new BeanDefinition(beanClass);
+            beanDef.getPropertyValues()
+                    .addPropertyValue(new PropertyValue("locations", new ArrayList<>(Arrays.asList(locations))));
+            registry.registerBeanDefinition(beanName, beanDef);
+        } else {
+            beanDef = ((DefaultListableBeanFactory) registry).getBeanDefinition(beanName);
+            PropertyValues propertyValues = beanDef.getPropertyValues();
+            PropertyValue pv = propertyValues.getPropertyValue("locations");
+            List value = (List) pv.getValue();
+            value.addAll(Arrays.asList(locations));
         }
     }
 }

@@ -32,9 +32,9 @@ public class ConfigurationBeanBeanFactoryPostProcessor implements BeanFactoryPos
 
         ConfigurationBeanBeanFactoryPostProcessor.beanFactory = beanFactory;
 
+        LOGGER.trace("handle [Configuration] ...");
         String[] names = beanFactory.getBeanDefinitionNames();
         HashSet<String> classes = new HashSet<>();
-
         for (String name : names) {
             BeanDefinition configBeanDef = beanFactory.getBeanDefinition(name);
             Class<?> configBeanClass = configBeanDef.getBeanClass();
@@ -44,13 +44,15 @@ public class ConfigurationBeanBeanFactoryPostProcessor implements BeanFactoryPos
             }
             classes.add(name);
         }
+        LOGGER.trace("parse [Configuration] from {} ...", classes);
 
         ConfigurationBeanClassParser configurationClassParser = new ConfigurationBeanClassParser(beanFactory, classes);
         Set<String> configBeanNames = configurationClassParser.parse();
 
-        LOGGER.trace("flora scanning @Configuration Bean");
+        LOGGER.trace("found [Configuration] {}", configBeanNames);
+
         for (String configBeanDefName : configBeanNames) {
-            LOGGER.trace("scan Configuration Bean [{}]", configBeanDefName);
+            LOGGER.trace("scan [Configuration] [{}] ...", configBeanDefName);
 
             BeanDefinition configBeanDef = beanFactory.getBeanDefinition(configBeanDefName);
             Class<?> configBeanClass = configBeanDef.getBeanClass();
@@ -85,10 +87,8 @@ public class ConfigurationBeanBeanFactoryPostProcessor implements BeanFactoryPos
                 }
                 beanFactory.registerBeanDefinition(beanName, beanDef);
             }
-
-
         }
-        LOGGER.trace("flora finished scanning @Configuration Bean");
+        LOGGER.trace("finish handling [Configuration]");
     }
 
 

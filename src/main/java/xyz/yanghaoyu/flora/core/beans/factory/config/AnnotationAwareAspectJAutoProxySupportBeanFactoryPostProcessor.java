@@ -27,7 +27,7 @@ public class AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
-        LOGGER.trace("init Aspect Bean in [AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor]");
+        LOGGER.trace("init [Aspect] ...");
         AnnotationAspectJExpressionPointcutAdvisorManager manager;
         try {
             manager = beanFactory.getBean(AnnotationAspectJExpressionPointcutAdvisorManager.class.getName(), AnnotationAspectJExpressionPointcutAdvisorManager.class);
@@ -49,6 +49,7 @@ public class AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor
                     if (enhanceAnno == null) {
                         continue;
                     }
+                    LOGGER.trace("register [Pointcut] [{}]", enhanceAnno.pointcut());
                     manager.addMethodEnhanceAdvice(enhanceAnno.pointcut(), new AdvicePoint() {
                         @Override
                         public int getPriority() {

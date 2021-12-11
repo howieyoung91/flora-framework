@@ -23,11 +23,6 @@
       <version>4.13.1</version>
       <scope>test</scope>
     </dependency>
-    <!--    <dependency>-->
-    <!--      <groupId>org.yaml</groupId>-->
-    <!--      <artifactId>snakeyaml</artifactId>-->
-    <!--      <version>1.26</version>-->
-    <!--    </dependency>-->
     <dependency>
       <groupId>cn.hutool</groupId>
       <artifactId>hutool-all</artifactId>
@@ -38,12 +33,16 @@
       <artifactId>commons-lang3</artifactId>
       <version>3.10</version>
     </dependency>
-
-    <!--    <dependency>-->
-    <!--      <groupId>org.aspectj</groupId>-->
-    <!--      <artifactId>aspectjrt</artifactId>-->
-    <!--      <version>1.8.9</version>-->
-    <!--    </dependency>-->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>2.9.10.8</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.dataformat</groupId>
+      <artifactId>jackson-dataformat-yaml</artifactId>
+      <version>2.9.8</version>
+    </dependency>
     <dependency>
       <groupId>net.bytebuddy</groupId>
       <artifactId>byte-buddy</artifactId>
@@ -81,29 +80,11 @@
       <artifactId>log4j-core</artifactId>
       <version>2.15.0</version>
     </dependency>
-    <!--    &lt;!&ndash; Web项目需添加 &ndash;&gt;-->
-    <!--    <dependency>-->
-    <!--      <groupId>org.apache.logging.log4j</groupId>-->
-    <!--      <artifactId>log4j-web</artifactId>-->
-    <!--      <version>2.9.1</version>-->
-    <!--    </dependency>-->
-    <!--用于与slf4j保持桥接-->
-    <!--    <dependency>-->
-    <!--      <groupId>org.apache.logging.log4j</groupId>-->
-    <!--      <artifactId>log4j-slf4j-impl</artifactId>-->
-    <!--      <version>2.9.1</version>-->
-    <!--    </dependency>-->
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-log4j12</artifactId>
       <version>1.7.5</version>
     </dependency>
-    <!--    <dependency>-->
-    <!--      <groupId>xyz.yanghaoyu.floratest</groupId>-->
-    <!--      <artifactId>Flora-Test</artifactId>-->
-    <!--      <version>1.0-SNAPSHOT</version>-->
-    <!--    </dependency>-->
-
   </dependencies>
 
   <build>

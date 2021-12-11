@@ -48,40 +48,35 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         // 0. 打印 Banner
         printBanner();
 
-        ConfigurableListableBeanFactory beanFactory = createBeanFactoryAndLoadBeanDefinition();
+        createBeanFactoryAndLoadBeanDefinition();
 
-        initBeanFactory(beanFactory);
+        initBeanFactory();
     }
 
-    protected final ConfigurableListableBeanFactory createBeanFactoryAndLoadBeanDefinition() {
+    protected final void createBeanFactoryAndLoadBeanDefinition() {
         // 1. 创建 BeanFactory， 并加载 BeanDefinition
         refreshBeanFactory();
 
-        // 2. 获取 BeanFactory
-        ConfigurableListableBeanFactory beanFactory = getBeanFactory();
-        return beanFactory;
+        // 处理 @Configuration
+        additionallyLoadBeanDefinition();
     }
 
-    protected final void initBeanFactory(ConfigurableListableBeanFactory beanFactory) {
-
-        // 处理 @Configuration
-        additionallyLoadBeanDefinition(beanFactory);
-
+    protected final void initBeanFactory() {
         // 3. 初始化 ApplicationContextAwareProcessor 为框架提供对象感知功能
         initApplicationContextAwareProcessor();
 
         // 5. 生成并注册 BeanPostProcessor  要在 Bean 实例化之前执行注册操作,
-        registerBeanPostProcessors(beanFactory);
+        registerBeanPostProcessors();
 
         // 4. 在 Bean 实例化之前，执行 BeanFactoryPostProcessor
-        invokeBeanFactoryPostProcessors(beanFactory);
+        invokeBeanFactoryPostProcessors();
 
         // 6. 初始化与事件相关的组件
         initApplicationEvent();
 
         // 7. 提前实例化单例Bean对象
         // beanFactory.preInstantiateSingletons();
-        finishBeanFactoryInitialization(beanFactory);
+        finishBeanFactoryInitialization();
 
         // 8. 发布容器刷新完成事件
         finishRefresh();
@@ -97,14 +92,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     protected abstract ConfigurableListableBeanFactory getBeanFactory();
 
     // 设置类型转换器、提前实例化单例Bean对象
-    protected void finishBeanFactoryInitialization(ConfigurableListableBeanFactory beanFactory) {
-
-        // ((BeanDefinitionRegistry) beanFactory)
-        //         .registerBeanDefinition(
-        //                 BuiltInBean.DefaultConverter,
-        //                 new BeanDefinition(DefaultConversionService.class)
-        //         );
-
+    protected void finishBeanFactoryInitialization() {
+        LOGGER.trace("init [ConvertService]...");
+        ConfigurableListableBeanFactory beanFactory = getBeanFactory();
         //  默认开启类型转换器
         if (beanFactory.containsBean(BuiltInBean.CONVERTER_FACTORY_BEAN.getName())) {
 
@@ -133,6 +123,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
                 }
             }
         }
+        LOGGER.trace("preInstantiate [Singleton Bean]...");
 
         // 提前实例化单例 Bean 对象
         beanFactory.preInstantiateSingletons();
@@ -145,6 +136,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         // 因此使用 ApplicationContextAwareProcessor 对 bean 进行增强
         // 在 执行 BeanPostProcessorBeforeInit 时 将会判断 是否实现 ApplicationContextAware
         // 如果实现,将会把 Context 注入
+        LOGGER.trace("init [BeanAware] ...");
         ApplicationContextAwareProcessor acp = new ApplicationContextAwareProcessor(this);
         getBeanFactory().addBeanPostProcessor(acp);
     }
@@ -153,6 +145,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
      * 初始化与事件相关的组件
      */
     private void initApplicationEvent() {
+        LOGGER.trace("init [ApplicationEvent] ...");
         // 初始化事件广播器 把广播器放到容器中
         initApplicationEventMulticaster();
 
@@ -165,6 +158,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
      * 把 事件广播器 注册到 bean 容器中
      */
     private void initApplicationEventMulticaster() {
+        LOGGER.trace("register [ApplicationEventMulticaster]");
         ConfigurableListableBeanFactory beanFactory = getBeanFactory();
         applicationEventMulticaster = new SimpleApplicationEventMulticaster(beanFactory);
         beanFactory.registerSingleton(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, applicationEventMulticaster);
@@ -176,11 +170,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     private void registerListeners() {
         Collection<ApplicationListener> applicationListeners = getBeansOfType(ApplicationListener.class).values();
         for (ApplicationListener listener : applicationListeners) {
+            LOGGER.trace("register [ApplicationListener] ...");
             applicationEventMulticaster.addApplicationListener(listener);
         }
     }
 
-    private void additionallyLoadBeanDefinition(ConfigurableListableBeanFactory beanFactory) {
+    private void additionallyLoadBeanDefinition() {
+        ConfigurableListableBeanFactory beanFactory = getBeanFactory();
         Collection<ConfigurationBeanBeanFactoryPostProcessor> configBeanFactoryPostProcesses = beanFactory.getBeansOfType(ConfigurationBeanBeanFactoryPostProcessor.class).values();
         for (ConfigurationBeanBeanFactoryPostProcessor configBeanFactoryPostProcess : configBeanFactoryPostProcesses) {
             configBeanFactoryPostProcess.postProcessBeanFactory(beanFactory);
@@ -190,7 +186,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     /**
      * 触发 BeanFactoryPostProcessors
      */
-    private void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
+    private void invokeBeanFactoryPostProcessors() {
+        LOGGER.trace("register [BeanFactoryPostProcessor] ...");
+        ConfigurableListableBeanFactory beanFactory = getBeanFactory();
         // 调用处理器
         Map<String, BeanFactoryPostProcessor> beanFactoryPostProcessorMap = beanFactory.getBeansOfType(BeanFactoryPostProcessor.class);
         BeanFactoryPostProcessor proxyBeanFactoryPostProcessor = null;
@@ -222,8 +220,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     /**
      * 把 BeanPostProcessors 添加到 BeanFactory 中
      */
-    private void registerBeanPostProcessors(ConfigurableListableBeanFactory beanFactory) {
-        Map<String, BeanPostProcessor> beanPostProcessorMap = beanFactory.getBeansOfType(BeanPostProcessor.class);
+    private void registerBeanPostProcessors() {
+        LOGGER.trace("register [BeanPostProcessor] ...");
+        ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+        Map<String, BeanPostProcessor> beanPostProcessorMap = getBeanFactory().getBeansOfType(BeanPostProcessor.class);
         // 从 声明的 bean 中挑选出 BeanPostProcessor 进行注册
         for (BeanPostProcessor beanPostProcessor : beanPostProcessorMap.values()) {
             // 延迟加载

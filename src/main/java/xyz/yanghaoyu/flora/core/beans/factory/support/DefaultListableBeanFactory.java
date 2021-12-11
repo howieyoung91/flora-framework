@@ -1,5 +1,7 @@
 package xyz.yanghaoyu.flora.core.beans.factory.support;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.exception.BeansException;
@@ -9,10 +11,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFactory implements BeanDefinitionRegistry, ConfigurableListableBeanFactory {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultListableBeanFactory.class);
     private Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
 
     @Override
     public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) {
+        LOGGER.trace("register [BeanDefinition] [{}]", beanName);
         beanDefinitionMap.put(beanName, beanDefinition);
     }
 

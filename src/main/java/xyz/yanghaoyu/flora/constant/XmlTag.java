@@ -21,6 +21,6 @@ public interface XmlTag {
     String REF = "ref";
     String VALUE = "value";
     String NAME = "name";
-    String ENABLE_PROPERTY_PLACEHOLDER_CONFIGURER = "enable-property-placeholder";
+    String ENABLE_PROPERTY_PLACEHOLDER_CONFIGURER = "enable-property-source";
     String ENABLE_AOP = "enable-aop";
 }

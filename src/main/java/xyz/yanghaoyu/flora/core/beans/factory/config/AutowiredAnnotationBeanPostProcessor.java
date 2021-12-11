@@ -1,6 +1,7 @@
 package xyz.yanghaoyu.flora.core.beans.factory.config;
 
 import cn.hutool.core.util.TypeUtil;
+import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 import xyz.yanghaoyu.flora.annotation.Inject;
 import xyz.yanghaoyu.flora.annotation.Value;
 import xyz.yanghaoyu.flora.core.beans.factory.BeanFactory;
@@ -14,6 +15,7 @@ import xyz.yanghaoyu.flora.util.ReflectUtil;
 import xyz.yanghaoyu.flora.util.StringUtil;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Type;
 import java.util.Map;
 
 public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareBeanPostProcessor, BeanFactoryAware {
@@ -114,16 +116,23 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
         }
     }
 
-    private Object convert(Field field, Object value) {
-        Class<?> sourceType = value.getClass();
-        Class<?> targetType = (Class<?>) TypeUtil.getType(field);
+    private Object convert(Field field, Object bean) {
+        Class<?> sourceType = bean.getClass();
+        // Class<?> targetType = (Class<?>) TypeUtil.getType(field);
+        Class<?> targetType = null;
+        Type fieldType = TypeUtil.getType(field);
+        if (fieldType instanceof ParameterizedTypeImpl) {
+            targetType = ((ParameterizedTypeImpl) fieldType).getRawType();
+        } else {
+            targetType = ((Class<?>) fieldType);
+        }
         ConversionService conversionService = beanFactory.getConversionService();
         if (conversionService != null) {
             if (conversionService.canConvert(sourceType, targetType)) {
-                value = conversionService.convert(value, targetType);
+                bean = conversionService.convert(bean, targetType);
             }
         }
-        return value;
+        return bean;
     }
 }
 
