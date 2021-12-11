@@ -17,6 +17,7 @@ import java.util.Set;
 public class ConversionServiceFactoryBean implements FactoryBean<ConversionService>, InitializingBean {
     private Set<?> converters;
     private GenericConversionService conversionService;
+
     @Override
     public ConversionService getObject() throws Exception {
         return conversionService;
@@ -33,7 +34,7 @@ public class ConversionServiceFactoryBean implements FactoryBean<ConversionServi
     }
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public void afterPropertiesSet() {
         this.conversionService = new DefaultConversionService();
         registerConverters(converters, conversionService);
     }

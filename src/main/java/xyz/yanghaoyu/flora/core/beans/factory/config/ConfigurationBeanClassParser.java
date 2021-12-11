@@ -74,7 +74,7 @@ public class ConfigurationBeanClassParser {
     private void parseImportConfiguration(Class<?> clazz) {
         Import.Configuration importConfigAnn = clazz.getAnnotation(Import.Configuration.class);
         if (importConfigAnn != null) {
-            for (Class aClass : importConfigAnn.configClasses()) {
+            for (Class aClass : importConfigAnn.configuration()) {
                 if (!aClass.isAnnotationPresent(Configuration.class)) {
                     continue;
                 }

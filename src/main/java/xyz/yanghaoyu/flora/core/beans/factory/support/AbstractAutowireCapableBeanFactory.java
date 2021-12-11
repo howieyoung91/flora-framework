@@ -6,8 +6,8 @@ import org.slf4j.LoggerFactory;
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 import xyz.yanghaoyu.flora.core.beans.factory.*;
 import xyz.yanghaoyu.flora.core.beans.factory.config.*;
-import xyz.yanghaoyu.flora.core.convert.converter.ConversionService;
 import xyz.yanghaoyu.flora.exception.BeansException;
+import xyz.yanghaoyu.flora.util.ConversionUtil;
 import xyz.yanghaoyu.flora.util.ReflectUtil;
 import xyz.yanghaoyu.flora.util.StringUtil;
 
@@ -210,12 +210,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
                     } else {
                         targetType = ((Class<?>) fieldType);
                     }
-                    ConversionService conversionService = getConversionService();
-                    if (conversionService != null) {
-                        if (conversionService.canConvert(sourceType, targetType)) {
-                            value = conversionService.convert(value, targetType);
-                        }
-                    }
+                    ConversionUtil.convert(value, (ConfigurableListableBeanFactory) this, sourceType, targetType);
                 }
                 ReflectUtil.setFieldValue(bean, name, value);
             }

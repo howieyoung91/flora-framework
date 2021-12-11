@@ -59,7 +59,8 @@ public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
             }
 
             // 向容器中添加字符串解析器，供解析 @Value 注解使用
-            StringValueResolver valueResolver = new PlaceholderResolvingStringValueResolver(properties);
+            StringValueResolver valueResolver =
+                    new PlaceholderResolvingStringValueResolver(properties);
             beanFactory.addEmbeddedValueResolver(valueResolver);
 
         } catch (IOException e) {
@@ -130,5 +131,8 @@ public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
             return PropertyPlaceholderConfigurer.this.resolvePlaceholder(value, properties);
         }
     }
+
+
+
 }
 

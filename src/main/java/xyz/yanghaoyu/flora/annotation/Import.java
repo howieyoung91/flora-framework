@@ -15,7 +15,7 @@ public @interface Import {
     @Target({ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @interface Configuration {
-        Class[] configClasses() default {};
+        Class[] configuration() default {};
     }
 
     @Target({ElementType.TYPE})
