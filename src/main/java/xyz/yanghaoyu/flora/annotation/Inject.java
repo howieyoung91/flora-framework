@@ -11,8 +11,6 @@ import java.lang.annotation.Target;
  */
 @Target({})
 public @interface Inject {
-    String DEFAULT_BEAN_NAME = "";
-
     @Target({ElementType.FIELD, ElementType.PARAMETER})
     @Retention(RetentionPolicy.RUNTIME)
     @interface ByType {
@@ -29,9 +27,9 @@ public @interface Inject {
     @Target({ElementType.FIELD, ElementType.PARAMETER})
     @Retention(RetentionPolicy.RUNTIME)
     @interface ByName {
-        String value() default DEFAULT_BEAN_NAME;
+        String value() default Component.DEFAULT_BEAN_NAME;
 
-        String id() default DEFAULT_BEAN_NAME;
+        String id() default Component.DEFAULT_BEAN_NAME;
 
         boolean required() default true;
     }

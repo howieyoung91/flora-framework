@@ -5,6 +5,8 @@ import xyz.yanghaoyu.flora.annotation.Enable;
 import xyz.yanghaoyu.flora.annotation.Import;
 import xyz.yanghaoyu.flora.core.beans.factory.support.DefaultListableBeanFactory;
 import xyz.yanghaoyu.flora.core.context.annotation.ClassPathBeanDefinitionScanner;
+import xyz.yanghaoyu.flora.core.io.loader.DefaultResourceLoader;
+import xyz.yanghaoyu.flora.core.io.reader.XmlBeanDefinitionReader;
 import xyz.yanghaoyu.flora.util.ComponentUtil;
 import xyz.yanghaoyu.flora.util.IocUtil;
 
@@ -22,8 +24,12 @@ import java.util.Set;
 public class ConfigurationBeanClassScanner {
     private final DefaultListableBeanFactory beanFactory;
     private final Set<String> startBeanNames;
+    // 正在扫描的 Config Bean 用于打破递归
     private final Set<String> current = new HashSet<>(6);
+    // 已经完成的 Config Bean
     private final Set<String> already = new HashSet<>(6);
+    // 新添加的 Config Bean
+    private final Set<String> waitingConfigBeanNames = new HashSet<>(0);
 
     public ConfigurationBeanClassScanner(DefaultListableBeanFactory beanFactory, Set<String> startClasses) {
         this.beanFactory = beanFactory;
@@ -31,10 +37,24 @@ public class ConfigurationBeanClassScanner {
     }
 
     public Set<String> scan() {
-        for (String startClass : startBeanNames) {
-            scan(startClass, beanFactory.getBeanDefinition(startClass));
-        }
+        do {
+            for (String startClass : startBeanNames) {
+                scan(startClass, beanFactory.getBeanDefinition(startClass));
+            }
+        } while (transfer());
+
         return already;
+    }
+
+    public boolean transfer() {
+        if (waitingConfigBeanNames.isEmpty()) {
+            return false;
+        }
+        waitingConfigBeanNames.removeIf(beanName -> already.contains(beanName) || current.contains(beanName));
+        startBeanNames.clear();
+        startBeanNames.addAll(waitingConfigBeanNames);
+        waitingConfigBeanNames.clear();
+        return true;
     }
 
     private void scan(String beanDefName, BeanDefinition configBeanDef) {
@@ -51,23 +71,27 @@ public class ConfigurationBeanClassScanner {
         parseAop(clazz);
         parserPropertyPlaceholder(clazz);
         parseImportConfiguration(clazz);
-
-        // TODO support
-        // parseImportResources(clazz);
+        parseImportResources(clazz);
 
         current.remove(beanDefName);
         already.add(beanDefName);
     }
 
-    // private void parseImportResources(Class<?> clazz) {
-    //     Import.Resource importResourceAnn = clazz.getAnnotation(Import.Resource.class);
-    //     if (importResourceAnn != null) {
-    //         String[] resource = importResourceAnn.resources();
-    //         DefaultResourceLoader loader = new DefaultResourceLoader();
-    //         // todo
-    //         new XmlBeanDefinitionReader(beanFactory, loader).loadBeanDefinitions(resource);
-    //     }
-    // }
+    private void parseImportResources(Class<?> clazz) {
+        Import.Resource importResourceAnn = clazz.getAnnotation(Import.Resource.class);
+        if (importResourceAnn != null) {
+            String[] resource = importResourceAnn.resources();
+            XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory, new DefaultResourceLoader());
+            reader.setShouldRegister(beanName -> beanDefinition -> beanDefinitionRegistry -> {
+                // 不判断是否存在 直接添加
+                if (beanDefinition.getBeanClass().isAnnotationPresent(Configuration.class)) {
+                    waitingConfigBeanNames.add(beanName);
+                }
+                return true;
+            });
+            reader.loadBeanDefinitions(resource);
+        }
+    }
 
 
     private void parserPropertyPlaceholder(Class<?> clazz) {
@@ -95,7 +119,7 @@ public class ConfigurationBeanClassScanner {
                 String newBeanName = ComponentUtil.determineBeanName(newBeanDef);
                 Configuration configAnn = (Configuration) newBeanDef.getBeanClass().getAnnotation(Configuration.class);
                 if (configAnn != null && !startBeanNames.contains(newBeanName)) {
-                    scan(newBeanName, newBeanDef);
+                    waitingConfigBeanNames.add(newBeanName);
                 }
                 beanFactory.registerBeanDefinition(newBeanName, newBeanDef);
             }
@@ -106,6 +130,7 @@ public class ConfigurationBeanClassScanner {
         Import.Configuration importConfigAnn = clazz.getAnnotation(Import.Configuration.class);
         if (importConfigAnn != null) {
             for (Class aClass : importConfigAnn.configuration()) {
+                // make sure that the @Configuration is existed
                 if (!aClass.isAnnotationPresent(Configuration.class)) {
                     continue;
                 }
@@ -117,11 +142,8 @@ public class ConfigurationBeanClassScanner {
                 if (already.contains(newBeanName) || current.contains(newBeanName) || startBeanNames.contains(newBeanName)) {
                     continue;
                 }
-                scan(newBeanName, newBeanDef);
-                // if (beanFactory.containsBeanDefinition(newBeanName)) {
-                //     throw new BeansException("Duplicate beanName [" + newBeanName + "] is not allowed");
-                // }
                 beanFactory.registerBeanDefinition(newBeanName, newBeanDef);
+                waitingConfigBeanNames.add(newBeanName);
             }
         }
     }

@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/8 11:12<i/>
@@ -32,12 +33,24 @@ import java.util.Set;
  */
 
 public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
+    private Function<String, Function<BeanDefinition, Function<BeanDefinitionRegistry, Boolean>>> shouldRegister =
+            (beanName -> beanDefinition -> beanDefinitionRegistry -> {
+                if (getRegistry().containsBeanDefinition(beanName)) {
+                    throw new BeansException("Duplicate beanName [" + beanName + "] is not allowed");
+                }
+                return true;
+            });
+
     public XmlBeanDefinitionReader(BeanDefinitionRegistry registry) {
         super(registry);
     }
 
     public XmlBeanDefinitionReader(BeanDefinitionRegistry registry, ResourceLoader resourceLoader) {
         super(registry, resourceLoader);
+    }
+
+    public void setShouldRegister(Function<String, Function<BeanDefinition, Function<BeanDefinitionRegistry, Boolean>>> shouldRegister) {
+        this.shouldRegister = shouldRegister;
     }
 
     @Override
@@ -127,13 +140,9 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
                 // 扫包
                 Set<BeanDefinition> beanDefinitions = new ClassPathBeanDefinitionScanner().doScan(basePaths);
 
-                BeanDefinitionRegistry registry = getRegistry();
                 for (BeanDefinition beanDefinition : beanDefinitions) {
                     String beanName = ComponentUtil.determineBeanName(beanDefinition);
-                    if (registry.containsBeanDefinition(beanName)) {
-                        throw new BeansException("Duplicate beanName [" + beanName + "] is not allowed");
-                    }
-                    getRegistry().registerBeanDefinition(beanName, beanDefinition);
+                    register(beanName, beanDefinition);
                 }
 
             }
@@ -154,7 +163,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
             Element bean = (Element) childNodes.item(i);
             String clazzName = bean.getAttribute(XmlTag.CLASS);
             // String name = bean.getAttribute("name");
-            String beanId = bean.getAttribute(XmlTag.ID);
+            String beanName = bean.getAttribute(XmlTag.ID);
             String initMethodName = bean.getAttribute(XmlTag.INIT_METHOD);
             String destroyMethodName = bean.getAttribute(XmlTag.DESTROY_METHOD);
             String beanScope = bean.getAttribute(XmlTag.SCOPE);
@@ -164,8 +173,8 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
             BeanDefinition beanDefinition = new BeanDefinition(clazz);
             // 解析 id
             // 优先级 id > name
-            if (StringUtil.isEmpty(beanId)) {
-                beanId = StringUtil.lowerFirstChar(clazz.getSimpleName());
+            if (StringUtil.isEmpty(beanName)) {
+                beanName = StringUtil.lowerFirstChar(clazz.getSimpleName());
             }
             // 解析初始化方法
             beanDefinition.setInitMethodName(initMethodName);
@@ -197,12 +206,18 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
                 PropertyValue propertyValue = new PropertyValue(attrName, value);
                 beanDefinition.getPropertyValues().addPropertyValue(propertyValue);
             }
-            // 如果已经存在
-            if (getRegistry().containsBeanDefinition(beanId)) {
-                throw new BeansException("Duplicate beanName [" + beanId + "] is not allowed");
-            }
             // 注册 BeanDefinition
-            getRegistry().registerBeanDefinition(beanId, beanDefinition);
+            register(beanName, beanDefinition);
         }
+    }
+
+    private void register(String beanName, BeanDefinition beanDefinition) {
+        if (shouldRegister(beanName, beanDefinition)) {
+            getRegistry().registerBeanDefinition(beanName, beanDefinition);
+        }
+    }
+
+    private boolean shouldRegister(String beanName, BeanDefinition beanDefinition) {
+        return shouldRegister.apply(beanName).apply(beanDefinition).apply(getRegistry());
     }
 }

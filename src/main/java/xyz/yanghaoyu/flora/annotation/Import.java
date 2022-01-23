@@ -15,12 +15,12 @@ public @interface Import {
     @Target({ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @interface Configuration {
-        Class[] configuration() default {};
+        Class[] configuration();
     }
 
     @Target({ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @interface Resource {
-        String[] resources() default {};
+        String[] resources();
     }
 }

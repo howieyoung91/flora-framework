@@ -1,5 +1,6 @@
 package xyz.yanghaoyu.flora.util;
 
+import com.sun.istack.internal.Nullable;
 import xyz.yanghaoyu.flora.annotation.*;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.core.beans.factory.support.DisposableBean;
@@ -9,13 +10,21 @@ import xyz.yanghaoyu.flora.exception.DuplicateDeclarationException;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
+
 /**
+ * The type Component util.
+ *
  * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2021/12/6 13:19<i/>
  * @version 1.0
  */
-
-
 public abstract class ComponentUtil {
+    /**
+     * Parse bean definition.
+     *
+     * @param clazz the clazz
+     * @return the bean definition
+     */
+    @Nullable
     public static BeanDefinition parse(Class<?> clazz) {
         if (!clazz.isAnnotationPresent(Component.class) && !clazz.isAnnotationPresent(Configuration.class)) {
             return null;
@@ -31,6 +40,12 @@ public abstract class ComponentUtil {
         return beanDefinition;
     }
 
+    /**
+     * Determine bean name string.
+     *
+     * @param beanDefinition the bean definition
+     * @return the string
+     */
     public static String determineBeanName(BeanDefinition beanDefinition) {
         Class<?> beanClass = beanDefinition.getBeanClass();
         Component componentAnn = beanClass.getAnnotation(Component.class);
@@ -53,6 +68,11 @@ public abstract class ComponentUtil {
         return value;
     }
 
+    /**
+     * Determine bean init method and destroy method.
+     *
+     * @param beanDefinition the bean definition
+     */
     public static void determineBeanInitMethodAndDestroyMethod(BeanDefinition beanDefinition) {
         Class<?> beanClass = beanDefinition.getBeanClass();
         Method[] methods = beanClass.getMethods();
@@ -74,7 +94,7 @@ public abstract class ComponentUtil {
                 }
                 if (isImplInitBean) {
                     throw new IllegalStateException(
-                            "class [" + beanDefinition.getBeanClass().getSimpleName() + "] impls interface [InitializingBean] but find the annotation [@Life.Initialize] at method [" + method.getName() + "]"
+                            "class [" + beanDefinition.getBeanClass().getSimpleName() + "] impls interface [InitializingBean] but find the annotation [@Life.Initialize] at method [" + method + "]"
                     );
                 }
 
@@ -93,7 +113,7 @@ public abstract class ComponentUtil {
                 }
                 if (isImplDisposableBean) {
                     throw new IllegalStateException(
-                            "class [" + beanDefinition.getBeanClass().getSimpleName() + "] impls interface [DisposableBean] but find the annotation [@Life.Destroy] at method [" + beanClass.getSimpleName() + "]"
+                            "class [" + beanDefinition.getBeanClass().getSimpleName() + "] impls interface [DisposableBean] but find the annotation [@Life.Destroy] at method [" + method + "]"
                     );
                 }
 
@@ -108,6 +128,13 @@ public abstract class ComponentUtil {
         }
     }
 
+    /**
+     * Determine bean name string when using FactoryMethod(@Bean)
+     *
+     * @param method  the factory method
+     * @param beanAnn the @Bean Annotation
+     * @return beanName
+     */
     public static String determineBeanName(Method method, Bean beanAnn) {
         String beanName = beanAnn.value();
         if (Objects.equals(beanName, Component.DEFAULT_BEAN_NAME)) {
@@ -132,6 +159,11 @@ public abstract class ComponentUtil {
         }
     }
 
+    /**
+     * Determine bean scope when using @Component
+     *
+     * @param beanDefinition the bean definition
+     */
     public static void determineBeanScope(BeanDefinition beanDefinition) {
         Class<?> aClass = beanDefinition.getBeanClass();
         Scope.Singleton singletonAnno = aClass.getAnnotation(Scope.Singleton.class);

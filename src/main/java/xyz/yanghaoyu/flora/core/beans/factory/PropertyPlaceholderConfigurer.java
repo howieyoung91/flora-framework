@@ -64,6 +64,7 @@ public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
             beanFactory.addEmbeddedValueResolver(valueResolver);
 
         } catch (IOException e) {
+            e.printStackTrace();
             throw new BeansException("Could not load properties", e);
         }
     }

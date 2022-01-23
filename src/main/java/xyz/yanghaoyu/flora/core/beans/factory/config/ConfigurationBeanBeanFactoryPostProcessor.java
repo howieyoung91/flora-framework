@@ -32,7 +32,8 @@ public class ConfigurationBeanBeanFactoryPostProcessor implements BeanFactoryPos
         Set<String> configBeanNames = configurationClassParser.scan();
         LOGGER.trace("found [Configuration] {}", configBeanNames);
 
-        ConfigurationBeanClassParser parser = new ConfigurationBeanClassParser(beanFactory, configBeanNames);
+        ConfigurationBeanClassParser parser =
+                new ConfigurationBeanClassParser(beanFactory, configBeanNames);
         parser.parse();
 
         LOGGER.trace("finish handling [Configuration]");

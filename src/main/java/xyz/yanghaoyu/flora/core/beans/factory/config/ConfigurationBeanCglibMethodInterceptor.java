@@ -3,6 +3,7 @@ package xyz.yanghaoyu.flora.core.beans.factory.config;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import xyz.yanghaoyu.flora.annotation.Bean;
+import xyz.yanghaoyu.flora.annotation.Component;
 import xyz.yanghaoyu.flora.annotation.Inject;
 import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.support.DefaultListableBeanFactory;
@@ -72,12 +73,12 @@ public class ConfigurationBeanCglibMethodInterceptor implements MethodIntercepto
             }
             bean = candidate.values().iterator().next();
         } else {
-            String dependOnBeanName = Inject.DEFAULT_BEAN_NAME;
+            String dependOnBeanName = Component.DEFAULT_BEAN_NAME;
             if (byNameAnn == null) {
                 dependOnBeanName = parameter.getName();
             } else {
                 dependOnBeanName = byNameAnn.value();
-                if (Objects.equals(Inject.DEFAULT_BEAN_NAME, dependOnBeanName)) {
+                if (Objects.equals(Component.DEFAULT_BEAN_NAME, dependOnBeanName)) {
                     dependOnBeanName = parameter.getName();
                 }
             }
