@@ -10,10 +10,10 @@ import xyz.yanghaoyu.flora.exception.BeansException;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
 
@@ -26,8 +26,8 @@ public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
      * Default placeholder suffix: {@value}
      */
     public static final String DEFAULT_PLACEHOLDER_SUFFIX = "}";
-
-    private ArrayList<String> locations;
+    public static final String LOCATIONS = "locations";
+    private Set<String> locations;
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
@@ -131,7 +131,6 @@ public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
             return PropertyPlaceholderConfigurer.this.resolvePlaceholder(value, properties);
         }
     }
-
 
 
 }

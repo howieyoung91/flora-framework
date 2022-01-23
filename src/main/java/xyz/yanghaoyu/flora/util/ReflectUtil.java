@@ -93,30 +93,23 @@ public abstract class ReflectUtil {
         return clazz;
     }
 
-    private static Set<Class> ANNS = new HashSet<>();
+    // private static Set<Class> ANNS = new HashSet<>();
 
-    static {
-        // ANNS.add(Deprecated.class);
-        // ANNS.add(SuppressWarnings.class);
-        // ANNS.add(Override.class);
-        // ANNS.add(PostConstruct.class);
-        // ANNS.add(PreDestroy.class);
-        // ANNS.add(Resource.class);
-        // ANNS.add(Resources.class);
-        // ANNS.add(Generated.class);
-        // ANNS.add(Target.class);
-        // ANNS.add(Retention.class);
-        // ANNS.add(Documented.class);
-        // ANNS.add(Inherited.class);
+    public static Annotation getAnnotation(Class clazz, Set<Class<? extends Annotation>> targetAnns) {
+        Annotation[] annotations = clazz.getAnnotations();
+        for (Annotation annotation : annotations) {
+            if (targetAnns.contains(annotation.annotationType())) {
+                return annotation;
+            } else {
+                getAnnotation(annotation.annotationType(), targetAnns);
+            }
+        }
+        return null;
     }
 
     public static Annotation getAnnotation(Class clazz, Class<? extends Annotation> targetAnn) {
         Annotation[] annotations = clazz.getAnnotations();
-
         for (Annotation annotation : annotations) {
-            if (ANNS.contains(annotation.annotationType())) {
-                continue;
-            }
             if (annotation.annotationType() == targetAnn) {
                 return annotation;
             } else {

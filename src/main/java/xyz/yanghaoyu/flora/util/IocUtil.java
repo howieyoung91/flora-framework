@@ -1,15 +1,16 @@
 package xyz.yanghaoyu.flora.util;
 
 import xyz.yanghaoyu.flora.constant.BuiltInBean;
+import xyz.yanghaoyu.flora.core.beans.factory.PropertyPlaceholderConfigurer;
 import xyz.yanghaoyu.flora.core.beans.factory.PropertyValue;
 import xyz.yanghaoyu.flora.core.beans.factory.PropertyValues;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.core.beans.factory.support.BeanDefinitionRegistry;
 import xyz.yanghaoyu.flora.core.beans.factory.support.DefaultListableBeanFactory;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public abstract class IocUtil {
     /**
@@ -69,17 +70,18 @@ public abstract class IocUtil {
         BeanDefinition beanDef = null;
         Class beanClass = BuiltInBean.PROPERTY_PLACEHOLDER_CONFIGURER;
         String beanName = beanClass.getName();
+        String resourcesLocationsFieldName = PropertyPlaceholderConfigurer.LOCATIONS;
 
         if (!registry.containsBeanDefinition(beanName)) {
             beanDef = new BeanDefinition(beanClass);
             beanDef.getPropertyValues()
-                    .addPropertyValue(new PropertyValue("locations", new ArrayList<>(Arrays.asList(locations))));
+                    .addPropertyValue(new PropertyValue(resourcesLocationsFieldName, new HashSet<>(Arrays.asList(locations))));
             registry.registerBeanDefinition(beanName, beanDef);
         } else {
             beanDef = ((DefaultListableBeanFactory) registry).getBeanDefinition(beanName);
             PropertyValues propertyValues = beanDef.getPropertyValues();
-            PropertyValue pv = propertyValues.getPropertyValue("locations");
-            List value = (List) pv.getValue();
+            PropertyValue pv = propertyValues.getPropertyValue(resourcesLocationsFieldName);
+            Set value = (Set) pv.getValue();
             value.addAll(Arrays.asList(locations));
         }
     }

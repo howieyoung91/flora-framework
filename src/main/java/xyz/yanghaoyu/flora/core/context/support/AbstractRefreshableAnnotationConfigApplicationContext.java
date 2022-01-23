@@ -7,17 +7,17 @@ package xyz.yanghaoyu.flora.core.context.support;
 
 
 public abstract class AbstractRefreshableAnnotationConfigApplicationContext extends AbstractRefreshableApplicationContext {
-    private Class<?>[] startConfigurationClasses;
+    private Class<?>[] baseConfigurationClasses;
 
-    protected Class<?>[] getStartConfigurationClasses() {
-        return startConfigurationClasses;
+    protected void setBaseConfigurationClasses(Class<?>[] baseConfigurationClasses) {
+        this.baseConfigurationClasses = baseConfigurationClasses;
     }
 
-    protected void setStartConfigurationClasses(Class<?>[] startConfigurationClasses) {
-        this.startConfigurationClasses = startConfigurationClasses;
+    protected void setBaseConfigurationClasses(Class<?> startConfigurationClass) {
+        setBaseConfigurationClasses(new Class[]{startConfigurationClass});
     }
 
-    protected void setStartConfigurationClasses(Class<?> startConfigurationClass) {
-        setStartConfigurationClasses(new Class[]{startConfigurationClass});
+    protected Class<?>[] getBaseConfigurationClasses() {
+        return baseConfigurationClasses;
     }
 }

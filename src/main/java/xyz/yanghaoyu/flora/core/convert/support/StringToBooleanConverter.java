@@ -7,9 +7,9 @@ import java.util.Set;
 
 
  class StringToBooleanConverter implements Converter<String, Boolean> {
-    private static final Set<String> trueValues = new HashSet<>(8);
+    private static final Set<String> trueValues = new HashSet<>(4);
 
-    private static final Set<String> falseValues = new HashSet<>(8);
+    private static final Set<String> falseValues = new HashSet<>(4);
 
     static {
         trueValues.add("true");

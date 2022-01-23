@@ -10,6 +10,7 @@ import xyz.yanghaoyu.flora.core.beans.factory.BeanFactoryAware;
 import xyz.yanghaoyu.flora.core.beans.factory.config.SmartInstantiationAwareBeanPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.support.DefaultListableBeanFactory;
 import xyz.yanghaoyu.flora.exception.BeansException;
+import xyz.yanghaoyu.flora.util.ReflectUtil;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -32,7 +33,8 @@ public class AnnotationAwareAspectJAutoProxyCreator implements SmartInstantiatio
     }
 
     private boolean isInfrastructureClass(Class<?> beanClass) {
-        return Advice.class.isAssignableFrom(beanClass)
+        return ReflectUtil.isCglibProxyClass(beanClass)
+               || Advice.class.isAssignableFrom(beanClass)
                || Pointcut.class.isAssignableFrom(beanClass)
                || Advisor.class.isAssignableFrom(beanClass);
     }
@@ -49,7 +51,6 @@ public class AnnotationAwareAspectJAutoProxyCreator implements SmartInstantiatio
         if (isInfrastructureClass(bean.getClass())) {
             return bean;
         }
-
         AnnotationAspectJExpressionPointcutAdvisorManager manager = beanFactory.getBean(
                 AnnotationAspectJExpressionPointcutAdvisorManager.class.getName(),
                 AnnotationAspectJExpressionPointcutAdvisorManager.class

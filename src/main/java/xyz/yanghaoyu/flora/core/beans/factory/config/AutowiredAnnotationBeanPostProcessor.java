@@ -49,7 +49,7 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
         if (injectByNameAnno != null && injectByTypeAnno != null) {
             throw new DuplicateDeclarationException("the [@Inject.ByType] and [@Inject.ByName] are duplicate!");
         }
-        // handle Inject.ByType
+        // handle @Inject.ByType
         if (injectByTypeAnno != null) {
             // determine the dependOnBeanClass
             Class value = injectByTypeAnno.value();
@@ -63,7 +63,7 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
                 dependOnBeanClass = field.getType();
             }
 
-            // pick candidates
+            // select a candidate
             Map<String, ?> candidates = beanFactory.getBeansOfType(dependOnBeanClass);
             if (candidates.size() == 1) {
                 for (Object dependOnBean : candidates.values()) {

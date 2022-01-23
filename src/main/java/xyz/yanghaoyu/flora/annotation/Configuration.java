@@ -1,5 +1,7 @@
 package xyz.yanghaoyu.flora.annotation;
 
+import org.apache.logging.log4j.core.tools.picocli.CommandLine;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

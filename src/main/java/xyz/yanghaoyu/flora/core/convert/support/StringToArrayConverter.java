@@ -39,13 +39,11 @@ class StringToArrayConverter implements GenericConverter {
 
         // new 出数组
         Object target = Array.newInstance(targetType.getComponentType(), fields.length);
-        System.out.println(target.getClass());
         for (int i = 0; i < fields.length; i++) {
             String sourceElem = fields[i];
             Object targetElem = conversionService.convert(sourceElem, componentType);
             Array.set(target, i, targetElem);
         }
-
         return target;
     }
 }

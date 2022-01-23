@@ -11,7 +11,7 @@ import java.util.Set;
  * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/4/27 22:50<i/>
  * @version 1.0
  */
-
+// @Deprecated
 public class AnnotationClassScanner extends ClassScanner {
     protected Set<Class<? extends Annotation>> set = new HashSet<>(3);
 

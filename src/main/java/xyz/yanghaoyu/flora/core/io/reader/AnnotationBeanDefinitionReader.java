@@ -22,12 +22,14 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionAnnota
     @Override
     public void loadBeanDefinitions(Class... configClasses) throws BeansException, IOException, ClassNotFoundException {
         IocUtil.enableComponentScan(getRegistry());
+        IocUtil.enableTypeConvert(getRegistry());
         for (Class<?> aClass : configClasses) {
-            BeanDefinition beanDefinition = new BeanDefinition(aClass);
-            ComponentUtil.determineBeanScope(beanDefinition);
-            ComponentUtil.determineBeanInitMethodAndDestroyMethod(beanDefinition);
-            String beanName = ComponentUtil.determineBeanName(beanDefinition);
-            getRegistry().registerBeanDefinition(beanName, beanDefinition);
+            BeanDefinition beanDef = ComponentUtil.parse(aClass);
+            if (beanDef == null) {
+                continue;
+            }
+            String beanName = ComponentUtil.determineBeanName(beanDef);
+            getRegistry().registerBeanDefinition(beanName, beanDef);
         }
     }
 }

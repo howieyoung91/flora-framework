@@ -10,7 +10,7 @@ import xyz.yanghaoyu.flora.exception.BeansException;
  */
 
 
-public abstract class AbstractXmlApplicationContext extends AbstractRefreshableConfigurableFileApplicationContext {
+public abstract class AbstractXmlApplicationContext extends AbstractRefreshableFileConfigApplicationContext {
     public AbstractXmlApplicationContext(String configLocations) throws BeansException {
         setConfigLocations(configLocations);
     }

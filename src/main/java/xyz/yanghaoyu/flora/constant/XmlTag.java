@@ -12,7 +12,7 @@ public interface XmlTag {
     String PROPERTY = "property";
     String COMPONENT_SCAN = "component-scan";
     String BASE_PATH = "base-path";
-    String BASE_PACKAGE = "base-package";
+    String BASE_PACKAGE = "base-packages";
     String INIT_METHOD = "init-method";
     String DESTROY_METHOD = "destroy-method";
     String CLASS = "class";

@@ -13,14 +13,14 @@ import java.io.IOException;
 
 public abstract class AbstractAnnotationConfigApplicationContext extends AbstractRefreshableAnnotationConfigApplicationContext {
     public AbstractAnnotationConfigApplicationContext(Class... classes) {
-        setStartConfigurationClasses(classes);
+        setBaseConfigurationClasses(classes);
     }
 
     @Override
     protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) {
         AnnotationBeanDefinitionReader reader = new AnnotationBeanDefinitionReader(beanFactory);
         try {
-            reader.loadBeanDefinitions(getStartConfigurationClasses());
+            reader.loadBeanDefinitions(getBaseConfigurationClasses());
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }

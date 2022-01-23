@@ -12,11 +12,14 @@ import xyz.yanghaoyu.flora.util.ComponentUtil;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public class ConfigurationBeanCglibMethodInterceptor implements MethodInterceptor {
     private final DefaultListableBeanFactory beanFactory;
+    private final Set cache = new HashSet(3);
 
     public ConfigurationBeanCglibMethodInterceptor(ConfigurableListableBeanFactory beanFactory) {
         this.beanFactory = (DefaultListableBeanFactory) beanFactory;
@@ -24,28 +27,34 @@ public class ConfigurationBeanCglibMethodInterceptor implements MethodIntercepto
 
     @Override
     public Object intercept(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
-        String beanName = ComponentUtil.determineBeanName(method, method.getAnnotation(Bean.class));
-        if (!beanFactory.isCurrentlyCreating(beanName)) {
-            return beanFactory.getBean(beanName);
-        }
-
-        int i = 0;
-        Parameter[] parameters = method.getParameters();
-        for (Parameter parameter : parameters) {
-            Inject.ByName byNameAnn = parameter.getAnnotation(Inject.ByName.class);
-            Inject.ByType byTypeAnn = parameter.getAnnotation(Inject.ByType.class);
-            if (byNameAnn != null && byTypeAnn != null) {
-                throw new DuplicateDeclarationException(
-                        "duplicate declaration [@Inject.ByName],[@Inject.ByType] on "
-                        + parameter.getName()
-                        + " when creating bean [" + beanName + "]"
-                );
+        if (!cache.contains(method)) {
+            if (method.isAnnotationPresent(Bean.class)) {
+                cache.add(method);
             }
-            Object bean = getBeanFromBeanFactory(beanName, parameter, byNameAnn, byTypeAnn);
-            args[i] = bean;
-            i++;
         }
-        // 使用真实对象生成
+        if (cache.contains(method)) {
+            String beanName = ComponentUtil.determineBeanName(method, method.getAnnotation(Bean.class));
+            if (!beanFactory.isCurrentlyCreating(beanName)) {
+                return beanFactory.getBean(beanName);
+            }
+
+            int i = 0;
+            Parameter[] parameters = method.getParameters();
+            for (Parameter parameter : parameters) {
+                Inject.ByName byNameAnn = parameter.getAnnotation(Inject.ByName.class);
+                Inject.ByType byTypeAnn = parameter.getAnnotation(Inject.ByType.class);
+                if (byNameAnn != null && byTypeAnn != null) {
+                    throw new DuplicateDeclarationException(
+                            "duplicate declaration [@Inject.ByName],[@Inject.ByType] on "
+                            + parameter.getName()
+                            + " when creating bean [" + beanName + "]"
+                    );
+                }
+                Object bean = getBeanFromBeanFactory(beanName, parameter, byNameAnn, byTypeAnn);
+                args[i] = bean;
+                i++;
+            }
+        }
         return methodProxy.invokeSuper(o, args);
     }
 

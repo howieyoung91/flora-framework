@@ -1,6 +1,9 @@
 package xyz.yanghaoyu.flora.annotation;
 
-import java.lang.annotation.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/13 22:45<i/>
@@ -13,11 +16,9 @@ public @interface Scope {
 
     @Target({ElementType.TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
-    @Documented
     @interface Singleton {}
 
     @Target({ElementType.TYPE, ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
-    @Documented
     @interface Prototype {}
 }
