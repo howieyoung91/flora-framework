@@ -1,6 +1,7 @@
 package xyz.yanghaoyu.flora.core.aop.autoproxy.annotation;
 
 import org.aopalliance.aop.Advice;
+import xyz.yanghaoyu.flora.core.Ordered;
 import xyz.yanghaoyu.flora.core.aop.*;
 import xyz.yanghaoyu.flora.core.aop.aspectj.AnnotationAspectJExpressionPointcutAdvisor;
 import xyz.yanghaoyu.flora.core.aop.aspectj.AnnotationAspectJExpressionPointcutAdvisorManager;
@@ -22,10 +23,14 @@ import java.util.Set;
  * @version 1.0
  */
 
-public class AnnotationAwareAspectJAutoProxyCreator implements SmartInstantiationAwareBeanPostProcessor, BeanFactoryAware {
+public class AnnotationAwareAspectJAutoProxyCreator implements SmartInstantiationAwareBeanPostProcessor, BeanFactoryAware, Ordered {
     protected DefaultListableBeanFactory beanFactory;
-
     protected final Set<Object> earlyProxyReferences = Collections.synchronizedSet(new HashSet<>());
+
+    @Override
+    public int getOrder() {
+        return Ordered.LOWEST_PRECEDENCE;
+    }
 
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -87,4 +92,6 @@ public class AnnotationAwareAspectJAutoProxyCreator implements SmartInstantiatio
         earlyProxyReferences.add(beanName);
         return wrapIfNecessary(bean, beanName);
     }
+
+
 }

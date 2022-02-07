@@ -74,7 +74,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         // 6. 初始化与事件相关的组件
         initApplicationEvent();
 
-        // 7. 提前实例化单例Bean对象
+        // 7. 提前实例化单例 Bean 对象
         // beanFactory.preInstantiateSingletons();
         finishBeanFactoryInitialization();
 
@@ -222,6 +222,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
      */
     private void registerBeanPostProcessors() {
         LOGGER.trace("register [BeanPostProcessor] ...");
+
         ConfigurableListableBeanFactory beanFactory = getBeanFactory();
         Map<String, BeanPostProcessor> beanPostProcessorMap = getBeanFactory().getBeansOfType(BeanPostProcessor.class);
         // 从 声明的 bean 中挑选出 BeanPostProcessor 进行注册

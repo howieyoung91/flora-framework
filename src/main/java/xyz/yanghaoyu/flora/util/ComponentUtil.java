@@ -36,7 +36,7 @@ public abstract class ComponentUtil {
         }
         BeanDefinition beanDefinition = new BeanDefinition(clazz);
         determineBeanScope(beanDefinition);
-        determineBeanInitMethodAndDestroyMethod(beanDefinition);
+        // determineBeanInitMethodAndDestroyMethod(beanDefinition);
         return beanDefinition;
     }
 

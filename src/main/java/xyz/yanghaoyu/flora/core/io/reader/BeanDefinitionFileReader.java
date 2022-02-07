@@ -1,9 +1,9 @@
 package xyz.yanghaoyu.flora.core.io.reader;
 
 import xyz.yanghaoyu.flora.core.io.BeanDefinitionReader;
-import xyz.yanghaoyu.flora.exception.BeansException;
-import xyz.yanghaoyu.flora.core.io.ResourceLoader;
 import xyz.yanghaoyu.flora.core.io.Resource;
+import xyz.yanghaoyu.flora.core.io.ResourceLoader;
+import xyz.yanghaoyu.flora.exception.BeansException;
 
 import java.io.IOException;
 

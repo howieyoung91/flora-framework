@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 import xyz.yanghaoyu.flora.core.beans.factory.*;
 import xyz.yanghaoyu.flora.core.beans.factory.config.*;
+import xyz.yanghaoyu.flora.exception.BeanCreateException;
 import xyz.yanghaoyu.flora.exception.BeansException;
 import xyz.yanghaoyu.flora.util.ConversionUtil;
 import xyz.yanghaoyu.flora.util.ReflectUtil;
@@ -15,7 +16,9 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * <pre style="color:orange;font-size:13px">
@@ -70,8 +73,6 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             }
 
             // 在设置 Bean 属性之前，允许 BeanPostProcessor 修改属性值
-
-            // 注解在这里被解析
             applyBeanPostProcessorsBeforeApplyingPropertyValues(beanName, bean, beanDefinition);
 
             // 给 Bean 填充属性
@@ -151,7 +152,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         try {
             constructor = ReflectUtil.selectConstructorByArgsType(beanDefinition.getBeanClass(), args);
         } catch (NoSuchMethodException e) {
-            throw new BeansException("Error creating bean instance " + beanName);
+            throw new BeanCreateException("Error creating bean instance " + beanName);
         }
         return instantiationStrategy.instantiate(beanDefinition, constructor, args);
     }
@@ -253,7 +254,9 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         Object result = existingBean;
         for (BeanPostProcessor processor : getBeanPostProcessors()) {
             Object current = processor.postProcessBeforeInitialization(result, beanName);
-            if (null == current) return result;
+            if (null == current) {
+                return result;
+            }
             result = current;
         }
         return result;
@@ -303,7 +306,14 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             return;
         }
         if (bean instanceof DisposableBean || StringUtil.isNotEmpty(beanDefinition.getDestroyMethodName())) {
-            registerDisposableBean(beanName, new DisposableBeanAdapter(bean, beanName, beanDefinition));
+            DisposableBeanAdapter adapter = new DisposableBeanAdapter(bean, beanName, beanDefinition);
+            List<DestructionAwareBeanPostProcessor> initDestroyBeanPostProcessors =
+                    (List) getBeanPostProcessors()
+                            .stream()
+                            .filter(processor -> processor instanceof DestructionAwareBeanPostProcessor)
+                            .collect(Collectors.toList());
+            adapter.setBeanPostProcessors(initDestroyBeanPostProcessors);
+            registerDisposableBean(beanName, adapter);
         }
     }
 }

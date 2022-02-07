@@ -1,6 +1,7 @@
 package xyz.yanghaoyu.flora.core.beans.factory.support;
 
 import cn.hutool.core.collection.ConcurrentHashSet;
+import xyz.yanghaoyu.flora.core.OrderComparator;
 import xyz.yanghaoyu.flora.core.beans.factory.FactoryBean;
 import xyz.yanghaoyu.flora.core.beans.factory.StringValueResolver;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
@@ -83,13 +84,13 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
         }
 
         // 先看看缓存中是否存在
-        Object object = getCachedObjectForFactoryBean(beanName);
+        // Object object = getCachedObjectForFactoryBean(beanName);
 
         // 不存在的话 则需要调用 FactoryBean#getObject 进行创建
-        if (object == null) {
-            FactoryBean<?> factoryBean = (FactoryBean<?>) beanInstance;
-            object = getObjectFromFactoryBean(factoryBean, beanName);
-        }
+        // if (object == null) {
+        FactoryBean<?> factoryBean = (FactoryBean<?>) beanInstance;
+        Object object = getObjectFromFactoryBean(factoryBean, beanName);
+        // }
 
         return object;
     }
@@ -127,13 +128,21 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
     protected abstract Object createBean(String beanName, BeanDefinition beanDefinition, Object[] args) throws BeansException;
 
+    private boolean isOrdered = false;
+
     @Override
     public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) {
+        isOrdered = false;
         this.beanPostProcessors.remove(beanPostProcessor);
         this.beanPostProcessors.add(beanPostProcessor);
     }
 
     public List<BeanPostProcessor> getBeanPostProcessors() {
+        // sort BeanPostProcessor
+        if (!isOrdered) {
+            OrderComparator.sort(this.beanPostProcessors);
+            isOrdered = true;
+        }
         return this.beanPostProcessors;
     }
 

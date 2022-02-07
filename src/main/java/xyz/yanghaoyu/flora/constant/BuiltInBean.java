@@ -6,6 +6,7 @@ import xyz.yanghaoyu.flora.core.beans.factory.PropertyPlaceholderConfigurer;
 import xyz.yanghaoyu.flora.core.beans.factory.config.AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.config.AutowiredAnnotationBeanPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.config.ConfigurationBeanBeanFactoryPostProcessor;
+import xyz.yanghaoyu.flora.core.beans.factory.config.InitDestroyAnnotationBeanPostProcessor;
 import xyz.yanghaoyu.flora.core.context.support.ConversionServiceFactoryBean;
 
 /**
@@ -22,4 +23,5 @@ public interface BuiltInBean {
     Class ANNOTATION_AWARE_ASPECT_J_AUTO_PROXY_CREATOR = AnnotationAwareAspectJAutoProxyCreator.class;
     Class PROPERTY_PLACEHOLDER_CONFIGURER = PropertyPlaceholderConfigurer.class;
     Class CONFIGURATION_BEAN_BEAN_FACTORY_POST_PROCESSOR = ConfigurationBeanBeanFactoryPostProcessor.class;
+    Class INIT_DESTROY_ANNOTATION_BEAN_POST_PROCESSOR = InitDestroyAnnotationBeanPostProcessor.class;
 }

@@ -1,12 +1,12 @@
 package xyz.yanghaoyu.flora.util;
 
 import xyz.yanghaoyu.flora.constant.BuiltInBean;
+import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.PropertyPlaceholderConfigurer;
 import xyz.yanghaoyu.flora.core.beans.factory.PropertyValue;
 import xyz.yanghaoyu.flora.core.beans.factory.PropertyValues;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.core.beans.factory.support.BeanDefinitionRegistry;
-import xyz.yanghaoyu.flora.core.beans.factory.support.DefaultListableBeanFactory;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -14,7 +14,7 @@ import java.util.Set;
 
 public abstract class IocUtil {
     /**
-     * 开启aop
+     * 开启 aop
      */
     public static void enableAop(BeanDefinitionRegistry registry) {
         // 不支持 XML AOP
@@ -36,6 +36,13 @@ public abstract class IocUtil {
 
     /**
      * 开启组件扫描
+     * <p>
+     * Support Annotations:
+     * <ol>
+     *     <li> @Inject </li>
+     *     <li> @Value </li>
+     *     <li> @Configuration </li>
+     * </ol>
      */
     public static void enableComponentScan(BeanDefinitionRegistry registry) {
         // @Inject, @Value Support
@@ -52,6 +59,8 @@ public abstract class IocUtil {
                     new BeanDefinition(BuiltInBean.CONFIGURATION_BEAN_BEAN_FACTORY_POST_PROCESSOR)
             );
         }
+
+        enableInitDestroyAnnotation(registry);
     }
 
     public static void enableTypeConvert(BeanDefinitionRegistry registry) {
@@ -78,11 +87,29 @@ public abstract class IocUtil {
                     .addPropertyValue(new PropertyValue(resourcesLocationsFieldName, new HashSet<>(Arrays.asList(locations))));
             registry.registerBeanDefinition(beanName, beanDef);
         } else {
-            beanDef = ((DefaultListableBeanFactory) registry).getBeanDefinition(beanName);
+            beanDef = ((ConfigurableListableBeanFactory) registry).getBeanDefinition(beanName);
             PropertyValues propertyValues = beanDef.getPropertyValues();
             PropertyValue pv = propertyValues.getPropertyValue(resourcesLocationsFieldName);
             Set value = (Set) pv.getValue();
             value.addAll(Arrays.asList(locations));
+        }
+    }
+
+    /**
+     * Support Annotations:
+     * <ol>
+     *     <li> @PostConstruct </li>
+     *     <li> @Life.Initialize </li>
+     *     <li> @PreDestroy </li>
+     *     <li> @Life.Destroy </li>
+     * </ol>
+     */
+    public static void enableInitDestroyAnnotation(BeanDefinitionRegistry registry) {
+        if (!registry.containsBeanDefinition(BuiltInBean.INIT_DESTROY_ANNOTATION_BEAN_POST_PROCESSOR.getName())) {
+            registry.registerBeanDefinition(
+                    BuiltInBean.INIT_DESTROY_ANNOTATION_BEAN_POST_PROCESSOR.getName(),
+                    new BeanDefinition(BuiltInBean.INIT_DESTROY_ANNOTATION_BEAN_POST_PROCESSOR)
+            );
         }
     }
 }

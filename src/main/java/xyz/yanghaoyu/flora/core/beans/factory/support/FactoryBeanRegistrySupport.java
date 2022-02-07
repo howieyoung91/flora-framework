@@ -1,7 +1,7 @@
 package xyz.yanghaoyu.flora.core.beans.factory.support;
 
-import xyz.yanghaoyu.flora.exception.BeansException;
 import xyz.yanghaoyu.flora.core.beans.factory.FactoryBean;
+import xyz.yanghaoyu.flora.exception.BeansException;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,7 +14,7 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
 
     protected Object getCachedObjectForFactoryBean(String beanName) {
         Object object = this.factoryBeanObjectCache.get(beanName);
-        return (object == NULL_OBJECT ? null : object);
+        return object == NULL_OBJECT ? null : object;
     }
 
     protected Object getObjectFromFactoryBean(FactoryBean factoryBean, String beanName) {

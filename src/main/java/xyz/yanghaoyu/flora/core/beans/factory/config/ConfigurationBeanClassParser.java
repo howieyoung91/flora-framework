@@ -60,7 +60,7 @@ public class ConfigurationBeanClassParser {
                 String beanName = ComponentUtil.determineBeanName(method, beanAnn);
 
                 ComponentUtil.determineBeanScope(method, beanDef);
-                ComponentUtil.determineBeanInitMethodAndDestroyMethod(beanDef);
+                // ComponentUtil.determineBeanInitMethodAndDestroyMethod(beanDef);
 
                 if (beanFactory.containsBeanDefinition(beanName)) {
                     throw new BeansException("Duplicate beanName [" + beanName + "] is not allowed");

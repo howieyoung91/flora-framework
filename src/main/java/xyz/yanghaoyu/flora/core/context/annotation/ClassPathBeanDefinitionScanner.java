@@ -18,7 +18,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
             for (Class<?> aClass : candidateClass) {
                 BeanDefinition beanDefinition = new BeanDefinition(aClass);
                 ComponentUtil.determineBeanScope(beanDefinition);
-                ComponentUtil.determineBeanInitMethodAndDestroyMethod(beanDefinition);
+                // ComponentUtil.determineBeanInitMethodAndDestroyMethod(beanDefinition);
                 bds.add(beanDefinition);
             }
         }
