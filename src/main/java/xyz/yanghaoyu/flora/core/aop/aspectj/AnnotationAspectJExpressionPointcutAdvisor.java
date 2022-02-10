@@ -33,7 +33,7 @@ public class AnnotationAspectJExpressionPointcutAdvisor implements PointcutAdvis
         return pointcut;
     }
 
-    public void addMethodPoint(AdvicePoint point) {
+    public void addAdvicePoint(AdvicePoint point) {
         this.methodInterceptor.addAdvice(point);
     }
 

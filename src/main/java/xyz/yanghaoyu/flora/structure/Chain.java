@@ -15,6 +15,7 @@ public class Chain {
     protected Collection<Point> points = new ArrayList<>();
     protected Iterator<Point> iterator = null;
 
+    @FunctionalInterface
     public interface Point {
         Object proceed(Chain chain) throws Throwable;
     }

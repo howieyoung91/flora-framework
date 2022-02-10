@@ -6,6 +6,8 @@ import xyz.yanghaoyu.flora.core.aop.interceptor.AdvicePoint;
 import xyz.yanghaoyu.flora.core.aop.interceptor.MethodEnhanceAdviceInterceptor;
 import xyz.yanghaoyu.flora.core.aop.interceptor.MultiMethodInterceptor;
 
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -14,17 +16,24 @@ import java.util.List;
  */
 
 
-public interface MultiAopProxy extends AopProxy {
+public interface MultiOrderedAopProxy extends AopProxy {
     // 把多个 Point 合并一下
-    default MultiMethodInterceptor merge(List<MultiMethodInterceptor> methodInterceptors) {
+    default MultiMethodInterceptor mergeAndSort(List<MultiMethodInterceptor> methodInterceptors) {
         if (methodInterceptors.size() == 0) {
             return null;
         }
-        MethodEnhanceAdviceInterceptor res = new MethodEnhanceAdviceInterceptor();
+        MethodEnhanceAdviceInterceptor methodEnhanceAdviceInterceptor = new MethodEnhanceAdviceInterceptor();
+
+        LinkedList<AdvicePoint> points = new LinkedList<>();
+        AdviceChain adviceChain = new AdviceChain(points);
         for (MultiMethodInterceptor methodInterceptor : methodInterceptors) {
-            AdviceChain chain = methodInterceptor.getMethodChain();
-            chain.forEach(point -> res.addAdvice((AdvicePoint) point));
+            methodInterceptor.getMethodChain().forEach(adviceChain::addPoint);
         }
-        return res;
+
+        // 完成排序
+        Collections.sort(points);
+
+        adviceChain.forEach(point -> methodEnhanceAdviceInterceptor.addAdvice((AdvicePoint) point));
+        return methodEnhanceAdviceInterceptor;
     }
 }

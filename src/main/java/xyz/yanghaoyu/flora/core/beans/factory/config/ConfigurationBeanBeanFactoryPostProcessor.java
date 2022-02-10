@@ -23,20 +23,20 @@ public class ConfigurationBeanBeanFactoryPostProcessor implements BeanFactoryPos
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory configBeanFactory) throws BeansException {
         DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) configBeanFactory;
-        LOGGER.trace("handle [Configuration] ...");
+        LOGGER.trace("resolve [Configuration] ...");
         HashSet<String> classes = findConfigBeanName(beanFactory);
 
         LOGGER.trace("scan [Configuration] from {} ...", classes);
         ConfigurationBeanClassScanner configurationClassParser =
                 new ConfigurationBeanClassScanner(beanFactory, classes);
         Set<String> configBeanNames = configurationClassParser.scan();
-        LOGGER.trace("found [Configuration] {}", configBeanNames);
+        LOGGER.trace("find [Configuration] -> {}", configBeanNames);
 
         ConfigurationBeanClassParser parser =
                 new ConfigurationBeanClassParser(beanFactory, configBeanNames);
         parser.parse();
 
-        LOGGER.trace("finish handling [Configuration]");
+        LOGGER.trace("finish resolve [Configuration]");
     }
 
     private HashSet<String> findConfigBeanName(DefaultListableBeanFactory beanFactory) {

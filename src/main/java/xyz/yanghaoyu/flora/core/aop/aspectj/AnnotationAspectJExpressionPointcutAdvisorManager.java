@@ -31,10 +31,10 @@ public class AnnotationAspectJExpressionPointcutAdvisorManager implements BeanFa
             advisor = new AnnotationAspectJExpressionPointcutAdvisor(pointCutExpr, new MethodEnhanceAdviceInterceptor());
             map.put(pointCutExpr, advisor);
         }
-        advisor.addMethodPoint(point);
+        advisor.addAdvicePoint(point);
     }
 
-    public Collection<AnnotationAspectJExpressionPointcutAdvisor> getAdvisorCandidates() {
+    private Collection<AnnotationAspectJExpressionPointcutAdvisor> getAdvisorCandidates() {
         if (advisorsCache == null) {
             advisorsCache = map.values();
         }

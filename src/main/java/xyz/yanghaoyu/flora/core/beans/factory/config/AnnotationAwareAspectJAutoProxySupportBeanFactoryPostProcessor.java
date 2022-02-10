@@ -4,6 +4,8 @@ import org.aspectj.lang.annotation.Aspect;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.yanghaoyu.flora.annotation.Aop;
+import xyz.yanghaoyu.flora.annotation.Order;
+import xyz.yanghaoyu.flora.core.Ordered;
 import xyz.yanghaoyu.flora.core.aop.aspectj.AnnotationAspectJExpressionPointcutAdvisorManager;
 import xyz.yanghaoyu.flora.core.aop.interceptor.AdviceChain;
 import xyz.yanghaoyu.flora.core.aop.interceptor.AdvicePoint;
@@ -49,21 +51,39 @@ public class AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor
                     if (enhanceAnno == null) {
                         continue;
                     }
+                    // todo support
+                    int order = getAdviceOrder(method);
                     LOGGER.trace("register [Pointcut] [{}]", enhanceAnno.pointcut());
-                    manager.addMethodEnhanceAdvice(enhanceAnno.pointcut(), new AdvicePoint() {
-                        @Override
-                        public int getPriority() {
-                            return enhanceAnno.priority();
-                        }
-
-                        @Override
-                        public Object proceed(AdviceChain chain) throws Throwable {
-                            // 调用用户的方法
-                            return method.invoke(bean, chain);
-                        }
-                    });
+                    manager.addMethodEnhanceAdvice(enhanceAnno.pointcut(), new Point(bean, method, order));
                 }
             }
+        }
+    }
+
+    private int getAdviceOrder(Method method) {
+        Order orderAnn = method.getAnnotation(Order.class);
+        return orderAnn == null ? Ordered.LOWEST_PRECEDENCE : orderAnn.value();
+    }
+
+    private static class Point implements AdvicePoint {
+        Object aspectBean;
+        Method enhance;
+        int order;
+
+        public Point(Object aspectBean, Method enhance, int order) {
+            this.aspectBean = aspectBean;
+            this.enhance = enhance;
+            this.order = order;
+        }
+
+        @Override
+        public int getOrder() {
+            return order;
+        }
+
+        @Override
+        public Object proceed(AdviceChain chain) throws Throwable {
+            return enhance.invoke(aspectBean, chain);
         }
     }
 }

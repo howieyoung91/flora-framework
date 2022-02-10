@@ -13,8 +13,6 @@ public @interface Aop {
     @Documented
     @interface Enhance {
         String pointcut();
-
-        int priority();
     }
 }
 

@@ -136,7 +136,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
                 }
                 String[] basePaths = basePackage.split(",");
                 // 注入 AutowiredAnnotationProcessor 这样才能在 BeanProcessor 中注入属性
-                IocUtil.enableComponentScan(getRegistry());
+                IocUtil.enableAutowiredAnnotations(getRegistry());
                 // 扫包
                 Set<BeanDefinition> beanDefinitions = new ClassPathBeanDefinitionScanner().doScan(basePaths);
 

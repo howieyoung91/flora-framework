@@ -4,7 +4,6 @@ import org.aopalliance.intercept.MethodInvocation;
 import xyz.yanghaoyu.flora.structure.Chain;
 
 import java.util.Collection;
-import java.util.TreeSet;
 
 /**
  * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2021/11/12 23:30<i/>
@@ -15,12 +14,12 @@ import java.util.TreeSet;
 public class AdviceChain extends Chain {
     private MethodInvocation methodInvocation;
 
-    public AdviceChain() {
-        super(new TreeSet<>());
-    }
+    // public AdviceChain() {
+    //     super(new TreeSet<>());
+    // }
 
-    public AdviceChain(Collection<Point> points) {
-        super(points);
+    public AdviceChain(Collection<AdvicePoint> points) {
+        super((Collection) points);
     }
 
     public MethodInvocation getMethodInvocation() {

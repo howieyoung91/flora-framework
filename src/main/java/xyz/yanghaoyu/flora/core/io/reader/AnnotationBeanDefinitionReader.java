@@ -21,7 +21,7 @@ public class AnnotationBeanDefinitionReader extends AbstractBeanDefinitionAnnota
 
     @Override
     public void loadBeanDefinitions(Class... configClasses) throws BeansException, IOException, ClassNotFoundException {
-        IocUtil.enableComponentScan(getRegistry());
+        IocUtil.enableAutowiredAnnotations(getRegistry());
         IocUtil.enableTypeConvert(getRegistry());
         for (Class<?> aClass : configClasses) {
             BeanDefinition beanDef = ComponentUtil.parse(aClass);

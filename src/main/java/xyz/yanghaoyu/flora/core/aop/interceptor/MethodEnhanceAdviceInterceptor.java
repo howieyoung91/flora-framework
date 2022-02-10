@@ -2,7 +2,7 @@ package xyz.yanghaoyu.flora.core.aop.interceptor;
 
 import org.aopalliance.intercept.MethodInvocation;
 
-import java.util.TreeSet;
+import java.util.LinkedList;
 
 /**
  * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2021/11/12 19:22<i/>
@@ -11,7 +11,7 @@ import java.util.TreeSet;
 
 
 public class MethodEnhanceAdviceInterceptor implements MultiMethodInterceptor {
-    private AdviceChain chain = new AdviceChain(new TreeSet<>());
+    private final AdviceChain chain = new AdviceChain(new LinkedList<>());
 
     @Override
     public Object invoke(MethodInvocation methodInvocation) throws Throwable {

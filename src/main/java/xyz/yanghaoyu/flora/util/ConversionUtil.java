@@ -2,7 +2,6 @@ package xyz.yanghaoyu.flora.util;
 
 import cn.hutool.core.util.TypeUtil;
 import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
-import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
 import xyz.yanghaoyu.flora.core.convert.converter.ConversionService;
 
 import java.lang.reflect.Field;
@@ -24,7 +23,7 @@ public abstract class ConversionUtil {
         return enumType;
     }
 
-    public static Object convertField(Field field, Object bean, ConfigurableListableBeanFactory beanFactory) {
+    public static Object convertField(Field field, Object bean, ConversionService conversionService) {
         Class<?> sourceType = bean.getClass();
         // Class<?> targetType = (Class<?>) TypeUtil.getType(field);
         Class<?> targetType;
@@ -34,11 +33,35 @@ public abstract class ConversionUtil {
         } else {
             targetType = ((Class<?>) fieldType);
         }
-        return convert(bean, beanFactory, sourceType, targetType);
+        return convert(bean, targetType, sourceType, conversionService);
     }
 
-    public static Object convert(Object value, ConfigurableListableBeanFactory beanFactory, Class<?> sourceType, Class<?> targetType) {
-        ConversionService conversionService = beanFactory.getConversionService();
+    // @Deprecated
+    // public static Object convertField(Field field, Object bean, ConfigurableListableBeanFactory beanFactory) {
+    //     Class<?> sourceType = bean.getClass();
+    //     // Class<?> targetType = (Class<?>) TypeUtil.getType(field);
+    //     Class<?> targetType;
+    //     Type fieldType = TypeUtil.getType(field);
+    //     if (fieldType instanceof ParameterizedTypeImpl) {
+    //         targetType = ((ParameterizedTypeImpl) fieldType).getRawType();
+    //     } else {
+    //         targetType = ((Class<?>) fieldType);
+    //     }
+    //     return convert(bean, targetType, sourceType, beanFactory.getConversionService());
+    // }
+    //
+    // @Deprecated
+    // public static Object convert(Object value, Class<?> targetType, Class<?> sourceType, ConfigurableListableBeanFactory beanFactory) {
+    //     ConversionService conversionService = beanFactory.getConversionService();
+    //     if (conversionService != null) {
+    //         if (conversionService.canConvert(sourceType, targetType)) {
+    //             value = conversionService.convert(value, targetType);
+    //         }
+    //     }
+    //     return value;
+    // }
+
+    public static Object convert(Object value, Class<?> targetType, Class<?> sourceType, ConversionService conversionService) {
         if (conversionService != null) {
             if (conversionService.canConvert(sourceType, targetType)) {
                 value = conversionService.convert(value, targetType);
@@ -46,5 +69,4 @@ public abstract class ConversionUtil {
         }
         return value;
     }
-
 }

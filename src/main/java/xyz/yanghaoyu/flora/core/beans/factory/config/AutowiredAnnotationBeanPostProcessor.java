@@ -1,6 +1,5 @@
 package xyz.yanghaoyu.flora.core.beans.factory.config;
 
-import xyz.yanghaoyu.flora.annotation.ConfigurationProperties;
 import xyz.yanghaoyu.flora.annotation.Inject;
 import xyz.yanghaoyu.flora.annotation.Value;
 import xyz.yanghaoyu.flora.core.beans.factory.BeanFactory;
@@ -10,16 +9,15 @@ import xyz.yanghaoyu.flora.core.beans.factory.PropertyValues;
 import xyz.yanghaoyu.flora.exception.BeansException;
 import xyz.yanghaoyu.flora.exception.DuplicateDeclarationException;
 import xyz.yanghaoyu.flora.util.ConversionUtil;
-import xyz.yanghaoyu.flora.util.PropertyUtil;
 import xyz.yanghaoyu.flora.util.ReflectUtil;
 import xyz.yanghaoyu.flora.util.StringUtil;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
+/**
+ * Support @Inject.ByType @Inject.ByName @Value
+ */
 public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareBeanPostProcessor, BeanFactoryAware {
     private ConfigurableListableBeanFactory beanFactory;
 
@@ -39,7 +37,7 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
             handleValueAnnotation(bean, field, clazz);
             handleInjectAnnotation(bean, beanName, field, clazz);
         }
-        handleConfigurationPropertiesAnnotation(bean, clazz);
+        // handleConfigurationPropertiesAnnotation(bean, clazz);
         return null;
     }
 
@@ -109,51 +107,10 @@ public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareB
                 }
             } else {
                 // 类型转换
-                value = ConversionUtil.convertField(field, value, beanFactory);
+                value = ConversionUtil.convertField(field, value, beanFactory.getConversionService());
             }
             ReflectUtil.setFieldValue(bean, clazz, field.getName(), value);
         }
     }
-
-    private static final Set SET = new HashSet(3);
-
-    static {
-        SET.add(Value.class);
-        SET.add(Inject.ByName.class);
-        SET.add(Inject.ByType.class);
-    }
-
-    private void handleConfigurationPropertiesAnnotation(Object bean, Class<?> actualClass) {
-        ConfigurationProperties configPropertiesAnn = actualClass.getAnnotation(ConfigurationProperties.class);
-        if (configPropertiesAnn == null) {
-            return;
-        }
-        String prefix = configPropertiesAnn.prefix();
-        Field[] declaredFields = actualClass.getDeclaredFields();
-        for (Field field : declaredFields) {
-            if (!shouldConfig(field)) {
-                continue;
-            }
-            String key = PropertyUtil.createPropertyKey(prefix + "." + field.getName());
-            Object value = beanFactory.resolveEmbeddedValue(key);
-            if (value == null) {
-                continue;
-            }
-            value = ConversionUtil.convertField(field, value, beanFactory);
-            ReflectUtil.setFieldValue(bean, actualClass, field.getName(), value);
-        }
-    }
-
-    private boolean shouldConfig(Field field) {
-        Annotation[] annotations = field.getAnnotations();
-        for (Annotation annotation : annotations) {
-            if (SET.contains(annotation.annotationType())) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-
 }
 

@@ -6,18 +6,24 @@ import xyz.yanghaoyu.flora.structure.Chain;
  * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2021/11/12 23:26<i/>
  * @version 1.0
  */
-
 public interface AdvicePoint extends Chain.Point, Comparable<AdvicePoint> {
 
     default int compareTo(AdvicePoint o) {
-        return getPriority() - o.getPriority();
+        return Integer.compare(getOrder(), o.getOrder());
+        // if (getOrder() == Ordered.LOWEST_PRECEDENCE) {
+        //     return 1;
+        // }
+        // if (getOrder() == Ordered.HIGHEST_PRECEDENCE) {
+        //     return -1;
+        // }
+        // return getOrder() - o.getOrder();
     }
 
     default Object proceed(Chain chain) throws Throwable {
         return proceed((AdviceChain) chain);
     }
 
-    int getPriority();
+    int getOrder();
 
     Object proceed(AdviceChain chain) throws Throwable;
 }

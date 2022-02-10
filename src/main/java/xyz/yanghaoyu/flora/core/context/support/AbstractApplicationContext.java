@@ -85,6 +85,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
     protected final void printBanner() {
         System.out.println(AbstractApplicationContext.BANNER);
+        LOGGER.trace("start ApplicationContext#refresh");
     }
 
     protected abstract void refreshBeanFactory() throws BeansException;
@@ -261,6 +262,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
     private void finishRefresh() {
         publishEvent(new ContextRefreshedEvent(this));
+        LOGGER.trace("finish ApplicationContext#refresh");
     }
 
     @Override

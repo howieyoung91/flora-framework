@@ -18,58 +18,42 @@ public abstract class IocUtil {
      */
     public static void enableAop(BeanDefinitionRegistry registry) {
         // 不支持 XML AOP
-        // registry.registerBeanDefinition(
-        //         DefaultAdvisorAutoProxyCreator.class.getName(),
-        //         new BeanDefinition(DefaultAdvisorAutoProxyCreator.class)
-        // );
-        // 注解 AOP
-        if (!registry.containsBeanDefinition(BuiltInBean.ANNOTATION_AWARE_ASPECT_J_AUTO_PROXY_SUPPORT_BEAN_FACTORY_POST_PROCESSOR.getName())) {
-            registry.registerBeanDefinition(
-                    BuiltInBean.ANNOTATION_AWARE_ASPECT_J_AUTO_PROXY_SUPPORT_BEAN_FACTORY_POST_PROCESSOR.getName(),
-                    new BeanDefinition(BuiltInBean.ANNOTATION_AWARE_ASPECT_J_AUTO_PROXY_SUPPORT_BEAN_FACTORY_POST_PROCESSOR));
-            registry.registerBeanDefinition(
-                    BuiltInBean.ANNOTATION_AWARE_ASPECT_J_AUTO_PROXY_CREATOR.getName(),
-                    new BeanDefinition(BuiltInBean.ANNOTATION_AWARE_ASPECT_J_AUTO_PROXY_CREATOR)
-            );
-        }
+        // registerBuiltinBeanIfNecessary(registry, BuiltInBean.DEFAULT_ADVISOR_AUTO_PROXY_CREATOR);
+
+        // Annotation AOP
+        registerBuiltinBeanIfNecessary(registry, BuiltInBean.ANNOTATION_AWARE_ASPECT_J_AUTO_PROXY_SUPPORT_BEAN_FACTORY_POST_PROCESSOR);
+        registerBuiltinBeanIfNecessary(registry, BuiltInBean.ANNOTATION_AWARE_ASPECT_J_AUTO_PROXY_CREATOR);
     }
 
     /**
-     * 开启组件扫描
+     * 开启依赖注入注解
      * <p>
      * Support Annotations:
      * <ol>
      *     <li> @Inject </li>
      *     <li> @Value </li>
-     *     <li> @Configuration </li>
+     *     <li> @ConfigurationProperties </li>
      * </ol>
      */
-    public static void enableComponentScan(BeanDefinitionRegistry registry) {
+    public static void enableAutowiredAnnotations(BeanDefinitionRegistry registry) {
         // @Inject, @Value Support
-        if (!registry.containsBeanDefinition(BuiltInBean.AUTOWIRED_ANNOTATION_BEAN_POST_PROCESSOR.getName())) {
-            registry.registerBeanDefinition(
-                    BuiltInBean.AUTOWIRED_ANNOTATION_BEAN_POST_PROCESSOR.getName(),
-                    new BeanDefinition(BuiltInBean.AUTOWIRED_ANNOTATION_BEAN_POST_PROCESSOR)
-            );
-        }
-        // @Configuration Support
-        if (!registry.containsBeanDefinition(BuiltInBean.CONFIGURATION_BEAN_BEAN_FACTORY_POST_PROCESSOR.getName())) {
-            registry.registerBeanDefinition(
-                    BuiltInBean.CONFIGURATION_BEAN_BEAN_FACTORY_POST_PROCESSOR.getName(),
-                    new BeanDefinition(BuiltInBean.CONFIGURATION_BEAN_BEAN_FACTORY_POST_PROCESSOR)
-            );
-        }
+        registerBuiltinBeanIfNecessary(registry, BuiltInBean.AUTOWIRED_ANNOTATION_BEAN_POST_PROCESSOR);
+        // @ConfigurationProperties
+        registerBuiltinBeanIfNecessary(registry, BuiltInBean.CONFIGURATION_PROPERTIES_BINDING_POST_PROCESSOR);
 
-        enableInitDestroyAnnotation(registry);
+        enableJavaClassConfiguration(registry);
+        enableInitDestroyAnnotations(registry);
+    }
+
+    /**
+     * Support @Configuration
+     */
+    public static void enableJavaClassConfiguration(BeanDefinitionRegistry registry) {
+        registerBuiltinBeanIfNecessary(registry, BuiltInBean.CONFIGURATION_BEAN_BEAN_FACTORY_POST_PROCESSOR);
     }
 
     public static void enableTypeConvert(BeanDefinitionRegistry registry) {
-        if (!registry.containsBeanDefinition(BuiltInBean.CONVERTER_FACTORY_BEAN.getName())) {
-            registry.registerBeanDefinition(
-                    BuiltInBean.CONVERTER_FACTORY_BEAN.getName(),
-                    new BeanDefinition(BuiltInBean.CONVERTER_FACTORY_BEAN)
-            );
-        }
+        registerBuiltinBeanIfNecessary(registry, BuiltInBean.CONVERTER_FACTORY_BEAN);
     }
 
     /**
@@ -104,12 +88,21 @@ public abstract class IocUtil {
      *     <li> @Life.Destroy </li>
      * </ol>
      */
-    public static void enableInitDestroyAnnotation(BeanDefinitionRegistry registry) {
-        if (!registry.containsBeanDefinition(BuiltInBean.INIT_DESTROY_ANNOTATION_BEAN_POST_PROCESSOR.getName())) {
+    public static void enableInitDestroyAnnotations(BeanDefinitionRegistry registry) {
+        registerBuiltinBeanIfNecessary(registry, BuiltInBean.INIT_DESTROY_ANNOTATION_BEAN_POST_PROCESSOR);
+    }
+
+    private static void registerBuiltinBeanIfNecessary(BeanDefinitionRegistry registry, Class<?> clazz) {
+        String beanName = builtInBeanName(clazz);
+        if (!registry.containsBeanDefinition(beanName)) {
             registry.registerBeanDefinition(
-                    BuiltInBean.INIT_DESTROY_ANNOTATION_BEAN_POST_PROCESSOR.getName(),
-                    new BeanDefinition(BuiltInBean.INIT_DESTROY_ANNOTATION_BEAN_POST_PROCESSOR)
+                    beanName,
+                    new BeanDefinition(clazz)
             );
         }
+    }
+
+    private static String builtInBeanName(Class<?> builtInBeanClazz) {
+        return "flora$" + builtInBeanClazz.getSimpleName();
     }
 }
