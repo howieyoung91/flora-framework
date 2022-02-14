@@ -18,7 +18,7 @@ import java.util.Set;
 /**
  * 按照 advisor 生成代理
  */
-
+@Deprecated
 public class DefaultAdvisorAutoProxyCreator implements SmartInstantiationAwareBeanPostProcessor, BeanFactoryAware {
     protected DefaultListableBeanFactory beanFactory;
 

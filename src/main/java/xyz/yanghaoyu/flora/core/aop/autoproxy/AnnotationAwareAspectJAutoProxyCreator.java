@@ -1,4 +1,4 @@
-package xyz.yanghaoyu.flora.core.aop.autoproxy.annotation;
+package xyz.yanghaoyu.flora.core.aop.autoproxy;
 
 import org.aopalliance.aop.Advice;
 import xyz.yanghaoyu.flora.core.Ordered;

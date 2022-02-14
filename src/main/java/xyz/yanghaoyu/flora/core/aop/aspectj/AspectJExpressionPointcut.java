@@ -19,6 +19,7 @@ public class AspectJExpressionPointcut implements AbstractPointcut {
 
     static {
         SUPPORTED_PRIMITIVES.add(PointcutPrimitive.EXECUTION);
+        SUPPORTED_PRIMITIVES.add(PointcutPrimitive.AT_ANNOTATION);
     }
 
     public AspectJExpressionPointcut(String pointcutExpression) {

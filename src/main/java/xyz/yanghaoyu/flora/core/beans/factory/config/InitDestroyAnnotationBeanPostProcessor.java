@@ -84,11 +84,12 @@ public class InitDestroyAnnotationBeanPostProcessor implements DestructionAwareB
                     destroyMethods.add(method);
                 }
             }
+            // 向上查找
             targetClass = targetClass.getSuperclass();
         } while (targetClass != null && targetClass != Object.class);
-        List[] methodRes = {initMethods, destroyMethods};
-        lifecycleMethodsCache.put(clazz, methodRes);
-        return methodRes;
+        List[] methods = {initMethods, destroyMethods};
+        lifecycleMethodsCache.put(clazz, methods);
+        return methods;
     }
 
     private boolean isDestroyMethod(Method method) {

@@ -1,10 +1,9 @@
-package xyz.yanghaoyu.flora.core.aop.autoproxy.annotation;
+package xyz.yanghaoyu.flora.core.aop.autoproxy;
 
 import net.sf.cglib.proxy.Enhancer;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import xyz.yanghaoyu.flora.core.aop.AnnotationAdvisedSupport;
-import xyz.yanghaoyu.flora.core.aop.autoproxy.CglibMethodInvocation;
 import xyz.yanghaoyu.flora.core.aop.interceptor.MultiMethodInterceptor;
 
 import java.lang.reflect.Method;

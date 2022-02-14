@@ -307,12 +307,12 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         }
         if (bean instanceof DisposableBean || StringUtil.isNotEmpty(beanDefinition.getDestroyMethodName())) {
             DisposableBeanAdapter adapter = new DisposableBeanAdapter(bean, beanName, beanDefinition);
-            List<DestructionAwareBeanPostProcessor> initDestroyBeanPostProcessors =
+            List<DestructionAwareBeanPostProcessor> destructionAwareBeanPostProcessors =
                     (List) getBeanPostProcessors()
                             .stream()
                             .filter(processor -> processor instanceof DestructionAwareBeanPostProcessor)
                             .collect(Collectors.toList());
-            adapter.setBeanPostProcessors(initDestroyBeanPostProcessors);
+            adapter.setBeanPostProcessors(destructionAwareBeanPostProcessors);
             registerDisposableBean(beanName, adapter);
         }
     }

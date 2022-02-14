@@ -93,16 +93,12 @@ public abstract class IocUtil {
     }
 
     private static void registerBuiltinBeanIfNecessary(BeanDefinitionRegistry registry, Class<?> clazz) {
-        String beanName = builtInBeanName(clazz);
+        String beanName = BeanUtil.builtInBeanName(clazz);
         if (!registry.containsBeanDefinition(beanName)) {
             registry.registerBeanDefinition(
                     beanName,
                     new BeanDefinition(clazz)
             );
         }
-    }
-
-    private static String builtInBeanName(Class<?> builtInBeanClazz) {
-        return "flora$" + builtInBeanClazz.getSimpleName();
     }
 }

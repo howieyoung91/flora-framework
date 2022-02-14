@@ -17,7 +17,7 @@ public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateCo
     public Set<BeanDefinition> doScan(String... basePackages) {
         Set<BeanDefinition> bds = new HashSet<>();
         for (String basePackage : basePackages) {
-            LOGGER.trace("scan [{}]", basePackage);
+            LOGGER.trace("scan [Package] [{}]", basePackage);
             Set<Class<?>> candidateClass = findCandidateComponents(basePackage);
             for (Class<?> aClass : candidateClass) {
                 BeanDefinition beanDefinition = new BeanDefinition(aClass);

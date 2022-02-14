@@ -1,4 +1,4 @@
-package xyz.yanghaoyu.flora.core.aop.autoproxy.annotation;
+package xyz.yanghaoyu.flora.core.aop.autoproxy;
 
 import xyz.yanghaoyu.flora.core.aop.autoproxy.AopProxy;
 import xyz.yanghaoyu.flora.core.aop.interceptor.AdviceChain;

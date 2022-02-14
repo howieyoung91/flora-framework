@@ -1,8 +1,8 @@
 package xyz.yanghaoyu.flora.core.aop;
 
-import xyz.yanghaoyu.flora.core.aop.autoproxy.annotation.AnnotationCglib2AopProxy;
+import xyz.yanghaoyu.flora.core.aop.autoproxy.AnnotationCglib2AopProxy;
 import xyz.yanghaoyu.flora.core.aop.autoproxy.AopProxy;
-import xyz.yanghaoyu.flora.core.aop.autoproxy.annotation.AnnotationJdkDynamicAopProxy;
+import xyz.yanghaoyu.flora.core.aop.autoproxy.AnnotationJdkDynamicAopProxy;
 
 /**
  * 代理工厂 用于生成 代理Bean

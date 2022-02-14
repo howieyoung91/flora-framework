@@ -2,8 +2,7 @@ package xyz.yanghaoyu.flora.core.context.support;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xyz.yanghaoyu.flora.constant.BuiltInBean;
-import xyz.yanghaoyu.flora.core.aop.autoproxy.annotation.AnnotationAwareAspectJAutoProxyCreator;
+import xyz.yanghaoyu.flora.core.aop.autoproxy.AnnotationAwareAspectJAutoProxyCreator;
 import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.config.AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanFactoryPostProcessor;
@@ -16,14 +15,15 @@ import xyz.yanghaoyu.flora.core.context.event.ApplicationEvent;
 import xyz.yanghaoyu.flora.core.context.event.ApplicationEventMulticaster;
 import xyz.yanghaoyu.flora.core.context.event.ContextRefreshedEvent;
 import xyz.yanghaoyu.flora.core.context.event.SimpleApplicationEventMulticaster;
-import xyz.yanghaoyu.flora.core.convert.converter.Converter;
-import xyz.yanghaoyu.flora.core.convert.converter.ConverterFactory;
 import xyz.yanghaoyu.flora.core.convert.support.DefaultConversionService;
 import xyz.yanghaoyu.flora.core.io.loader.DefaultResourceLoader;
 import xyz.yanghaoyu.flora.exception.BeansException;
+import xyz.yanghaoyu.flora.util.BeanUtil;
 
 import java.util.Collection;
 import java.util.Map;
+
+import static xyz.yanghaoyu.flora.constant.BuiltInBean.CONVERTER_FACTORY_BEAN;
 
 /**
  * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/9 11:38<i/>
@@ -31,7 +31,7 @@ import java.util.Map;
  */
 
 public abstract class AbstractApplicationContext extends DefaultResourceLoader implements ConfigurableApplicationContext {
-    public static final String APPLICATION_EVENT_MULTICASTER_BEAN_NAME = "applicationEventMulticaster";
+    public static final String APPLICATION_EVENT_MULTICASTER_BEAN_NAME = BeanUtil.builtInBeanName(ApplicationEventMulticaster.class);
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractApplicationContext.class);
     private ApplicationEventMulticaster applicationEventMulticaster;
     private static final String BANNER =
@@ -94,40 +94,24 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
     // 设置类型转换器、提前实例化单例Bean对象
     protected void finishBeanFactoryInitialization() {
-        LOGGER.trace("init [ConvertService]...");
         ConfigurableListableBeanFactory beanFactory = getBeanFactory();
         //  默认开启类型转换器
-        if (beanFactory.containsBean(BuiltInBean.CONVERTER_FACTORY_BEAN.getName())) {
-
-            DefaultConversionService conversionService = beanFactory.getBean(
-                    BuiltInBean.CONVERTER_FACTORY_BEAN.getName(),
-                    DefaultConversionService.class
-            );
+        String conversionServiceFactoryBeanName = BeanUtil.builtInBeanName(CONVERTER_FACTORY_BEAN);
+        if (beanFactory.containsBean(conversionServiceFactoryBeanName)) {
+            LOGGER.trace("start init [ConvertService]...");
+            DefaultConversionService conversionService =
+                    beanFactory.getBean(conversionServiceFactoryBeanName, DefaultConversionService.class);
 
             if (conversionService != null) {
                 beanFactory.setConversionService(conversionService);
             }
-
-            // HashSet<Object> set = new HashSet<>();
-            String[] beanDefinitionNames = beanFactory.getBeanDefinitionNames();
-            for (String beanDefinitionName : beanDefinitionNames) {
-                Class beanClass = beanFactory.getBeanDefinition(beanDefinitionName).getBeanClass();
-                Class<?>[] interfaces = beanClass.getInterfaces();
-                for (Class<?> anInterface : interfaces) {
-                    if (anInterface.equals(Converter.class)) {
-                        Converter bean = (Converter) beanFactory.getBean(beanDefinitionName);
-                        conversionService.addConverter(bean);
-                    } else if (anInterface.equals(ConverterFactory.class)) {
-                        Object bean = beanFactory.getBean(beanDefinitionName);
-                        conversionService.addConverterFactory((ConverterFactory) bean);
-                    }
-                }
-            }
+            LOGGER.trace("finish init [ConvertService]");
         }
-        LOGGER.trace("preInstantiate [Singleton Bean]...");
 
+        LOGGER.trace("start preInstantiate [Singleton Bean]...");
         // 提前实例化单例 Bean 对象
         beanFactory.preInstantiateSingletons();
+        LOGGER.trace("finish preInstantiate [Singleton Bean]...");
 
 
     }
@@ -137,7 +121,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         // 因此使用 ApplicationContextAwareProcessor 对 bean 进行增强
         // 在 执行 BeanPostProcessorBeforeInit 时 将会判断 是否实现 ApplicationContextAware
         // 如果实现,将会把 Context 注入
-        LOGGER.trace("init [BeanAware] ...");
+        // LOGGER.trace("init [BeanAware] ...");
         ApplicationContextAwareProcessor acp = new ApplicationContextAwareProcessor(this);
         getBeanFactory().addBeanPostProcessor(acp);
     }
@@ -146,12 +130,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
      * 初始化与事件相关的组件
      */
     private void initApplicationEvent() {
-        LOGGER.trace("init [ApplicationEvent] ...");
+        LOGGER.trace("start init [ApplicationEvent] ...");
         // 初始化事件广播器 把广播器放到容器中
         initApplicationEventMulticaster();
 
         //  注册事件监听器 把监听器加入广播器中
         registerListeners();
+        LOGGER.trace("finish init [ApplicationEvent] ...");
     }
 
     /**
@@ -177,18 +162,20 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     }
 
     private void additionallyLoadBeanDefinition() {
+        LOGGER.trace("start resolve [Configuration] ...");
         ConfigurableListableBeanFactory beanFactory = getBeanFactory();
         Collection<ConfigurationBeanBeanFactoryPostProcessor> configBeanFactoryPostProcesses = beanFactory.getBeansOfType(ConfigurationBeanBeanFactoryPostProcessor.class).values();
         for (ConfigurationBeanBeanFactoryPostProcessor configBeanFactoryPostProcess : configBeanFactoryPostProcesses) {
             configBeanFactoryPostProcess.postProcessBeanFactory(beanFactory);
         }
+        LOGGER.trace("finish resolve [Configuration]");
     }
 
     /**
      * 触发 BeanFactoryPostProcessors
      */
     private void invokeBeanFactoryPostProcessors() {
-        LOGGER.trace("register [BeanFactoryPostProcessor] ...");
+        LOGGER.trace("start register [BeanFactoryPostProcessor] ...");
         ConfigurableListableBeanFactory beanFactory = getBeanFactory();
         // 调用处理器
         Map<String, BeanFactoryPostProcessor> beanFactoryPostProcessorMap = beanFactory.getBeansOfType(BeanFactoryPostProcessor.class);
@@ -215,6 +202,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
                 beanFactory.addBeanPostProcessor(value);
             }
         }
+        LOGGER.trace("finish register [BeanFactoryPostProcessor] ...");
     }
 
 
@@ -222,7 +210,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
      * 把 BeanPostProcessors 添加到 BeanFactory 中
      */
     private void registerBeanPostProcessors() {
-        LOGGER.trace("register [BeanPostProcessor] ...");
+        LOGGER.trace("start register [BeanPostProcessor] ...");
 
         ConfigurableListableBeanFactory beanFactory = getBeanFactory();
         Map<String, BeanPostProcessor> beanPostProcessorMap = getBeanFactory().getBeansOfType(BeanPostProcessor.class);
@@ -234,6 +222,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
             }
             beanFactory.addBeanPostProcessor(beanPostProcessor);
         }
+        LOGGER.trace("finish register [BeanPostProcessor]");
 
     }
 

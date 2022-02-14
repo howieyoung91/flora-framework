@@ -13,7 +13,7 @@ import java.lang.reflect.Proxy;
  * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/12 18:13<i/>
  * @version 1.0
  */
-
+@Deprecated
 public class JdkDynamicAopProxy implements AopProxy, InvocationHandler {
 
     private final AdvisedSupport advisedSupport;

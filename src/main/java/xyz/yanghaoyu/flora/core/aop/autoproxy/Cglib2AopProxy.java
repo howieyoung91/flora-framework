@@ -13,7 +13,7 @@ import java.lang.reflect.Method;
  * @author <a href="https://www.yanghaoyu.xyz">Howie Young</a><i>on 2021/8/12 18:10<i/>
  * @version 1.0
  */
-
+@Deprecated
 public class Cglib2AopProxy implements AopProxy, MethodInterceptor {
     private final AdvisedSupport advisedSupport;
 

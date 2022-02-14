@@ -1,7 +1,7 @@
 package xyz.yanghaoyu.flora.constant;
 
 import xyz.yanghaoyu.flora.core.aop.autoproxy.DefaultAdvisorAutoProxyCreator;
-import xyz.yanghaoyu.flora.core.aop.autoproxy.annotation.AnnotationAwareAspectJAutoProxyCreator;
+import xyz.yanghaoyu.flora.core.aop.autoproxy.AnnotationAwareAspectJAutoProxyCreator;
 import xyz.yanghaoyu.flora.core.beans.factory.PropertyPlaceholderConfigurer;
 import xyz.yanghaoyu.flora.core.beans.factory.config.*;
 import xyz.yanghaoyu.flora.core.context.support.ConversionServiceFactoryBean;
