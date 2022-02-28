@@ -27,7 +27,7 @@ public class Config {
 ### 使用 AOP
 
 ```java
-package xyz.yanghaoyu.demo
+package xyz.yanghaoyu.demo;
 
 @Component
 public class User {
@@ -113,6 +113,6 @@ public class IocUtil {
 }
 ```
 
-注意: 如果在切面类中使用@Inject 注入的对象将不会被代理!
+注意: 如果在切面类中使用`@Inject` 注入的对象将不会被代理!
 
 
