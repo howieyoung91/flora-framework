@@ -7,6 +7,7 @@ import xyz.yanghaoyu.flora.core.aop.advice.MethodAroundAdvice;
 /**
  * 环绕增强拦截器
  */
+@Deprecated
 public class MethodAroundAdviceInterceptor implements MethodInterceptor {
     protected MethodAroundAdvice advice;
 

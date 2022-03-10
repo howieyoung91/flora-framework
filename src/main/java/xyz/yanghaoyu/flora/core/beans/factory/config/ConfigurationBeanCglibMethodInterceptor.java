@@ -20,7 +20,7 @@ import java.util.Set;
 
 public class ConfigurationBeanCglibMethodInterceptor implements MethodInterceptor {
     private final DefaultListableBeanFactory beanFactory;
-    private final Set cache = new HashSet(3);
+    private final Set<Method>                cache = new HashSet(3);
 
     public ConfigurationBeanCglibMethodInterceptor(ConfigurableListableBeanFactory beanFactory) {
         this.beanFactory = (DefaultListableBeanFactory) beanFactory;
@@ -40,6 +40,7 @@ public class ConfigurationBeanCglibMethodInterceptor implements MethodIntercepto
             }
 
             int i = 0;
+
             Parameter[] parameters = method.getParameters();
             for (Parameter parameter : parameters) {
                 Inject.ByName byNameAnn = parameter.getAnnotation(Inject.ByName.class);
@@ -47,8 +48,8 @@ public class ConfigurationBeanCglibMethodInterceptor implements MethodIntercepto
                 if (byNameAnn != null && byTypeAnn != null) {
                     throw new DuplicateDeclarationException(
                             "duplicate declaration [@Inject.ByName],[@Inject.ByType] on "
-                            + parameter.getName()
-                            + " when creating bean [" + beanName + "]"
+                                    + parameter.getName()
+                                    + " when creating bean [" + beanName + "]"
                     );
                 }
                 Object bean = getBeanFromBeanFactory(beanName, parameter, byNameAnn, byTypeAnn);

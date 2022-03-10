@@ -7,6 +7,7 @@ import xyz.yanghaoyu.flora.core.aop.autoproxy.JdkDynamicAopProxy;
 /**
  * 代理工厂 用于生成 代理Bean
  */
+@Deprecated
 public class ProxyFactory {
     private AdvisedSupport advisedSupport;
 

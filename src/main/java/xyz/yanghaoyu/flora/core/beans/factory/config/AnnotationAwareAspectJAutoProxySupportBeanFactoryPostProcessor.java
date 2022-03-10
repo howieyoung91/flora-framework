@@ -40,10 +40,11 @@ public class AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor
         String[] names = beanFactory.getBeanDefinitionNames();
         for (String name : names) {
             // 首先 生成 Aspect
-            Class clazz = beanFactory.getBeanDefinition(name).getBeanClass();
+
+            Class      clazz      = beanFactory.getBeanDefinition(name).getBeanClass();
             Annotation annotation = clazz.getAnnotation(Aspect.class);
             if (annotation != null) {
-                Object bean = beanFactory.getBean(name);
+                Object   bean    = beanFactory.getBean(name);
                 Method[] methods = clazz.getDeclaredMethods();
 
                 for (Method method : methods) {
@@ -51,7 +52,6 @@ public class AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor
                     if (enhanceAnno == null) {
                         continue;
                     }
-                    // todo support
                     int order = getAdviceOrder(method);
                     LOGGER.trace("register [Pointcut] [{}]", enhanceAnno.pointcut());
                     manager.addMethodEnhanceAdvice(enhanceAnno.pointcut(), new Point(bean, method, order));
@@ -68,7 +68,7 @@ public class AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor
     private static class Point implements AdvicePoint {
         Object aspectBean;
         Method enhance;
-        int order;
+        int    order;
 
         public Point(Object aspectBean, Method enhance, int order) {
             this.aspectBean = aspectBean;

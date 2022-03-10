@@ -25,11 +25,14 @@ public class ConfigurationBeanClassScanner {
     private final DefaultListableBeanFactory beanFactory;
     private final Set<String> startBeanNames;
     // 正在扫描的 Config Bean 用于打破递归
-    private final Set<String> current = new HashSet<>(6);
+    private final Set<String> current
+            = new HashSet<>(6);
     // 已经完成的 Config Bean
-    private final Set<String> already = new HashSet<>(6);
+    private final Set<String> already
+            = new HashSet<>(6);
     // 新添加的 Config Bean
-    private final Set<String> waitingConfigBeanNames = new HashSet<>(0);
+    private final Set<String> waitingConfigBeanNames
+            = new HashSet<>(0);
 
     public ConfigurationBeanClassScanner(DefaultListableBeanFactory beanFactory, Set<String> startClasses) {
         this.beanFactory = beanFactory;
