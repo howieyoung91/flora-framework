@@ -6,20 +6,21 @@ package xyz.yanghaoyu.flora.constant;
  */
 
 public interface XmlTag {
-    String BEANS = "beans";
-    String BEAN = "bean";
-    String PROPERTY = "property";
+    String BEANS          = "beans";
+    String BEAN           = "bean";
+    String PROPERTY       = "property";
     String COMPONENT_SCAN = "component-scan";
-    String BASE_PATH = "base-path";
-    String BASE_PACKAGE = "base-packages";
-    String INIT_METHOD = "init-method";
+    // String BASE_PATH = "base-path";
+    String BASE_PACKAGE   = "base-packages";
+    String INIT_METHOD    = "init-method";
     String DESTROY_METHOD = "destroy-method";
-    String CLASS = "class";
-    String ID = "id";
-    String SCOPE = "scope";
-    String REF = "ref";
-    String VALUE = "value";
-    String NAME = "name";
-    String ENABLE_PROPERTY_PLACEHOLDER_CONFIGURER = "enable-property-source";
-    String ENABLE_AOP = "enable-aop";
+    String CLASS          = "class";
+    String ID             = "id";
+    String SCOPE          = "scope";
+    String REF            = "ref";
+    String VALUE          = "value";
+    String NAME           = "name";
+    String ENABLE_PROPERTY_PLACEHOLDER_CONFIGURER
+                          = "enable-property-source";
+    String ENABLE_AOP     = "enable-aop";
 }

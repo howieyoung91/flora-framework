@@ -25,9 +25,11 @@ public @interface Enable {
 
     @Target({ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
-    @interface Aop {}
+    @interface Aop {
+    }
 
     @Target({ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
-    @interface TransactionManagement {}
+    @interface TransactionManagement {
+    }
 }

@@ -8,7 +8,7 @@ import xyz.yanghaoyu.flora.core.aop.autoproxy.AnnotationJdkDynamicAopProxy;
  * 代理工厂 用于生成 代理Bean
  */
 public class AnnotationProxyFactory {
-    private AnnotationAdvisedSupport advisedSupport;
+    private final AnnotationAdvisedSupport advisedSupport;
 
     public AnnotationProxyFactory(AnnotationAdvisedSupport advisedSupport) {
         this.advisedSupport = advisedSupport;

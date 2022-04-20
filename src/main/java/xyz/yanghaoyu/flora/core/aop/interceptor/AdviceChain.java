@@ -14,10 +14,6 @@ import java.util.Collection;
 public class AdviceChain extends Chain {
     private MethodInvocation methodInvocation;
 
-    // public AdviceChain() {
-    //     super(new TreeSet<>());
-    // }
-
     public AdviceChain(Collection<AdvicePoint> points) {
         super((Collection) points);
     }
@@ -33,6 +29,7 @@ public class AdviceChain extends Chain {
 
     @Override
     protected Object doEnd() throws Throwable {
+        // 在执行链的最后调用真实的方法
         return methodInvocation.getMethod().invoke(methodInvocation.getThis(), methodInvocation.getArguments());
     }
 }

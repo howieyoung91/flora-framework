@@ -16,7 +16,7 @@ import java.util.Set;
  */
 
 public abstract class AnnotationAopProxy implements MultiOrderedAopProxy {
-    protected final AnnotationAdvisedSupport advisedSupport;
+    protected final AnnotationAdvisedSupport            advisedSupport;
     protected final Map<Method, MultiMethodInterceptor> cache = new HashMap<>();
 
     public AnnotationAopProxy(AnnotationAdvisedSupport advisedSupport) {

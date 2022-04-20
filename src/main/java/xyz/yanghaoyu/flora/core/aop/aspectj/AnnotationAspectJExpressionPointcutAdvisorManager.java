@@ -10,15 +10,19 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2021/11/12 19:50<i/>
  * @version 1.0
  */
 public class AnnotationAspectJExpressionPointcutAdvisorManager implements BeanFactoryAware {
-    private Map<String, AnnotationAspectJExpressionPointcutAdvisor> map = new HashMap<>(8);
-    Collection<AnnotationAspectJExpressionPointcutAdvisor> advisorsCache = map.values();
-    BeanFactory beanFactory;
+    private final Map<String, AnnotationAspectJExpressionPointcutAdvisor> map
+            = new ConcurrentHashMap<>(8);
+    private       Collection<AnnotationAspectJExpressionPointcutAdvisor>  advisorsCache
+            = map.values();
+
+    private BeanFactory beanFactory;
 
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -28,7 +32,9 @@ public class AnnotationAspectJExpressionPointcutAdvisorManager implements BeanFa
     public void addMethodEnhanceAdvice(String pointCutExpr, AdvicePoint point) {
         AnnotationAspectJExpressionPointcutAdvisor advisor = map.get(pointCutExpr);
         if (advisor == null) {
-            advisor = new AnnotationAspectJExpressionPointcutAdvisor(pointCutExpr, new MethodEnhanceAdviceInterceptor());
+            advisor = new AnnotationAspectJExpressionPointcutAdvisor(
+                    pointCutExpr, new MethodEnhanceAdviceInterceptor()
+            );
             map.put(pointCutExpr, advisor);
         }
         advisor.addAdvicePoint(point);
@@ -43,7 +49,7 @@ public class AnnotationAspectJExpressionPointcutAdvisorManager implements BeanFa
 
     public Collection<AnnotationAspectJExpressionPointcutAdvisor> getAdvisorCandidates(Class<?> clazz) {
         LinkedList<AnnotationAspectJExpressionPointcutAdvisor> candidate = new LinkedList<>();
-        Collection<AnnotationAspectJExpressionPointcutAdvisor> advisors = getAdvisorCandidates();
+        Collection<AnnotationAspectJExpressionPointcutAdvisor> advisors  = getAdvisorCandidates();
         for (AnnotationAspectJExpressionPointcutAdvisor advisor : advisors) {
             if (!advisor.getPointcut().getClassFilter().matches(clazz)) {
                 continue;

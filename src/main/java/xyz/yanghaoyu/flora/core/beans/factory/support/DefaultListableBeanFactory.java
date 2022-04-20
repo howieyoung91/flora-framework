@@ -11,8 +11,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFactory implements BeanDefinitionRegistry, ConfigurableListableBeanFactory {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultListableBeanFactory.class);
-    private Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
+    private static final Logger                      LOGGER            = LoggerFactory.getLogger(DefaultListableBeanFactory.class);
+    private              Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
 
     @Override
     public void registerBeanDefinition(String beanName, BeanDefinition beanDefinition) {
@@ -43,7 +43,7 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
     public <T> Map<String, T> getBeansOfType(Class<T> type) throws BeansException {
         Map<String, T> result = new HashMap<>();
         beanDefinitionMap.forEach((beanName, beanDefinition) -> {
-            Class beanClass = beanDefinition.getBeanClass();
+            Class<?> beanClass = beanDefinition.getBeanClass();
             if (type.isAssignableFrom(beanClass)) {
                 result.put(beanName, (T) getBean(beanName));
             }

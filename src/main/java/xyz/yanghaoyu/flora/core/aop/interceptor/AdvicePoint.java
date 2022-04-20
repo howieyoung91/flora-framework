@@ -10,13 +10,6 @@ public interface AdvicePoint extends Chain.Point, Comparable<AdvicePoint> {
 
     default int compareTo(AdvicePoint o) {
         return Integer.compare(getOrder(), o.getOrder());
-        // if (getOrder() == Ordered.LOWEST_PRECEDENCE) {
-        //     return 1;
-        // }
-        // if (getOrder() == Ordered.HIGHEST_PRECEDENCE) {
-        //     return -1;
-        // }
-        // return getOrder() - o.getOrder();
     }
 
     default Object proceed(Chain chain) throws Throwable {

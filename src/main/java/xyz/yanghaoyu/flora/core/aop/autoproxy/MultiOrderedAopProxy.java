@@ -22,10 +22,12 @@ public interface MultiOrderedAopProxy extends AopProxy {
         if (methodInterceptors.size() == 0) {
             return null;
         }
-        MethodEnhanceAdviceInterceptor methodEnhanceAdviceInterceptor = new MethodEnhanceAdviceInterceptor();
-
+        // 真正使用的拦截器
+        MethodEnhanceAdviceInterceptor willUsedMethodEnhanceAdviceInterceptor = new MethodEnhanceAdviceInterceptor();
         LinkedList<AdvicePoint> points = new LinkedList<>();
         AdviceChain adviceChain = new AdviceChain(points);
+        
+        // 加入到新的 adviceChain 中
         for (MultiMethodInterceptor methodInterceptor : methodInterceptors) {
             methodInterceptor.getMethodChain().forEach(adviceChain::addPoint);
         }
@@ -33,7 +35,7 @@ public interface MultiOrderedAopProxy extends AopProxy {
         // 完成排序
         Collections.sort(points);
 
-        adviceChain.forEach(point -> methodEnhanceAdviceInterceptor.addAdvice((AdvicePoint) point));
-        return methodEnhanceAdviceInterceptor;
+        adviceChain.forEach(point -> willUsedMethodEnhanceAdviceInterceptor.addAdvice((AdvicePoint) point));
+        return willUsedMethodEnhanceAdviceInterceptor;
     }
 }

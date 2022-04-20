@@ -14,13 +14,22 @@ import xyz.yanghaoyu.flora.core.context.support.ConversionServiceFactoryBean;
 
 
 public interface BuiltInBean {
-    Class<?> CONVERTER_FACTORY_BEAN = ConversionServiceFactoryBean.class;
-    Class<?> DEFAULT_ADVISOR_AUTO_PROXY_CREATOR = DefaultAdvisorAutoProxyCreator.class;
-    Class<?> ANNOTATION_AWARE_ASPECT_J_AUTO_PROXY_SUPPORT_BEAN_FACTORY_POST_PROCESSOR = AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor.class;
-    Class<?> AUTOWIRED_ANNOTATION_BEAN_POST_PROCESSOR = AutowiredAnnotationBeanPostProcessor.class;
-    Class<?> ANNOTATION_AWARE_ASPECT_J_AUTO_PROXY_CREATOR = AnnotationAwareAspectJAutoProxyCreator.class;
-    Class<?> PROPERTY_PLACEHOLDER_CONFIGURER = PropertyPlaceholderConfigurer.class;
-    Class<?> CONFIGURATION_BEAN_BEAN_FACTORY_POST_PROCESSOR = ConfigurationBeanBeanFactoryPostProcessor.class;
-    Class<?> INIT_DESTROY_ANNOTATION_BEAN_POST_PROCESSOR = InitDestroyAnnotationBeanPostProcessor.class;
-    Class<?> CONFIGURATION_PROPERTIES_BINDING_POST_PROCESSOR = ConfigurationPropertiesBindingPostProcessor.class;
+    Class<?> CONVERTER_FACTORY_BEAN
+            = ConversionServiceFactoryBean.class;
+    Class<?> DEFAULT_ADVISOR_AUTO_PROXY_CREATOR
+            = DefaultAdvisorAutoProxyCreator.class;
+    Class<?> ANNOTATION_AWARE_ASPECT_J_AUTO_PROXY_SUPPORT_BEAN_FACTORY_POST_PROCESSOR
+            = AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor.class;
+    Class<?> AUTOWIRED_ANNOTATION_BEAN_POST_PROCESSOR
+            = AutowiredAnnotationBeanPostProcessor.class;
+    Class<?> ANNOTATION_AWARE_ASPECT_J_AUTO_PROXY_CREATOR
+            = AnnotationAwareAspectJAutoProxyCreator.class;
+    Class<?> PROPERTY_PLACEHOLDER_CONFIGURER
+            = PropertyPlaceholderConfigurer.class;
+    Class<?> CONFIGURATION_BEAN_BEAN_FACTORY_POST_PROCESSOR
+            = ConfigurationBeanBeanFactoryPostProcessor.class;
+    Class<?> INIT_DESTROY_ANNOTATION_BEAN_POST_PROCESSOR
+            = InitDestroyAnnotationBeanPostProcessor.class;
+    Class<?> CONFIGURATION_PROPERTIES_BINDING_POST_PROCESSOR
+            = ConfigurationPropertiesBindingPostProcessor.class;
 }

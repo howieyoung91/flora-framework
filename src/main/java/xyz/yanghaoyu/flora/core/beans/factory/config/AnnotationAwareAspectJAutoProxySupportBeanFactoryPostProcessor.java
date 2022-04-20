@@ -32,35 +32,48 @@ public class AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor
         LOGGER.trace("init [Aspect] ...");
         AnnotationAspectJExpressionPointcutAdvisorManager manager;
         try {
-            manager = beanFactory.getBean(AnnotationAspectJExpressionPointcutAdvisorManager.class.getName(), AnnotationAspectJExpressionPointcutAdvisorManager.class);
+            manager = beanFactory.getBean(
+                    AnnotationAspectJExpressionPointcutAdvisorManager.class.getName(),
+                    AnnotationAspectJExpressionPointcutAdvisorManager.class
+            );
         } catch (BeansException e) {
             manager = new AnnotationAspectJExpressionPointcutAdvisorManager();
-            beanFactory.registerSingleton(AnnotationAspectJExpressionPointcutAdvisorManager.class.getName(), manager);
+            beanFactory.registerSingleton(
+                    AnnotationAspectJExpressionPointcutAdvisorManager.class.getName(),
+                    manager
+            );
         }
         String[] names = beanFactory.getBeanDefinitionNames();
         for (String name : names) {
             // 首先 生成 Aspect
 
-            Class      clazz      = beanFactory.getBeanDefinition(name).getBeanClass();
+            Class<?> clazz = beanFactory.getBeanDefinition(name).getBeanClass();
+            // 是否标记 @Aspect
             Annotation annotation = clazz.getAnnotation(Aspect.class);
             if (annotation != null) {
                 Object   bean    = beanFactory.getBean(name);
                 Method[] methods = clazz.getDeclaredMethods();
 
+                // 查找被 @Enhance 标记的方法
                 for (Method method : methods) {
                     Aop.Enhance enhanceAnno = method.getAnnotation(Aop.Enhance.class);
                     if (enhanceAnno == null) {
                         continue;
                     }
-                    int order = getAdviceOrder(method);
+
                     LOGGER.trace("register [Pointcut] [{}]", enhanceAnno.pointcut());
-                    manager.addMethodEnhanceAdvice(enhanceAnno.pointcut(), new Point(bean, method, order));
+                    manager.addMethodEnhanceAdvice(
+                            enhanceAnno.pointcut(),
+                            new Point(bean, method, getAdviceOrder(method))
+                    );
                 }
             }
         }
     }
 
+    // 确定优先级
     private int getAdviceOrder(Method method) {
+        // 解析 @Order
         Order orderAnn = method.getAnnotation(Order.class);
         return orderAnn == null ? Ordered.LOWEST_PRECEDENCE : orderAnn.value();
     }

@@ -43,7 +43,7 @@ public class ConfigurationPropertiesBindingPostProcessor
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         BeanDefinition beanDef = beanFactory.getBeanDefinition(beanName);
-        Class<?> clazz = bean.getClass();
+        Class<?>       clazz   = bean.getClass();
         clazz = ReflectUtil.isCglibProxyClass(clazz) ? clazz.getSuperclass() : clazz;
         Method factoryMethod = beanDef.getFactoryMethod();
         if (factoryMethod == null) {
@@ -65,7 +65,7 @@ public class ConfigurationPropertiesBindingPostProcessor
 
     private void handleConfigurationPropertiesAnnotation(Object bean, Method factoryMethod) {
         ConfigurationProperties configurationProperties = factoryMethod.getAnnotation(ConfigurationProperties.class);
-        Class<?> actualClass = factoryMethod.getReturnType();
+        Class<?>                actualClass             = factoryMethod.getReturnType();
         inject(bean, actualClass, configurationProperties);
     }
 
@@ -78,13 +78,13 @@ public class ConfigurationPropertiesBindingPostProcessor
         if (configPropertiesAnn == null) {
             return;
         }
-        String prefix = configPropertiesAnn.prefix();
+        String  prefix         = configPropertiesAnn.prefix();
         Field[] declaredFields = actualClass.getDeclaredFields();
         for (Field field : declaredFields) {
             if (!shouldConfig(field)) {
                 continue;
             }
-            String key = PropertyUtil.createPropertyKey(prefix + "." + field.getName());
+            String key   = PropertyUtil.createPropertyKey(prefix + "." + field.getName());
             Object value = beanFactory.resolveEmbeddedValue(key);
             if (value == null) {
                 continue;

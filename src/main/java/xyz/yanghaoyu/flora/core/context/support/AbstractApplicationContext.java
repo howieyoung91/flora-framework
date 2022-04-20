@@ -11,10 +11,7 @@ import xyz.yanghaoyu.flora.core.beans.factory.config.ConfigurationBeanBeanFactor
 import xyz.yanghaoyu.flora.core.beans.factory.support.ApplicationContextAwareProcessor;
 import xyz.yanghaoyu.flora.core.context.ApplicationListener;
 import xyz.yanghaoyu.flora.core.context.ConfigurableApplicationContext;
-import xyz.yanghaoyu.flora.core.context.event.ApplicationEvent;
-import xyz.yanghaoyu.flora.core.context.event.ApplicationEventMulticaster;
-import xyz.yanghaoyu.flora.core.context.event.ContextRefreshedEvent;
-import xyz.yanghaoyu.flora.core.context.event.SimpleApplicationEventMulticaster;
+import xyz.yanghaoyu.flora.core.context.event.*;
 import xyz.yanghaoyu.flora.core.convert.support.DefaultConversionService;
 import xyz.yanghaoyu.flora.core.io.loader.DefaultResourceLoader;
 import xyz.yanghaoyu.flora.exception.BeansException;
@@ -31,17 +28,19 @@ import static xyz.yanghaoyu.flora.constant.BuiltInBean.CONVERTER_FACTORY_BEAN;
  */
 
 public abstract class AbstractApplicationContext extends DefaultResourceLoader implements ConfigurableApplicationContext {
-    public static final String APPLICATION_EVENT_MULTICASTER_BEAN_NAME = BeanUtil.builtInBeanName(ApplicationEventMulticaster.class);
+    public static final  String APPLICATION_EVENT_MULTICASTER_BEAN_NAME
+                                       = BeanUtil.builtInBeanName(ApplicationEventMulticaster.class);
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractApplicationContext.class);
-    private ApplicationEventMulticaster applicationEventMulticaster;
     private static final String BANNER =
             "\n" +
-            " _______  __        ______   .______          ___      \n" +
-            "|   ____||  |      /  __  \\  |   _  \\        /   \\     \n" +
-            "|  |__   |  |     |  |  |  | |  |_)  |      /  ^  \\    \n" +
-            "|   __|  |  |     |  |  |  | |      /      /  /_\\  \\   \n" +
-            "|  |     |  `----.|  `--'  | |  |\\  \\----./  _____  \\  \n" +
-            "|__|     |_______| \\______/  | _| `._____/__/     \\__\\ \n";
+                    " _______  __        ______   .______          ___      \n" +
+                    "|   ____||  |      /  __  \\  |   _  \\        /   \\     \n" +
+                    "|  |__   |  |     |  |  |  | |  |_)  |      /  ^  \\    \n" +
+                    "|   __|  |  |     |  |  |  | |      /      /  /_\\  \\   \n" +
+                    "|  |     |  `----.|  `--'  | |  |\\  \\----./  _____  \\  \n" +
+                    "|__|     |_______| \\______/  | _| `._____/__/     \\__\\ \n";
+
+    private ApplicationEventMulticaster applicationEventMulticaster;
 
     @Override
     public void refresh() throws BeansException {
@@ -164,7 +163,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     private void additionallyLoadBeanDefinition() {
         LOGGER.trace("start resolve [Configuration] ...");
         ConfigurableListableBeanFactory beanFactory = getBeanFactory();
-        Collection<ConfigurationBeanBeanFactoryPostProcessor> configBeanFactoryPostProcesses = beanFactory.getBeansOfType(ConfigurationBeanBeanFactoryPostProcessor.class).values();
+        Collection<ConfigurationBeanBeanFactoryPostProcessor> configBeanFactoryPostProcesses
+                = beanFactory.getBeansOfType(ConfigurationBeanBeanFactoryPostProcessor.class).values();
         for (ConfigurationBeanBeanFactoryPostProcessor configBeanFactoryPostProcess : configBeanFactoryPostProcesses) {
             configBeanFactoryPostProcess.postProcessBeanFactory(beanFactory);
         }
@@ -182,7 +182,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         BeanFactoryPostProcessor proxyBeanFactoryPostProcessor = null;
         for (BeanFactoryPostProcessor beanFactoryPostProcessor : beanFactoryPostProcessorMap.values()) {
             // 支持 aop 的 处理 最后再调用 防止 aop 丢失
-            if (beanFactoryPostProcessor instanceof AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor) {
+            // IocUtil.EnableAop() 将会注入 AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor
+            if (beanFactoryPostProcessor instanceof
+                    AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor) {
                 proxyBeanFactoryPostProcessor = beanFactoryPostProcessor;
                 continue;
             }
@@ -194,10 +196,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         }
 
         if (proxyBeanFactoryPostProcessor != null) {
-            // 先 BeanFactoryPostProcessor 获取到 enhance 信息
+            // 先从 BeanFactoryPostProcessor 获取到 enhance 信息
             proxyBeanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
             // 添加 对 aop 支持的 bean post processor
-            Collection<AnnotationAwareAspectJAutoProxyCreator> values = beanFactory.getBeansOfType(AnnotationAwareAspectJAutoProxyCreator.class).values();
+            // IocUtil.EnableAop() 将会注入 AnnotationAwareAspectJAutoProxyCreator
+            Collection<AnnotationAwareAspectJAutoProxyCreator> values
+                    = beanFactory.getBeansOfType(AnnotationAwareAspectJAutoProxyCreator.class).values();
             for (BeanPostProcessor value : values) {
                 beanFactory.addBeanPostProcessor(value);
             }
@@ -228,6 +232,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
     @Override
     public void close() {
+        publishEvent(new ContextClosedEvent(this));
         getBeanFactory().destroySingletons();
     }
 

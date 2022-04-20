@@ -14,12 +14,12 @@ public @interface Inject {
     @Target({ElementType.FIELD, ElementType.PARAMETER})
     @Retention(RetentionPolicy.RUNTIME)
     @interface ByType {
-        Class DEFAULT_CLASS = Object.class;
+        Class<?> DEFAULT_CLASS = Object.class;
 
         // 默认注入与 field 匹配的 bean, 使用 value可以指定注入类型
-        Class value() default Object.class;
+        Class<?> value() default Object.class;
 
-        Class clazz() default Object.class;
+        Class<?> clazz() default Object.class;
 
         boolean required() default true;
     }

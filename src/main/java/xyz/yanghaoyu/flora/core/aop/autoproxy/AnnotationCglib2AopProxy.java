@@ -39,7 +39,6 @@ public class AnnotationCglib2AopProxy extends AnnotationAopProxy implements Meth
         }
 
         // 获取真实的拦截器 主要目的是把多个拦截器合并为一个 确保优先级正确
-        // 这里不应该循环触发拦截器 因为会造成方法的多次调用
         interceptor = getEnhanceMethodInterceptor(method);
 
         if (interceptor == null) {
@@ -59,7 +58,6 @@ public class AnnotationCglib2AopProxy extends AnnotationAopProxy implements Meth
     }
 
     private Object invokeActualMethod(Object[] args, MethodProxy methodProxy) throws Throwable {
-        // return method.invoke(advisedSupport.getTargetSource().getTarget(), args)
         return methodProxy.invoke(advisedSupport.getTargetSource().getTarget(), args);
     }
 }

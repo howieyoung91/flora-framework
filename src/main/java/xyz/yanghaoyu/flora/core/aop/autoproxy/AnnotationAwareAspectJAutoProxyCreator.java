@@ -23,9 +23,11 @@ import java.util.Set;
  * @version 1.0
  */
 
-public class AnnotationAwareAspectJAutoProxyCreator implements SmartInstantiationAwareBeanPostProcessor, BeanFactoryAware, Ordered {
-    protected DefaultListableBeanFactory beanFactory;
-    protected final Set<Object> earlyProxyReferences = Collections.synchronizedSet(new HashSet<>());
+public class AnnotationAwareAspectJAutoProxyCreator
+        implements SmartInstantiationAwareBeanPostProcessor, BeanFactoryAware, Ordered {
+    protected       DefaultListableBeanFactory beanFactory;
+    protected final Set<Object>                earlyProxyReferences
+            = Collections.synchronizedSet(new HashSet<>());
 
     @Override
     public int getOrder() {
@@ -39,9 +41,9 @@ public class AnnotationAwareAspectJAutoProxyCreator implements SmartInstantiatio
 
     private boolean isInfrastructureClass(Class<?> beanClass) {
         return ReflectUtil.isCglibProxyClass(beanClass)
-               || Advice.class.isAssignableFrom(beanClass)
-               || Pointcut.class.isAssignableFrom(beanClass)
-               || Advisor.class.isAssignableFrom(beanClass);
+                || Advice.class.isAssignableFrom(beanClass)
+                || Pointcut.class.isAssignableFrom(beanClass)
+                || Advisor.class.isAssignableFrom(beanClass);
     }
 
     @Override
@@ -70,14 +72,17 @@ public class AnnotationAwareAspectJAutoProxyCreator implements SmartInstantiatio
         }
 
         // 代理
-        TargetSource targetSource = new TargetSource(bean);
-        AnnotationAdvisedSupport support = new AnnotationAdvisedSupport();
+        TargetSource             targetSource = new TargetSource(bean);
+        AnnotationAdvisedSupport support      = new AnnotationAdvisedSupport();
         support.setTargetSource(targetSource);
         // 默认使用 cglib
         support.setProxyTargetClass(true);
         // 把候选的拦截器注入
         for (AnnotationAspectJExpressionPointcutAdvisor advisor : candidates) {
-            support.addMethodInterceptor(advisor.getPointcut().getMethodMatcher(), (MultiMethodInterceptor) advisor.getAdvice());
+            support.addMethodInterceptor(
+                    advisor.getPointcut().getMethodMatcher(),
+                    (MultiMethodInterceptor) advisor.getAdvice()
+            );
         }
         bean = new AnnotationProxyFactory(support).getProxy();
         return bean;

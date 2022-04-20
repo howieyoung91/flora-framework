@@ -14,10 +14,12 @@ public @interface Life {
     // Initialize Method 是不支持 aop 的
     @Target({ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
-    @interface Initialize {}
+    @interface Initialize {
+    }
 
     // Destroy Method 支持 aop
     @Target({ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
-    @interface Destroy {}
+    @interface Destroy {
+    }
 }
