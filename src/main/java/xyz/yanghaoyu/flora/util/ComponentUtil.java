@@ -1,6 +1,5 @@
 package xyz.yanghaoyu.flora.util;
 
-import com.sun.istack.internal.Nullable;
 import xyz.yanghaoyu.flora.annotation.*;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.core.beans.factory.support.DisposableBean;
@@ -24,7 +23,6 @@ public abstract class ComponentUtil {
      * @param clazz the clazz
      * @return the bean definition
      */
-    @Nullable
     public static BeanDefinition parse(Class<?> clazz) {
         if (!clazz.isAnnotationPresent(Component.class) && !clazz.isAnnotationPresent(Configuration.class)) {
             return null;
