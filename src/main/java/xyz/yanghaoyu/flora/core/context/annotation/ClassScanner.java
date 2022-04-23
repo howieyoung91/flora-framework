@@ -18,7 +18,7 @@ import java.util.jar.JarFile;
  */
 
 public abstract class ClassScanner {
-    protected final String targetPackage;
+    protected final String        targetPackage;
     protected final Set<Class<?>> classSet = new HashSet<>();
 
     public ClassScanner(String pkgName) {
@@ -32,7 +32,8 @@ public abstract class ClassScanner {
     public final ClassScanner scan() {
         try {
             // 从包名获取 URL 类型的资源
-            Enumeration<URL> urls = ReflectUtil.getDefaultClassLoader().getResources(targetPackage.replace(".", "/"));
+            Enumeration<URL> urls = ReflectUtil.getDefaultClassLoader()
+                    .getResources(targetPackage.replace(".", "/"));
             // 遍历 URL 资源
             while (urls.hasMoreElements()) {
                 URL url = urls.nextElement();
@@ -46,20 +47,20 @@ public abstract class ClassScanner {
                     } else if (protocol.equals("jar")) {
                         // 若在 jar 包中，则解析 jar 包中的 entry
                         JarURLConnection jarURLConnection = (JarURLConnection) url.openConnection();
-                        try (JarFile jarFile = jarURLConnection.getJarFile()) {
-                            Enumeration<JarEntry> jarEntries = jarFile.entries();
-                            while (jarEntries.hasMoreElements()) {
-                                JarEntry jarEntry = jarEntries.nextElement();
-                                String jarEntryName = jarEntry.getName();
-                                // 判断该 entry 是否为 class
-                                if (jarEntryName.endsWith(".class")) {
-                                    // 获取类名
-                                    String className = jarEntryName.substring(0, jarEntryName.lastIndexOf(".")).replaceAll("/", ".");
-                                    // 执行添加类操作
-                                    doAddClass(classSet, className);
-                                }
+                        JarFile jarFile = jarURLConnection.getJarFile();
+                        Enumeration<JarEntry> jarEntries = jarFile.entries();
+                        while (jarEntries.hasMoreElements()) {
+                            JarEntry jarEntry = jarEntries.nextElement();
+                            String jarEntryName = jarEntry.getName();
+                            // 判断该 entry 是否为 class
+                            if (jarEntryName.endsWith(".class")) {
+                                // 获取类名
+                                String className = jarEntryName.substring(0, jarEntryName.lastIndexOf(".")).replaceAll("/", ".");
+                                // 执行添加类操作
+                                doAddClass(classSet, className);
                             }
                         }
+                        jarFile.close();
                     }
                 }
             }

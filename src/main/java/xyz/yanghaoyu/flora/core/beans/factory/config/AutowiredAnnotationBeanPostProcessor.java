@@ -18,7 +18,8 @@ import java.util.Map;
 /**
  * Support @Inject.ByType @Inject.ByName @Value
  */
-public class AutowiredAnnotationBeanPostProcessor implements InstantiationAwareBeanPostProcessor, BeanFactoryAware {
+public class AutowiredAnnotationBeanPostProcessor
+        implements InstantiationAwareBeanPostProcessor, BeanFactoryAware {
     private ConfigurableListableBeanFactory beanFactory;
 
     @Override

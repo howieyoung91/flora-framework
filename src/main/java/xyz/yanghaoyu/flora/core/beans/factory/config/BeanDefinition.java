@@ -6,16 +6,16 @@ import xyz.yanghaoyu.flora.core.beans.factory.PropertyValues;
 import java.lang.reflect.Method;
 
 public class BeanDefinition {
-    private Class beanClass;
+    private Class          beanClass;
     private PropertyValues propertyValues;
-    private String initMethodName;
-    private String destroyMethodName;
-    private boolean singleton = true;
-    private boolean prototype = false;
+    private String         initMethodName;
+    private String         destroyMethodName;
+    private boolean        singleton = true;
+    private boolean        prototype = false;
 
     // @Bean @Configuration support
     private String configurationClassBeanName = null;
-    private Method factoryMethod = null;
+    private Method factoryMethod              = null;
 
     public BeanDefinition(Class beanClass) {
         this.beanClass = beanClass;

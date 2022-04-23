@@ -10,10 +10,7 @@ import xyz.yanghaoyu.flora.exception.BeansException;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
+import java.util.*;
 
 public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
 
@@ -25,9 +22,9 @@ public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
     /**
      * Default placeholder suffix: {@value}
      */
-    public static final String DEFAULT_PLACEHOLDER_SUFFIX = "}";
-    public static final String LOCATIONS = "locations";
-    private Set<String> locations;
+    public static final String      DEFAULT_PLACEHOLDER_SUFFIX = "}";
+    public static final String      LOCATIONS                  = "locations";
+    private             Set<String> locations;
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
@@ -90,14 +87,18 @@ public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
         return map;
     }
 
-    public Map<String, String> flatTree(Map<String, Object> tree) {
+    public static Map<String, String> flatTree(Map<String, Object> tree) {
         HashMap<String, String> res = new HashMap<>();
         tree.forEach((k, v) -> {
             if (v instanceof Map) {
                 flatTree((Map<String, Object>) v)
                         .forEach((s, s2) -> res.put(k + "." + s, s2));
             } else {
-                res.put(k, v.toString());
+                String value = v.toString();
+                if (v instanceof List) {
+                    value = value.substring(1, value.length() - 1);
+                }
+                res.put(k, value);
             }
         });
         return res;

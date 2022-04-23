@@ -30,7 +30,7 @@ public abstract class ComponentUtil {
         Component componentAnn = clazz.getAnnotation(Component.class);
         Configuration configAnn = clazz.getAnnotation(Configuration.class);
         if (componentAnn != null && configAnn != null) {
-            throw new DuplicateDeclarationException("the duplicate declaration [@Component] and [@Configuration] on class [" + clazz.getSimpleName() + "]");
+            throw new DuplicateDeclarationException("duplicate declaration [@Component] and [@Configuration] on class [" + clazz.getSimpleName() + "]");
         }
         BeanDefinition beanDefinition = new BeanDefinition(clazz);
         determineBeanScope(beanDefinition);
@@ -136,7 +136,7 @@ public abstract class ComponentUtil {
     public static String determineBeanName(Method method, Bean beanAnn) {
         String beanName = beanAnn.value();
         if (Objects.equals(beanName, Component.DEFAULT_BEAN_NAME)) {
-            beanName = StringUtil.lowerFirstChar(method.getReturnType().getSimpleName());
+            beanName = StringUtil.lowerFirstChar(method.getName());
         }
         return beanName;
     }

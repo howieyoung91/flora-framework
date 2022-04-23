@@ -7,10 +7,13 @@ import xyz.yanghaoyu.flora.core.beans.factory.support.DefaultListableBeanFactory
 import xyz.yanghaoyu.flora.core.context.annotation.ClassPathBeanDefinitionScanner;
 import xyz.yanghaoyu.flora.core.io.loader.DefaultResourceLoader;
 import xyz.yanghaoyu.flora.core.io.reader.XmlBeanDefinitionReader;
+import xyz.yanghaoyu.flora.core.io.spi.FloraFactoriesLoader;
 import xyz.yanghaoyu.flora.util.ComponentUtil;
 import xyz.yanghaoyu.flora.util.IocUtil;
+import xyz.yanghaoyu.flora.util.StringUtil;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -23,15 +26,15 @@ import java.util.Set;
 
 public class ConfigurationBeanClassScanner {
     private final DefaultListableBeanFactory beanFactory;
-    private final Set<String> startBeanNames;
+    private final Set<String>                startBeanNames;
     // 正在扫描的 Config Bean 用于打破递归
-    private final Set<String> current
+    private final Set<String>                current
             = new HashSet<>(6);
     // 已经完成的 Config Bean
-    private final Set<String> already
+    private final Set<String>                already
             = new HashSet<>(6);
     // 新添加的 Config Bean
-    private final Set<String> waitingConfigBeanNames
+    private final Set<String>                waitingConfigBeanNames
             = new HashSet<>(0);
 
     public ConfigurationBeanClassScanner(DefaultListableBeanFactory beanFactory, Set<String> startClasses) {
@@ -72,12 +75,49 @@ public class ConfigurationBeanClassScanner {
 
         parseComponentScan(clazz);
         parseAop(clazz);
-        parserPropertyPlaceholder(clazz);
+        parsePropertyPlaceholder(clazz);
         parseImportConfiguration(clazz);
         parseImportResources(clazz);
-
+        parseEnableAutoConfiguration(clazz);
         current.remove(beanDefName);
         already.add(beanDefName);
+    }
+
+    boolean parsed = false;
+
+    private void parseEnableAutoConfiguration(Class<?> clazz) {
+        if (clazz.isAnnotationPresent(Enable.AutoConfiguration.class)) {
+            if (parsed) {
+                return;
+            }
+            Map<String, Map<String, String>> factories =
+                    FloraFactoriesLoader.loadFactories(null);
+            try {
+                for (Map<String, String> factory : factories.values()) {
+                    String classes = factory.get("flora.framework.autoconfiguration");
+                    if (classes == null) {
+                        continue;
+                    }
+                    String[] classNames = StringUtil.commaDelimitedListToStringArray(classes);
+                    for (String className : classNames) {
+                        Class<?> configClass = Class.forName(className);
+                        Configuration configAnn = configClass.getAnnotation(Configuration.class);
+                        if (configAnn == null) {
+                            continue;
+                        }
+                        // 注入配置
+                        BeanDefinition beanDef = ComponentUtil.parse(configClass);
+                        assert beanDef != null;
+                        String beanName = ComponentUtil.determineBeanName(beanDef);
+                        beanFactory.registerBeanDefinition(beanName, beanDef);
+                        waitingConfigBeanNames.add(beanName);
+                    }
+                }
+                parsed = true;
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private void parseImportResources(Class<?> clazz) {
@@ -86,10 +126,11 @@ public class ConfigurationBeanClassScanner {
             String[] resource = importResourceAnn.resources();
             XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory, new DefaultResourceLoader());
             reader.setShouldRegister(beanName -> beanDefinition -> beanDefinitionRegistry -> {
-                // 不判断是否存在 直接添加
+                // 添加到 waitingConfigBeanNames
                 if (beanDefinition.getBeanClass().isAnnotationPresent(Configuration.class)) {
                     waitingConfigBeanNames.add(beanName);
                 }
+                // 不判断是否存在 直接添加
                 return true;
             });
             reader.loadBeanDefinitions(resource);
@@ -97,7 +138,7 @@ public class ConfigurationBeanClassScanner {
     }
 
 
-    private void parserPropertyPlaceholder(Class<?> clazz) {
+    private void parsePropertyPlaceholder(Class<?> clazz) {
         Enable.PropertySource propertyPlaceholderAnn = clazz.getAnnotation(Enable.PropertySource.class);
         if (propertyPlaceholderAnn != null) {
             String[] location = propertyPlaceholderAnn.location();
@@ -124,6 +165,10 @@ public class ConfigurationBeanClassScanner {
                 if (configAnn != null && !startBeanNames.contains(newBeanName)) {
                     waitingConfigBeanNames.add(newBeanName);
                 }
+                // if (beanFactory.containsBeanDefinition(newBeanName)) {
+                //     throw new BeanDefinitionOverrideException("the bean [" + newBeanName + "] cannot be registered because it will override the old bean");
+                // }
+                // 这里会覆盖掉以前的 BeanDefinition
                 beanFactory.registerBeanDefinition(newBeanName, newBeanDef);
             }
         }
@@ -133,7 +178,6 @@ public class ConfigurationBeanClassScanner {
         Import.Configuration importConfigAnn = clazz.getAnnotation(Import.Configuration.class);
         if (importConfigAnn != null) {
             for (Class aClass : importConfigAnn.configuration()) {
-                // make sure that the @Configuration is existed
                 if (!aClass.isAnnotationPresent(Configuration.class)) {
                     continue;
                 }
