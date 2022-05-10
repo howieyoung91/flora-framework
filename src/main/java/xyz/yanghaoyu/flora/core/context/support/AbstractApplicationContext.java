@@ -4,10 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.yanghaoyu.flora.core.aop.autoproxy.AnnotationAwareAspectJAutoProxyCreator;
 import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
-import xyz.yanghaoyu.flora.core.beans.factory.config.AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor;
-import xyz.yanghaoyu.flora.core.beans.factory.config.BeanFactoryPostProcessor;
-import xyz.yanghaoyu.flora.core.beans.factory.config.BeanPostProcessor;
-import xyz.yanghaoyu.flora.core.beans.factory.config.ConfigurationBeanBeanFactoryPostProcessor;
+import xyz.yanghaoyu.flora.core.beans.factory.config.*;
 import xyz.yanghaoyu.flora.core.beans.factory.support.ApplicationContextAwareProcessor;
 import xyz.yanghaoyu.flora.core.context.ApplicationListener;
 import xyz.yanghaoyu.flora.core.context.ConfigurableApplicationContext;
@@ -33,12 +30,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractApplicationContext.class);
     private static final String BANNER =
             "\n" +
-                    " _______  __        ______   .______          ___      \n" +
-                    "|   ____||  |      /  __  \\  |   _  \\        /   \\     \n" +
-                    "|  |__   |  |     |  |  |  | |  |_)  |      /  ^  \\    \n" +
-                    "|   __|  |  |     |  |  |  | |      /      /  /_\\  \\   \n" +
-                    "|  |     |  `----.|  `--'  | |  |\\  \\----./  _____  \\  \n" +
-                    "|__|     |_______| \\______/  | _| `._____/__/     \\__\\ \n";
+            " _______  __        ______   .______          ___      \n" +
+            "|   ____||  |      /  __  \\  |   _  \\        /   \\     \n" +
+            "|  |__   |  |     |  |  |  | |  |_)  |      /  ^  \\    \n" +
+            "|   __|  |  |     |  |  |  | |      /      /  /_\\  \\   \n" +
+            "|  |     |  `----.|  `--'  | |  |\\  \\----./  _____  \\  \n" +
+            "|__|     |_______| \\______/  | _| `._____/__/     \\__\\ \n";
 
     private ApplicationEventMulticaster applicationEventMulticaster;
 
@@ -176,10 +173,32 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
      */
     private void invokeBeanFactoryPostProcessors() {
         LOGGER.trace("start register [BeanFactoryPostProcessor] ...");
-        ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+        ConfigurableListableBeanFactory beanFactory                   = getBeanFactory();
+        BeanFactoryPostProcessor        proxyBeanFactoryPostProcessor = null;
+
+        // String[] beanDefNames = beanFactory.getBeanDefinitionNames();
+        // for (String beanDefName : beanDefNames) {
+        //     BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanDefName);
+        //
+        //     if (BeanFactoryPostProcessor.class.isAssignableFrom(beanDefinition.getBeanClass())) {
+        //         if (AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor.class.isAssignableFrom(beanDefinition.getBeanClass())) {
+        //             proxyBeanFactoryPostProcessor = beanFactory.getBean(beanDefName, BeanFactoryPostProcessor.class);
+        //             continue;
+        //         }
+        //         if (ConfigurationBeanBeanFactoryPostProcessor.class.isAssignableFrom(beanDefinition.getBeanClass())) {
+        //             continue;
+        //         }
+        //         if (beanDefName.startsWith("flora$")) {
+        //             continue;
+        //         }
+        //         beanFactory.getBean(beanDefName, BeanFactoryPostProcessor.class).postProcessBeanFactory(beanFactory);
+        //     }
+        // }
+
         // 调用处理器
-        Map<String, BeanFactoryPostProcessor> beanFactoryPostProcessorMap = beanFactory.getBeansOfType(BeanFactoryPostProcessor.class);
-        BeanFactoryPostProcessor proxyBeanFactoryPostProcessor = null;
+        Map<String, BeanFactoryPostProcessor> beanFactoryPostProcessorMap =
+                beanFactory.getBeansOfType(BeanFactoryPostProcessor.class);
+        // BeanFactoryPostProcessor proxyBeanFactoryPostProcessor = null;
         for (BeanFactoryPostProcessor beanFactoryPostProcessor : beanFactoryPostProcessorMap.values()) {
             // 支持 aop 的 处理 最后再调用 防止 aop 丢失
             // IocUtil.EnableAop() 将会注入 AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor
@@ -217,6 +236,25 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         LOGGER.trace("start register [BeanPostProcessor] ...");
 
         ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+
+
+        // String[] beanDefNames = beanFactory.getBeanDefinitionNames();
+
+        // for (String beanDefName : beanDefNames) {
+        //     BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanDefName);
+        //     // if (BeanPostProcessor.class.isAssignableFrom(beanDefinition.getBeanClass())) {
+        //     if (beanDefName.startsWith("flora$")) {
+        //         Object bean = beanFactory.getBean(beanDefName);
+        //         if (bean instanceof BeanPostProcessor) {
+        //             beanFactory.addBeanPostProcessor((BeanPostProcessor) bean);
+        //         }
+        //         if (bean instanceof BeanFactoryPostProcessor) {
+        //             ((BeanFactoryPostProcessor) bean).postProcessBeanFactory(beanFactory);
+        //         }
+        //     }
+        //     // }
+        // }
+
         Map<String, BeanPostProcessor> beanPostProcessorMap = getBeanFactory().getBeansOfType(BeanPostProcessor.class);
         // 从 声明的 bean 中挑选出 BeanPostProcessor 进行注册
         for (BeanPostProcessor beanPostProcessor : beanPostProcessorMap.values()) {

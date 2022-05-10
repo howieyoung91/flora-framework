@@ -85,6 +85,7 @@ public class ConfigurationBeanClassScanner {
 
     boolean parsed = false;
 
+    // 解析 META-INF/flora.yaml
     private void parseEnableAutoConfiguration(Class<?> clazz) {
         if (clazz.isAnnotationPresent(Enable.AutoConfiguration.class)) {
             if (parsed) {
@@ -100,8 +101,9 @@ public class ConfigurationBeanClassScanner {
                     }
                     String[] classNames = StringUtil.commaDelimitedListToStringArray(classes);
                     for (String className : classNames) {
-                        Class<?> configClass = Class.forName(className);
-                        Configuration configAnn = configClass.getAnnotation(Configuration.class);
+                        className = className.trim();
+                        Class<?>      configClass = Class.forName(className);
+                        Configuration configAnn   = configClass.getAnnotation(Configuration.class);
                         if (configAnn == null) {
                             continue;
                         }
@@ -123,8 +125,8 @@ public class ConfigurationBeanClassScanner {
     private void parseImportResources(Class<?> clazz) {
         Import.Resource importResourceAnn = clazz.getAnnotation(Import.Resource.class);
         if (importResourceAnn != null) {
-            String[] resource = importResourceAnn.resources();
-            XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory, new DefaultResourceLoader());
+            String[]                resource = importResourceAnn.resources();
+            XmlBeanDefinitionReader reader   = new XmlBeanDefinitionReader(beanFactory, new DefaultResourceLoader());
             reader.setShouldRegister(beanName -> beanDefinition -> beanDefinitionRegistry -> {
                 // 添加到 waitingConfigBeanNames
                 if (beanDefinition.getBeanClass().isAnnotationPresent(Configuration.class)) {
@@ -160,8 +162,8 @@ public class ConfigurationBeanClassScanner {
             Set<BeanDefinition> newBeanDefs = new ClassPathBeanDefinitionScanner().doScan(basePackages);
 
             for (BeanDefinition newBeanDef : newBeanDefs) {
-                String newBeanName = ComponentUtil.determineBeanName(newBeanDef);
-                Configuration configAnn = (Configuration) newBeanDef.getBeanClass().getAnnotation(Configuration.class);
+                String        newBeanName = ComponentUtil.determineBeanName(newBeanDef);
+                Configuration configAnn   = (Configuration) newBeanDef.getBeanClass().getAnnotation(Configuration.class);
                 if (configAnn != null && !startBeanNames.contains(newBeanName)) {
                     waitingConfigBeanNames.add(newBeanName);
                 }

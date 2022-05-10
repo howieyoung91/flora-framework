@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanRegistry {
     private final Map<String, Object> factoryBeanObjectCache = new ConcurrentHashMap<>();
 
+    @Deprecated
     protected Object getCachedObjectForFactoryBean(String beanName) {
         Object object = this.factoryBeanObjectCache.get(beanName);
         return object == NULL_OBJECT ? null : object;

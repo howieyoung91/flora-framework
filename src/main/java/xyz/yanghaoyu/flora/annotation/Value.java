@@ -13,7 +13,11 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Value {
+    // String NULL_DEFAULT_VALUE = "";
+
     String value();
+
+    // String defaultValue() default NULL_DEFAULT_VALUE;
 
     boolean required() default true;
 }

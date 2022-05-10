@@ -83,16 +83,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
             return beanInstance;
         }
 
-        // 先看看缓存中是否存在
-        // Object object = getCachedObjectForFactoryBean(beanName);
-
-        // 不存在的话 则需要调用 FactoryBean#getObject 进行创建
-        // if (object == null) {
         FactoryBean<?> factoryBean = (FactoryBean<?>) beanInstance;
-        Object object = getObjectFromFactoryBean(factoryBean, beanName);
-        // }
 
-        return object;
+        return getObjectFromFactoryBean(factoryBean, beanName);
     }
 
     @Override

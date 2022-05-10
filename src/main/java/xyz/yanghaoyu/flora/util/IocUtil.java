@@ -9,7 +9,7 @@ import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.core.beans.factory.support.BeanDefinitionRegistry;
 
 import java.util.Arrays;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 public abstract class IocUtil {
@@ -23,10 +23,6 @@ public abstract class IocUtil {
         // Annotation AOP
         registerBuiltinBeanIfNecessary(registry, BuiltInBean.ANNOTATION_AWARE_ASPECT_J_AUTO_PROXY_SUPPORT_BEAN_FACTORY_POST_PROCESSOR);
         registerBuiltinBeanIfNecessary(registry, BuiltInBean.ANNOTATION_AWARE_ASPECT_J_AUTO_PROXY_CREATOR);
-    }
-
-    public static void enableComponentScan(BeanDefinitionRegistry registry) {
-
     }
 
     /**
@@ -72,7 +68,12 @@ public abstract class IocUtil {
         if (!registry.containsBeanDefinition(beanName)) {
             beanDef = new BeanDefinition(beanClass);
             beanDef.getPropertyValues()
-                    .addPropertyValue(new PropertyValue(resourcesLocationsFieldName, new HashSet<>(Arrays.asList(locations))));
+                    .addPropertyValue(
+                            new PropertyValue(
+                                    resourcesLocationsFieldName,
+                                    new LinkedHashSet<>(Arrays.asList(locations))
+                            )
+                    );
             registry.registerBeanDefinition(beanName, beanDef);
         } else {
             beanDef = ((ConfigurableListableBeanFactory) registry).getBeanDefinition(beanName);

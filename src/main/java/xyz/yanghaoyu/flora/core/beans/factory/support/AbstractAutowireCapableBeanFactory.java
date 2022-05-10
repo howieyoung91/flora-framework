@@ -36,8 +36,9 @@ import java.util.stream.Collectors;
 
 public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory implements AutowireCapableBeanFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractAutowireCapableBeanFactory.class);
+
     // 实例化策略
-    private InstantiationStrategy instantiationStrategy = new JDKInstantiationStrategy();
+    private final InstantiationStrategy instantiationStrategy = new JDKInstantiationStrategy();
 
     @Override
     protected Object createBean(String beanName, BeanDefinition beanDefinition, Object[] args) throws BeansException {
@@ -139,11 +140,11 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 
         if (beanDefinition.getFactoryMethod() != null) {
             String configurationClassBeanName = beanDefinition.getConfigurationClassBeanName();
-            Object configProxyBean = getBean(configurationClassBeanName);
+            Object configProxyBean            = getBean(configurationClassBeanName);
 
-            Method factoryMethod = beanDefinition.getFactoryMethod();
+            Method     factoryMethod  = beanDefinition.getFactoryMethod();
             Class<?>[] parameterTypes = factoryMethod.getParameterTypes();
-            Method method = configProxyBean.getClass().getMethod(factoryMethod.getName(), parameterTypes);
+            Method     method         = configProxyBean.getClass().getMethod(factoryMethod.getName(), parameterTypes);
 
             return method.invoke(configProxyBean, new Object[parameterTypes.length]);
         }
@@ -176,7 +177,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
      * 在设置 Bean 属性之前，允许 BeanPostProcessor 修改属性值
      */
     protected void applyBeanPostProcessorsBeforeApplyingPropertyValues(String beanName, Object bean, BeanDefinition beanDefinition) {
-        for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
+        List<BeanPostProcessor> beanPostProcessors = getBeanPostProcessors();
+        for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
             if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
                 // PropertyValues pvs =
                 ((InstantiationAwareBeanPostProcessor) beanPostProcessor).postProcessPropertyValues(beanDefinition.getPropertyValues(), bean, beanName);
@@ -197,14 +199,14 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         PropertyValues propertyValues = beanDefinition.getPropertyValues();
         try {
             for (PropertyValue propertyValue : propertyValues) {
-                String name = propertyValue.getName();
+                String name  = propertyValue.getName();
                 Object value = propertyValue.getValue();
                 if (value instanceof BeanReference) {
                     value = getBean(((BeanReference) value).getBeanName());
                 } else {
                     Class<?> sourceType = value.getClass();
                     Class<?> targetType = null;
-                    Type fieldType = TypeUtil.getFieldType(bean.getClass(), name);
+                    Type     fieldType  = TypeUtil.getFieldType(bean.getClass(), name);
                     if (fieldType instanceof ParameterizedTypeImpl) {
                         targetType = ((ParameterizedTypeImpl) fieldType).getRawType();
                     } else {
@@ -229,6 +231,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
                 ((BeanNameAware) bean).setBeanName(beanName);
             } else if (bean instanceof BeanClassLoaderAware) {
                 ((BeanClassLoaderAware) bean).setBeanClassLoader(bean.getClass().getClassLoader());
+            } else if (bean instanceof BeanDefinitionRegistryAware) {
+                ((BeanDefinitionRegistryAware) bean).setBeanRegistry((BeanDefinitionRegistry) this);
             }
         }
 
@@ -249,7 +253,6 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     /**
      * 在初始化之前
      */
-    @Override
     public Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName) throws BeansException {
         Object result = existingBean;
         for (BeanPostProcessor processor : getBeanPostProcessors()) {
@@ -285,7 +288,6 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     /**
      * 在初始化之后
      */
-    @Override
     public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName) throws BeansException {
         Object result = existingBean;
         for (BeanPostProcessor processor : getBeanPostProcessors()) {

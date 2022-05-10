@@ -52,7 +52,7 @@ public class AutowiredAnnotationBeanPostProcessor
         if (injectByTypeAnno != null) {
             // determine the dependOnBeanClass
             Class value = injectByTypeAnno.value();
-            Class clz = injectByTypeAnno.clazz();
+            Class clz   = injectByTypeAnno.clazz();
 
             Class dependOnBeanClass = value == clz
                     ? value
@@ -82,7 +82,7 @@ public class AutowiredAnnotationBeanPostProcessor
         // 处理 Inject.ByName
         if (injectByNameAnno != null) {
             String value = injectByNameAnno.value();
-            String id = injectByNameAnno.id();
+            String id    = injectByNameAnno.id();
             if (StringUtil.isEmpty(id)) {
                 id = StringUtil.isEmpty(value)
                         ? StringUtil.lowerFirstChar(field.getName())
@@ -102,10 +102,16 @@ public class AutowiredAnnotationBeanPostProcessor
             Object value = valueAnn.value();
             value = beanFactory.resolveEmbeddedValue((String) value);
 
-            if (value == null) {
+            if (StringUtil.isEmpty((String) value)
+                || ((String) value).charAt(0) == '$') {
+                // String defaultValue = valueAnn.defaultValue();
                 if (valueAnn.required()) {
+                    // if (defaultValue.equals(Value.NULL_DEFAULT_VALUE)) {
                     throw new BeansException("Fail to find the value [" + valueAnn.value() + "]");
+                    // }
                 }
+                value = null;
+                // value = defaultValue;
             } else {
                 // 类型转换
                 value = ConversionUtil.convertField(field, value, beanFactory.getConversionService());

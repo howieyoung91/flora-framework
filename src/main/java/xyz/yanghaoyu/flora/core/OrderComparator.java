@@ -37,7 +37,7 @@ public class OrderComparator implements Comparator<Object> {
     }
 
     private int getOrder(Object o) {
-        return o instanceof Ordered ? ((Ordered) o).getOrder() : Ordered.LOWEST_PRECEDENCE;
+        return o instanceof Ordered ? ((Ordered) o).getOrder() : Ordered.LOWEST_PRECEDENCE / 2;
     }
 
 

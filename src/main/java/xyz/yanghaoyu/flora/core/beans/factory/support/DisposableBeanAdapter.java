@@ -19,10 +19,11 @@ import java.util.List;
 
 public class DisposableBeanAdapter implements DisposableBean {
     private static final Logger LOGGER = LoggerFactory.getLogger(DisposableBeanAdapter.class);
-    private final Object bean;
-    private final String beanName;
-    private String destroyMethodName;
-    private List<DestructionAwareBeanPostProcessor> beanPostProcessors;
+
+    private final Object                                  bean;
+    private final String                                  beanName;
+    private       String                                  destroyMethodName;
+    private       List<DestructionAwareBeanPostProcessor> beanPostProcessors;
 
     public DisposableBeanAdapter(Object bean, String beanName, BeanDefinition beanDefinition) {
         this.bean = bean;
@@ -39,14 +40,16 @@ public class DisposableBeanAdapter implements DisposableBean {
     public void destroy() throws Exception {
         // 0. DestructionAwareBeanPostProcessor
         for (DestructionAwareBeanPostProcessor processor : beanPostProcessors) {
-            processor.postProcessBeforeDestruction(bean, beanName);
+            if (processor.requiresDestruction(bean)) {
+                processor.postProcessBeforeDestruction(bean, beanName);
+            }
         }
         // 1. 实现接口 DisposableBean
         if (bean instanceof DisposableBean) {
             ((DisposableBean) bean).destroy();
         }
 
-        // 2. 配置信息 destroy-method {判断是为了避免二次执行销毁}
+        // 2. 配置信息 destroy-method ,避免二次执行销毁
         if (StringUtil.isEmpty(destroyMethodName) || (bean instanceof DisposableBean && "destroy".equals(this.destroyMethodName))) {
             return;
         }

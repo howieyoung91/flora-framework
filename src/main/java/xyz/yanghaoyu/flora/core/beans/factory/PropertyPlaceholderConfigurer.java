@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanFactoryPostProcessor;
+import xyz.yanghaoyu.flora.core.beans.factory.support.InitializingBean;
 import xyz.yanghaoyu.flora.core.io.Resource;
 import xyz.yanghaoyu.flora.core.io.loader.DefaultResourceLoader;
 import xyz.yanghaoyu.flora.exception.BeansException;
@@ -12,7 +13,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
+public class PropertyPlaceholderConfigurer
+        implements BeanFactoryPostProcessor, InitializingBean {
 
     /**
      * Default placeholder prefix: {@value}
@@ -22,16 +24,28 @@ public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
     /**
      * Default placeholder suffix: {@value}
      */
-    public static final String      DEFAULT_PLACEHOLDER_SUFFIX = "}";
-    public static final String      LOCATIONS                  = "locations";
-    private             Set<String> locations;
+    public static final String DEFAULT_PLACEHOLDER_SUFFIX = "}";
+    public static final String LOCATIONS                  = "locations";
+
+    private       Set<String>        locations;
+    private final LinkedList<String> usingLocations = new LinkedList<>();
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        // 这里要处理了 locations 乱序的问题
+        // 确保库的配置文件比项目配置文件先解析
+        // todo 实验功能
+        for (String location : locations) {
+            usingLocations.addFirst(location);
+        }
+    }
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         try {
             // 加载属性文件
             DefaultResourceLoader resourceLoader = new DefaultResourceLoader();
-            Map<String, String> properties = loadProperties(resourceLoader);
+            Map<String, String>   properties     = loadProperties(resourceLoader);
 
             String[] beanDefinitionNames = beanFactory.getBeanDefinitionNames();
             for (String beanName : beanDefinitionNames) {
@@ -67,11 +81,13 @@ public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
     }
 
     private Map<String, String> loadProperties(DefaultResourceLoader resourceLoader) throws IOException {
-        Map<String, String> map = new HashMap<>(8);
-        Properties properties = new Properties();
-        ObjectMapper yamlMapper = new ObjectMapper(new YAMLFactory());
-        for (String location : locations) {
-            Resource resource = resourceLoader.getResource(location);
+        Map<String, String> map        = new HashMap<>(8);
+        Properties          properties = new Properties();
+        ObjectMapper        yamlMapper = new ObjectMapper(new YAMLFactory());
+
+        for (String location : usingLocations) {
+            // System.out.println(location);
+            Resource    resource    = resourceLoader.getResource(location);
             InputStream inputStream = resource.getInputStream();
             if (location.endsWith(".properties")) {
                 properties.load(inputStream);
@@ -83,6 +99,7 @@ public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
             }
             inputStream.close();
         }
+        // System.out.println(properties);
         map.putAll((Map) properties);
         return map;
     }
@@ -96,7 +113,7 @@ public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
             } else {
                 String value = v.toString();
                 if (v instanceof List) {
-                    value = value.substring(1, value.length() - 1);
+                    value = value.substring(1, value.length() - 1).trim();
                 }
                 res.put(k, value);
             }
@@ -105,9 +122,9 @@ public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
     }
 
     private String resolvePlaceholder(String value, Map<String, String> properties) {
-        StringBuilder builder = new StringBuilder(value);
-        int startIdx = value.indexOf(DEFAULT_PLACEHOLDER_PREFIX);
-        int stopIdx = value.indexOf(DEFAULT_PLACEHOLDER_SUFFIX);
+        StringBuilder builder  = new StringBuilder(value);
+        int           startIdx = value.indexOf(DEFAULT_PLACEHOLDER_PREFIX);
+        int           stopIdx  = value.indexOf(DEFAULT_PLACEHOLDER_SUFFIX);
         if (startIdx != -1 && stopIdx != -1 && startIdx < stopIdx) {
             String propKey = value.substring(startIdx + 2, stopIdx);
             String propVal = properties.get(propKey);
@@ -118,6 +135,7 @@ public class PropertyPlaceholderConfigurer implements BeanFactoryPostProcessor {
         }
         return builder.toString();
     }
+
 
     // 对 @Value 做支持
     private class PlaceholderResolvingStringValueResolver implements StringValueResolver {

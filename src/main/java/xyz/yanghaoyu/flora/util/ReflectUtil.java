@@ -4,8 +4,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -137,5 +135,10 @@ public abstract class ReflectUtil {
      */
     public static boolean isCglibProxyClassName(String className) {
         return (className != null && className.contains("$$"));
+    }
+
+    public static Class<?> getBeanClassFromCglibProxy(Class<?> clazz) {
+        clazz = ReflectUtil.isCglibProxyClass(clazz) ? clazz.getSuperclass() : clazz;
+        return clazz;
     }
 }
