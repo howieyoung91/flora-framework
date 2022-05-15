@@ -82,7 +82,7 @@ public class AutowiredAnnotationBeanPostProcessor
         // 处理 Inject.ByName
         if (injectByNameAnno != null) {
             String value = injectByNameAnno.value();
-            String id    = injectByNameAnno.id();
+            String id    = injectByNameAnno.name();
             if (StringUtil.isEmpty(id)) {
                 id = StringUtil.isEmpty(value)
                         ? StringUtil.lowerFirstChar(field.getName())

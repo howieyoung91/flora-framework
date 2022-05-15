@@ -29,7 +29,7 @@ public @interface Inject {
     @interface ByName {
         String value() default Component.DEFAULT_BEAN_NAME;
 
-        String id() default Component.DEFAULT_BEAN_NAME;
+        String name() default Component.DEFAULT_BEAN_NAME;
 
         boolean required() default true;
     }
