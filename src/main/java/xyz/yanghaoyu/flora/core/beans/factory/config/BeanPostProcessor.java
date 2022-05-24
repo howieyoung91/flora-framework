@@ -1,6 +1,5 @@
 package xyz.yanghaoyu.flora.core.beans.factory.config;
 
-import xyz.yanghaoyu.flora.annotation.Bean;
 import xyz.yanghaoyu.flora.exception.BeansException;
 
 /**

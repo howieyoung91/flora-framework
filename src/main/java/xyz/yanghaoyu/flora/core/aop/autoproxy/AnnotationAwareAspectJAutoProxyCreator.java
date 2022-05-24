@@ -19,8 +19,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * 这个类从 AnnotationAspectJExpressionPointcutAdvisorManager 读入 enhance信息
+ * 根据 enhance信息 为 bean 生成代理对象 实现 AOP
+ *
  * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2021/11/11 21:41<i/>
  * @version 1.0
+ * @see AnnotationAspectJExpressionPointcutAdvisorManager
  */
 
 public class AnnotationAwareAspectJAutoProxyCreator
@@ -41,9 +45,9 @@ public class AnnotationAwareAspectJAutoProxyCreator
 
     private boolean isInfrastructureClass(Class<?> beanClass) {
         return ReflectUtil.isCglibProxyClass(beanClass)
-                || Advice.class.isAssignableFrom(beanClass)
-                || Pointcut.class.isAssignableFrom(beanClass)
-                || Advisor.class.isAssignableFrom(beanClass);
+               || Advice.class.isAssignableFrom(beanClass)
+               || Pointcut.class.isAssignableFrom(beanClass)
+               || Advisor.class.isAssignableFrom(beanClass);
     }
 
     @Override

@@ -2,9 +2,10 @@ package xyz.yanghaoyu.flora.core.context.support;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xyz.yanghaoyu.flora.core.aop.autoproxy.AnnotationAwareAspectJAutoProxyCreator;
 import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
-import xyz.yanghaoyu.flora.core.beans.factory.config.*;
+import xyz.yanghaoyu.flora.core.beans.factory.config.BeanFactoryPostProcessor;
+import xyz.yanghaoyu.flora.core.beans.factory.config.BeanPostProcessor;
+import xyz.yanghaoyu.flora.core.beans.factory.config.ConfigurationBeanBeanFactoryPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.support.ApplicationContextAwareProcessor;
 import xyz.yanghaoyu.flora.core.context.ApplicationListener;
 import xyz.yanghaoyu.flora.core.context.ConfigurableApplicationContext;
@@ -53,7 +54,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         // 1. 创建 BeanFactory， 并加载 BeanDefinition
         refreshBeanFactory();
 
-        // 处理 @Configuration
+        // 2. 处理 @Configuration
         additionallyLoadBeanDefinition();
     }
 
@@ -61,11 +62,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         // 3. 初始化 ApplicationContextAwareProcessor 为框架提供对象感知功能
         initApplicationContextAwareProcessor();
 
-        // 5. 生成并注册 BeanPostProcessor  要在 Bean 实例化之前执行注册操作,
-        registerBeanPostProcessors();
-
         // 4. 在 Bean 实例化之前，执行 BeanFactoryPostProcessor
         invokeBeanFactoryPostProcessors();
+
+        // 5. 生成并注册 BeanPostProcessor  要在 Bean 实例化之前执行注册操作,
+        registerBeanPostProcessors();
 
         // 6. 初始化与事件相关的组件
         initApplicationEvent();
@@ -108,8 +109,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         // 提前实例化单例 Bean 对象
         beanFactory.preInstantiateSingletons();
         LOGGER.trace("finish preInstantiate [Singleton Bean]...");
-
-
     }
 
     private void initApplicationContextAwareProcessor() {
@@ -150,21 +149,16 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
      * 把 监听器 注册到 事件广播器 中
      */
     private void registerListeners() {
-        Collection<ApplicationListener> applicationListeners = getBeansOfType(ApplicationListener.class).values();
-        for (ApplicationListener listener : applicationListeners) {
-            LOGGER.trace("register [ApplicationListener] ...");
-            applicationEventMulticaster.addApplicationListener(listener);
-        }
+        LOGGER.trace("register [ApplicationListener] ...");
+        getBeansOfType(ApplicationListener.class).values()
+                .forEach(listener -> applicationEventMulticaster.addApplicationListener(listener));
     }
 
     private void additionallyLoadBeanDefinition() {
         LOGGER.trace("start resolve [Configuration] ...");
         ConfigurableListableBeanFactory beanFactory = getBeanFactory();
-        Collection<ConfigurationBeanBeanFactoryPostProcessor> configBeanFactoryPostProcesses
-                = beanFactory.getBeansOfType(ConfigurationBeanBeanFactoryPostProcessor.class).values();
-        for (ConfigurationBeanBeanFactoryPostProcessor configBeanFactoryPostProcess : configBeanFactoryPostProcesses) {
-            configBeanFactoryPostProcess.postProcessBeanFactory(beanFactory);
-        }
+        beanFactory.getBeansOfType(ConfigurationBeanBeanFactoryPostProcessor.class).values()
+                .forEach(processor -> processor.postProcessBeanFactory(beanFactory));
         LOGGER.trace("finish resolve [Configuration]");
     }
 
@@ -173,58 +167,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
      */
     private void invokeBeanFactoryPostProcessors() {
         LOGGER.trace("start register [BeanFactoryPostProcessor] ...");
-        ConfigurableListableBeanFactory beanFactory                   = getBeanFactory();
-        BeanFactoryPostProcessor        proxyBeanFactoryPostProcessor = null;
-
-        // String[] beanDefNames = beanFactory.getBeanDefinitionNames();
-        // for (String beanDefName : beanDefNames) {
-        //     BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanDefName);
-        //
-        //     if (BeanFactoryPostProcessor.class.isAssignableFrom(beanDefinition.getBeanClass())) {
-        //         if (AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor.class.isAssignableFrom(beanDefinition.getBeanClass())) {
-        //             proxyBeanFactoryPostProcessor = beanFactory.getBean(beanDefName, BeanFactoryPostProcessor.class);
-        //             continue;
-        //         }
-        //         if (ConfigurationBeanBeanFactoryPostProcessor.class.isAssignableFrom(beanDefinition.getBeanClass())) {
-        //             continue;
-        //         }
-        //         if (beanDefName.startsWith("flora$")) {
-        //             continue;
-        //         }
-        //         beanFactory.getBean(beanDefName, BeanFactoryPostProcessor.class).postProcessBeanFactory(beanFactory);
-        //     }
-        // }
-
+        ConfigurableListableBeanFactory beanFactory = getBeanFactory();
         // 调用处理器
-        Map<String, BeanFactoryPostProcessor> beanFactoryPostProcessorMap =
-                beanFactory.getBeansOfType(BeanFactoryPostProcessor.class);
-        // BeanFactoryPostProcessor proxyBeanFactoryPostProcessor = null;
-        for (BeanFactoryPostProcessor beanFactoryPostProcessor : beanFactoryPostProcessorMap.values()) {
-            // 支持 aop 的 处理 最后再调用 防止 aop 丢失
-            // IocUtil.EnableAop() 将会注入 AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor
-            if (beanFactoryPostProcessor instanceof
-                    AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor) {
-                proxyBeanFactoryPostProcessor = beanFactoryPostProcessor;
-                continue;
-            }
-            // 跳过 @Configuration 的处理器 已经调用过了
-            if (beanFactoryPostProcessor instanceof ConfigurationBeanBeanFactoryPostProcessor) {
-                continue;
-            }
-            beanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
-        }
-
-        if (proxyBeanFactoryPostProcessor != null) {
-            // 先从 BeanFactoryPostProcessor 获取到 enhance 信息
-            proxyBeanFactoryPostProcessor.postProcessBeanFactory(beanFactory);
-            // 添加 对 aop 支持的 bean post processor
-            // IocUtil.EnableAop() 将会注入 AnnotationAwareAspectJAutoProxyCreator
-            Collection<AnnotationAwareAspectJAutoProxyCreator> values
-                    = beanFactory.getBeansOfType(AnnotationAwareAspectJAutoProxyCreator.class).values();
-            for (BeanPostProcessor value : values) {
-                beanFactory.addBeanPostProcessor(value);
-            }
-        }
+        Collection<BeanFactoryPostProcessor> processors = beanFactory.getBeansOfType(BeanFactoryPostProcessor.class).values();
+        // 跳过 @Configuration 的处理器 已经调用过了
+        processors.stream()
+                .filter(processor -> !(processor instanceof ConfigurationBeanBeanFactoryPostProcessor))
+                .forEach(processor -> processor.postProcessBeanFactory(beanFactory));
         LOGGER.trace("finish register [BeanFactoryPostProcessor] ...");
     }
 
@@ -234,38 +183,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
      */
     private void registerBeanPostProcessors() {
         LOGGER.trace("start register [BeanPostProcessor] ...");
-
         ConfigurableListableBeanFactory beanFactory = getBeanFactory();
-
-
-        // String[] beanDefNames = beanFactory.getBeanDefinitionNames();
-
-        // for (String beanDefName : beanDefNames) {
-        //     BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanDefName);
-        //     // if (BeanPostProcessor.class.isAssignableFrom(beanDefinition.getBeanClass())) {
-        //     if (beanDefName.startsWith("flora$")) {
-        //         Object bean = beanFactory.getBean(beanDefName);
-        //         if (bean instanceof BeanPostProcessor) {
-        //             beanFactory.addBeanPostProcessor((BeanPostProcessor) bean);
-        //         }
-        //         if (bean instanceof BeanFactoryPostProcessor) {
-        //             ((BeanFactoryPostProcessor) bean).postProcessBeanFactory(beanFactory);
-        //         }
-        //     }
-        //     // }
-        // }
-
-        Map<String, BeanPostProcessor> beanPostProcessorMap = getBeanFactory().getBeansOfType(BeanPostProcessor.class);
-        // 从 声明的 bean 中挑选出 BeanPostProcessor 进行注册
-        for (BeanPostProcessor beanPostProcessor : beanPostProcessorMap.values()) {
-            // 延迟加载
-            if (beanPostProcessor instanceof AnnotationAwareAspectJAutoProxyCreator) {
-                continue;
-            }
-            beanFactory.addBeanPostProcessor(beanPostProcessor);
-        }
+        beanFactory.getBeansOfType(BeanPostProcessor.class).values()
+                .forEach(beanFactory::addBeanPostProcessor);
         LOGGER.trace("finish register [BeanPostProcessor]");
-
     }
 
     @Override
