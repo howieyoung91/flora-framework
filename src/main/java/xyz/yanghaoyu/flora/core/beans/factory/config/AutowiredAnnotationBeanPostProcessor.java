@@ -2,6 +2,7 @@ package xyz.yanghaoyu.flora.core.beans.factory.config;
 
 import xyz.yanghaoyu.flora.annotation.Inject;
 import xyz.yanghaoyu.flora.annotation.Value;
+import xyz.yanghaoyu.flora.core.Ordered;
 import xyz.yanghaoyu.flora.core.beans.factory.BeanFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.BeanFactoryAware;
 import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
@@ -19,8 +20,13 @@ import java.util.Map;
  * Support @Inject.ByType @Inject.ByName @Value
  */
 public class AutowiredAnnotationBeanPostProcessor
-        implements InstantiationAwareBeanPostProcessor, BeanFactoryAware {
+        implements InstantiationAwareBeanPostProcessor, BeanFactoryAware, Ordered {
     private ConfigurableListableBeanFactory beanFactory;
+
+    @Override
+    public int getOrder() {
+        return Ordered.HIGHEST_PRECEDENCE / 2 + 1;
+    }
 
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {

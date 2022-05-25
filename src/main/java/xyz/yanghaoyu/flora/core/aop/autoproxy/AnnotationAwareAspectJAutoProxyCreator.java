@@ -35,7 +35,7 @@ public class AnnotationAwareAspectJAutoProxyCreator
 
     @Override
     public int getOrder() {
-        return Ordered.LOWEST_PRECEDENCE;
+        return Ordered.LOWEST_PRECEDENCE / 2;
     }
 
     @Override

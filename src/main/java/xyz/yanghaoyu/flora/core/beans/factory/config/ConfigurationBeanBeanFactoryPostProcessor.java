@@ -17,13 +17,14 @@ import java.util.Set;
  * @version 1.0
  */
 
-public class ConfigurationBeanBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
+public class ConfigurationBeanBeanFactoryPostProcessor
+        implements BeanFactoryPostProcessor {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationBeanBeanFactoryPostProcessor.class);
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory configBeanFactory) throws BeansException {
         DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) configBeanFactory;
-        HashSet<String> classes = findConfigBeanName(beanFactory);
+        HashSet<String>            classes     = findConfigBeanName(beanFactory);
 
         LOGGER.trace("scan [Configuration] from {} ...", classes);
         ConfigurationBeanClassScanner configurationClassParser =
@@ -38,11 +39,11 @@ public class ConfigurationBeanBeanFactoryPostProcessor implements BeanFactoryPos
     }
 
     private HashSet<String> findConfigBeanName(DefaultListableBeanFactory beanFactory) {
-        String[] names = beanFactory.getBeanDefinitionNames();
+        String[]        names   = beanFactory.getBeanDefinitionNames();
         HashSet<String> classes = new HashSet<>();
         for (String name : names) {
-            BeanDefinition configBeanDef = beanFactory.getBeanDefinition(name);
-            Class<?> configBeanClass = configBeanDef.getBeanClass();
+            BeanDefinition configBeanDef   = beanFactory.getBeanDefinition(name);
+            Class<?>       configBeanClass = configBeanDef.getBeanClass();
             if (!configBeanClass.isAnnotationPresent(Configuration.class)) {
                 continue;
             }
@@ -50,4 +51,5 @@ public class ConfigurationBeanBeanFactoryPostProcessor implements BeanFactoryPos
         }
         return classes;
     }
+
 }

@@ -2,6 +2,7 @@ package xyz.yanghaoyu.flora.core.beans.factory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import xyz.yanghaoyu.flora.core.Ordered;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanFactoryPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.support.InitializingBean;
@@ -13,17 +14,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
+/**
+ * 处理 property，用于 @Value 的支持
+ * 这个执行优先级尽可能地高
+ */
 public class PropertyPlaceholderConfigurer
-        implements BeanFactoryPostProcessor, InitializingBean {
-
-    /**
-     * Default placeholder prefix: {@value}
-     */
+        implements BeanFactoryPostProcessor, InitializingBean, Ordered {
     public static final String DEFAULT_PLACEHOLDER_PREFIX = "${";
-
-    /**
-     * Default placeholder suffix: {@value}
-     */
     public static final String DEFAULT_PLACEHOLDER_SUFFIX = "}";
     public static final String LOCATIONS                  = "locations";
 
@@ -31,7 +28,12 @@ public class PropertyPlaceholderConfigurer
     private final LinkedList<String> usingLocations = new LinkedList<>();
 
     @Override
-    public void afterPropertiesSet() throws Exception {
+    public int getOrder() {
+        return Ordered.HIGHEST_PRECEDENCE / 2;
+    }
+
+    @Override
+    public void afterPropertiesSet() {
         // 这里要处理了 locations 乱序的问题
         // 确保库的配置文件比项目配置文件先解析
         // todo 实验功能

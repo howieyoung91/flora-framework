@@ -12,7 +12,7 @@ public @interface Aop {
     @Retention(RetentionPolicy.RUNTIME)
     @Documented
     @interface Enhance {
-        String pointcut();
+        String value();
     }
 }
 

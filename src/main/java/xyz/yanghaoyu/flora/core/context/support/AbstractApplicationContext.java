@@ -2,6 +2,7 @@ package xyz.yanghaoyu.flora.core.context.support;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xyz.yanghaoyu.flora.core.OrderComparator;
 import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanFactoryPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanPostProcessor;
@@ -72,7 +73,6 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         initApplicationEvent();
 
         // 7. 提前实例化单例 Bean 对象
-        // beanFactory.preInstantiateSingletons();
         finishBeanFactoryInitialization();
 
         // 8. 发布容器刷新完成事件
@@ -172,6 +172,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
         Collection<BeanFactoryPostProcessor> processors = beanFactory.getBeansOfType(BeanFactoryPostProcessor.class).values();
         // 跳过 @Configuration 的处理器 已经调用过了
         processors.stream()
+                .sorted(OrderComparator.INSTANCE)  // sort
                 .filter(processor -> !(processor instanceof ConfigurationBeanBeanFactoryPostProcessor))
                 .forEach(processor -> processor.postProcessBeanFactory(beanFactory));
         LOGGER.trace("finish register [BeanFactoryPostProcessor] ...");

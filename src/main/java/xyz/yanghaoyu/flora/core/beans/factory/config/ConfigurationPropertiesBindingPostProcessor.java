@@ -4,7 +4,6 @@ import xyz.yanghaoyu.flora.annotation.ConfigurationProperties;
 import xyz.yanghaoyu.flora.annotation.Inject;
 import xyz.yanghaoyu.flora.annotation.Value;
 import xyz.yanghaoyu.flora.core.Ordered;
-import xyz.yanghaoyu.flora.core.PriorityOrdered;
 import xyz.yanghaoyu.flora.core.beans.factory.BeanFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.BeanFactoryAware;
 import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
@@ -27,12 +26,12 @@ import java.util.Set;
  */
 
 public class ConfigurationPropertiesBindingPostProcessor
-        implements BeanPostProcessor, PriorityOrdered, BeanFactoryAware {
+        implements BeanPostProcessor, BeanFactoryAware, Ordered {
     private ConfigurableListableBeanFactory beanFactory;
 
     @Override
     public int getOrder() {
-        return Ordered.HIGHEST_PRECEDENCE + 1;
+        return Ordered.HIGHEST_PRECEDENCE / 2 + 2;
     }
 
     @Override
@@ -43,15 +42,14 @@ public class ConfigurationPropertiesBindingPostProcessor
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         BeanDefinition beanDef = beanFactory.getBeanDefinition(beanName);
-        Class<?>       clazz   = bean.getClass();
-        clazz = ReflectUtil.isCglibProxyClass(clazz) ? clazz.getSuperclass() : clazz;
+        Class<?>       clazz   = ReflectUtil.getBeanClassFromCglibProxy(bean.getClass());
+
         Method factoryMethod = beanDef.getFactoryMethod();
         if (factoryMethod == null) {
-            handleConfigurationPropertiesAnnotation(bean, clazz);
+            handle(bean, clazz);
         } else {
-            handleConfigurationPropertiesAnnotation(bean, factoryMethod);
+            handle(bean, factoryMethod);
         }
-
         return bean;
     }
 
@@ -63,13 +61,17 @@ public class ConfigurationPropertiesBindingPostProcessor
         SET.add(Inject.ByType.class);
     }
 
-    private void handleConfigurationPropertiesAnnotation(Object bean, Method factoryMethod) {
-        ConfigurationProperties configurationProperties = factoryMethod.getAnnotation(ConfigurationProperties.class);
-        Class<?>                actualClass             = factoryMethod.getReturnType();
-        inject(bean, actualClass, configurationProperties);
+    private void handle(Object bean, Method factoryMethod) {
+        ConfigurationProperties configPropertiesAnn = factoryMethod.getAnnotation(ConfigurationProperties.class);
+        Class<?>                actualClass         = factoryMethod.getReturnType();
+        // 如果 factoryMethod 上没有注解，则看看类上是否存在注解
+        if (configPropertiesAnn == null) {
+            configPropertiesAnn = actualClass.getAnnotation(ConfigurationProperties.class);
+        }
+        inject(bean, actualClass, configPropertiesAnn);
     }
 
-    private void handleConfigurationPropertiesAnnotation(Object bean, Class<?> actualClass) {
+    private void handle(Object bean, Class<?> actualClass) {
         ConfigurationProperties configPropertiesAnn = actualClass.getAnnotation(ConfigurationProperties.class);
         inject(bean, actualClass, configPropertiesAnn);
     }
@@ -78,23 +80,23 @@ public class ConfigurationPropertiesBindingPostProcessor
         if (configPropertiesAnn == null) {
             return;
         }
-        String  prefix         = configPropertiesAnn.prefix();
-        Field[] declaredFields = actualClass.getDeclaredFields();
-        for (Field field : declaredFields) {
-            if (!shouldConfig(field)) {
-                continue;
+
+        String  prefix = configPropertiesAnn.prefix();
+        Field[] fields = actualClass.getDeclaredFields();
+        for (Field field : fields) {
+            if (shouldConfigure(field)) {
+                String key   = PropertyUtil.createPropertyKey(prefix + "." + field.getName());
+                Object value = beanFactory.resolveEmbeddedValue(key);
+                if (value == null) {
+                    continue;
+                }
+                value = ConversionUtil.convertField(field, value, beanFactory.getConversionService());
+                ReflectUtil.setFieldValue(bean, actualClass, field.getName(), value);
             }
-            String key   = PropertyUtil.createPropertyKey(prefix + "." + field.getName());
-            Object value = beanFactory.resolveEmbeddedValue(key);
-            if (value == null) {
-                continue;
-            }
-            value = ConversionUtil.convertField(field, value, beanFactory.getConversionService());
-            ReflectUtil.setFieldValue(bean, actualClass, field.getName(), value);
         }
     }
 
-    private boolean shouldConfig(Field field) {
+    private boolean shouldConfigure(Field field) {
         Annotation[] annotations = field.getAnnotations();
         for (Annotation annotation : annotations) {
             if (SET.contains(annotation.annotationType())) {

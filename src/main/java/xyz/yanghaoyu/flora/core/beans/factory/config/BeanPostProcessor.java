@@ -15,6 +15,7 @@ public interface BeanPostProcessor {
     default Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         return bean;
     }
+
     /**
      * 在 Bean 对象执行初始化方法之后，执行此方法
      */

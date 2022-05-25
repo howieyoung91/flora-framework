@@ -61,9 +61,9 @@ public class AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor
                         continue;
                     }
 
-                    LOGGER.trace("register [Pointcut] [{}]", enhanceAnno.pointcut());
+                    LOGGER.trace("register [Pointcut] [{}]", enhanceAnno.value());
                     manager.addMethodEnhanceAdvice(
-                            enhanceAnno.pointcut(),
+                            enhanceAnno.value(),
                             new Point(bean, method, getAdviceOrder(method))
                     );
                 }

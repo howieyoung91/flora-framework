@@ -3,7 +3,6 @@ package xyz.yanghaoyu.flora.core.beans.factory.config;
 import cn.hutool.core.bean.BeanException;
 import xyz.yanghaoyu.flora.annotation.Life;
 import xyz.yanghaoyu.flora.core.Ordered;
-import xyz.yanghaoyu.flora.core.PriorityOrdered;
 import xyz.yanghaoyu.flora.exception.BeanCreateException;
 import xyz.yanghaoyu.flora.exception.BeansException;
 
@@ -21,14 +20,20 @@ import java.util.Map;
  * @version 1.0
  */
 
-public class InitDestroyAnnotationBeanPostProcessor implements DestructionAwareBeanPostProcessor, PriorityOrdered {
+public class InitDestroyAnnotationBeanPostProcessor
+        implements DestructionAwareBeanPostProcessor, Ordered {
     private final Map<Class<?>, List[]> lifecycleMethodsCache = new HashMap<>();
 
     @Override
+    public int getOrder() {
+        return Ordered.LOWEST_PRECEDENCE;
+    }
+
+    @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
-        Class<?> beanClass = bean.getClass();
-        List[] lifecycleMethods = findLifecycleMethod(beanClass);
-        List<Method> initMethods = lifecycleMethods[0];
+        Class<?>     beanClass        = bean.getClass();
+        List[]       lifecycleMethods = findLifecycleMethod(beanClass);
+        List<Method> initMethods      = lifecycleMethods[0];
         try {
             invokeInitialMethods(bean, initMethods);
         } catch (InvocationTargetException e) {
@@ -41,9 +46,9 @@ public class InitDestroyAnnotationBeanPostProcessor implements DestructionAwareB
 
     @Override
     public void postProcessBeforeDestruction(Object bean, String beanName) throws BeanException {
-        Class<?> beanClass = bean.getClass();
-        List[] lifecycleMethods = findLifecycleMethod(beanClass);
-        List<Method> destroyMethods = lifecycleMethods[1];
+        Class<?>     beanClass        = bean.getClass();
+        List[]       lifecycleMethods = findLifecycleMethod(beanClass);
+        List<Method> destroyMethods   = lifecycleMethods[1];
         try {
             invokeDestroyMethods(bean, destroyMethods);
         } catch (InvocationTargetException e) {
@@ -53,27 +58,27 @@ public class InitDestroyAnnotationBeanPostProcessor implements DestructionAwareB
         }
     }
 
-    public void invokeInitialMethods(Object bean, List<Method> initMethods) throws InvocationTargetException, IllegalAccessException {
+    private void invokeInitialMethods(Object bean, List<Method> initMethods) throws InvocationTargetException, IllegalAccessException {
         for (Method initMethod : initMethods) {
             initMethod.invoke(bean);
         }
     }
 
-    public void invokeDestroyMethods(Object bean, List<Method> destroyMethods) throws InvocationTargetException, IllegalAccessException {
+    private void invokeDestroyMethods(Object bean, List<Method> destroyMethods) throws InvocationTargetException, IllegalAccessException {
         for (Method destroyMethod : destroyMethods) {
             destroyMethod.invoke(bean);
         }
     }
 
-    public List[] findLifecycleMethod(final Class<?> clazz) {
+    private List[] findLifecycleMethod(final Class<?> clazz) {
         List[] res = lifecycleMethodsCache.get(clazz);
         if (res != null) {
             return res;
         }
 
-        ArrayList<Method> initMethods = new ArrayList<>();
+        ArrayList<Method> initMethods    = new ArrayList<>();
         ArrayList<Method> destroyMethods = new ArrayList<>();
-        Class<?> targetClass = clazz;
+        Class<?>          targetClass    = clazz;
         do {
             Method[] methods = targetClass.getDeclaredMethods();
             for (Method method : methods) {
@@ -100,8 +105,4 @@ public class InitDestroyAnnotationBeanPostProcessor implements DestructionAwareB
         return method.isAnnotationPresent(PostConstruct.class) || method.isAnnotationPresent(Life.Initialize.class);
     }
 
-    @Override
-    public int getOrder() {
-        return Ordered.LOWEST_PRECEDENCE;
-    }
 }
