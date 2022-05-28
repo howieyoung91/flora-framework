@@ -20,4 +20,5 @@ public abstract class AbstractRefreshableAnnotationConfigApplicationContext exte
     protected Class<?>[] getBaseConfigurationClasses() {
         return baseConfigurationClasses;
     }
+
 }

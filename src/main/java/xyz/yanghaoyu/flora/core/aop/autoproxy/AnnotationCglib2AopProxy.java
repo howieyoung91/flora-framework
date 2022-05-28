@@ -34,7 +34,6 @@ public class AnnotationCglib2AopProxy extends AnnotationAopProxy implements Meth
     public Object intercept(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
         MultiMethodInterceptor interceptor = cache.get(method);
         if (interceptor != null) {
-            // cache hit
             return invokeProxyMethod(method, args, methodProxy, interceptor);
         }
 

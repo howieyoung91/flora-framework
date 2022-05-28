@@ -1,5 +1,7 @@
 package xyz.yanghaoyu.flora.core.beans.factory.config;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xyz.yanghaoyu.flora.annotation.Inject;
 import xyz.yanghaoyu.flora.annotation.Value;
 import xyz.yanghaoyu.flora.core.Ordered;
@@ -21,6 +23,8 @@ import java.util.Map;
  */
 public class AutowiredAnnotationBeanPostProcessor
         implements InstantiationAwareBeanPostProcessor, BeanFactoryAware, Ordered {
+    private static final Logger LOGGER = LoggerFactory.getLogger(AutowiredAnnotationBeanPostProcessor.class);
+
     private ConfigurableListableBeanFactory beanFactory;
 
     @Override
@@ -56,17 +60,7 @@ public class AutowiredAnnotationBeanPostProcessor
         }
         // handle @Inject.ByType
         if (injectByTypeAnno != null) {
-            // determine the dependOnBeanClass
-            Class value = injectByTypeAnno.value();
-            Class clz   = injectByTypeAnno.clazz();
-
-            Class dependOnBeanClass = value == clz
-                    ? value
-                    : clz == Inject.ByType.DEFAULT_CLASS ? value : clz;
-
-            if (dependOnBeanClass == Inject.ByType.DEFAULT_CLASS) {
-                dependOnBeanClass = field.getType();
-            }
+            Class dependOnBeanClass = determineDependOnBeanClass(field, injectByTypeAnno);
 
             // select a candidate
             Map<String, ?> candidates = beanFactory.getBeansOfType(dependOnBeanClass);
@@ -90,16 +84,33 @@ public class AutowiredAnnotationBeanPostProcessor
             String value = injectByNameAnno.value();
             String id    = injectByNameAnno.name();
             if (StringUtil.isEmpty(id)) {
-                id = StringUtil.isEmpty(value)
-                        ? StringUtil.lowerFirstChar(field.getName())
-                        : value;
+                id = StringUtil.isEmpty(value) ? StringUtil.lowerFirstChar(field.getName()) : value;
             }
-            Object dependOnBean = beanFactory.getBean(id);
-            if (dependOnBean == null && injectByNameAnno.required()) {
-                throw new BeansException("No such Bean which id is  " + id);
+            Object dependOnBean = null;
+            try {
+                dependOnBean = beanFactory.getBean(id);
+            } catch (Exception e) {
+                LOGGER.info("{}", e.toString());
+                if (injectByNameAnno.required()) {
+                    throw new BeansException("No such Bean which id is  " + id);
+                }
             }
             ReflectUtil.setFieldValue(bean, actualClass, field.getName(), dependOnBean);
         }
+    }
+
+    private Class determineDependOnBeanClass(Field field, Inject.ByType injectByTypeAnno) {
+        Class value = injectByTypeAnno.value();
+        Class clazz = injectByTypeAnno.clazz();
+
+        Class dependOnBeanClass = value == clazz
+                ? value
+                : clazz == Inject.ByType.DEFAULT_CLASS ? value : clazz;
+
+        if (dependOnBeanClass == Inject.ByType.DEFAULT_CLASS) {
+            dependOnBeanClass = field.getType();
+        }
+        return dependOnBeanClass;
     }
 
     private void handleValueAnnotation(Object bean, Field field, Class<?> clazz) {

@@ -6,9 +6,8 @@ import xyz.yanghaoyu.flora.core.aop.interceptor.MultiMethodInterceptor;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2022/2/10 18:12<i/>
@@ -17,23 +16,24 @@ import java.util.Set;
 
 public abstract class AnnotationAopProxy implements MultiOrderedAopProxy {
     protected final AnnotationAdvisedSupport            advisedSupport;
-    protected final Map<Method, MultiMethodInterceptor> cache = new HashMap<>();
+    protected final Map<Method, MultiMethodInterceptor> cache = new ConcurrentHashMap<>();
 
     public AnnotationAopProxy(AnnotationAdvisedSupport advisedSupport) {
         this.advisedSupport = advisedSupport;
     }
 
     protected ArrayList<MultiMethodInterceptor> findMatchedMethodInterceptor(Method method) {
-        Set<Map.Entry<MethodMatcher, MultiMethodInterceptor>> set = advisedSupport.getMethodInterceptorSet();
-        ArrayList<MultiMethodInterceptor> matchedMethodInterceptors = new ArrayList<>();
-        for (Map.Entry<MethodMatcher, MultiMethodInterceptor> entry : set) {
-            MethodMatcher methodMatcher = entry.getKey();
-            MultiMethodInterceptor multiMethodInterceptor = entry.getValue();
-            if (methodMatcher.matches(method, advisedSupport.getTargetSource().getTarget().getClass())) {
-                matchedMethodInterceptors.add(multiMethodInterceptor);
+        ArrayList<MultiMethodInterceptor> interceptors = new ArrayList<>();
+        for (Map.Entry<MethodMatcher, MultiMethodInterceptor> entry : advisedSupport.getMethodInterceptorSet()) {
+            MethodMatcher          matcher     = entry.getKey();
+            MultiMethodInterceptor interceptor = entry.getValue();
+
+            Class<?> targetClass = advisedSupport.getTargetSource().getTarget().getClass();
+            if (matcher.matches(method, targetClass)) {
+                interceptors.add(interceptor);
             }
         }
-        return matchedMethodInterceptors;
+        return interceptors;
     }
 
     /**

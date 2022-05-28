@@ -73,7 +73,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
         return containsBeanDefinition(name);
     }
 
-
+    // 交给子类实现
     protected abstract boolean containsBeanDefinition(String name);
 
     private Object getObjectForBeanInstance(Object beanInstance, String beanName) {

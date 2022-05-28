@@ -11,8 +11,8 @@ import xyz.yanghaoyu.flora.exception.BeansException;
  */
 
 public abstract class AbstractRefreshableApplicationContext extends AbstractApplicationContext {
-    public static final Logger LOGGER = LoggerFactory.getLogger(AbstractRefreshableApplicationContext.class);
-    private DefaultListableBeanFactory beanFactory;
+    public static final Logger                     LOGGER = LoggerFactory.getLogger(AbstractRefreshableApplicationContext.class);
+    private             DefaultListableBeanFactory beanFactory;
 
     @Override
     protected void refreshBeanFactory() throws BeansException {
@@ -29,7 +29,11 @@ public abstract class AbstractRefreshableApplicationContext extends AbstractAppl
     protected abstract void loadBeanDefinitions(DefaultListableBeanFactory beanFactory);
 
     @Override
-    protected ConfigurableListableBeanFactory getBeanFactory() {
+    public final ConfigurableListableBeanFactory getBeanFactory() {
         return beanFactory;
+    }
+
+    public final DefaultListableBeanFactory getDefaultListableBeanFactory() {
+        return this.beanFactory;
     }
 }

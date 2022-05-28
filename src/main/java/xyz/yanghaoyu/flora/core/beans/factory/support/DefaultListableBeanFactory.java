@@ -6,11 +6,14 @@ import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.exception.BeansException;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFactory implements BeanDefinitionRegistry, ConfigurableListableBeanFactory {
+public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFactory
+        implements ConfigurableListableBeanFactory, BeanDefinitionRegistry {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultListableBeanFactory.class);
 
     private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
@@ -29,6 +32,23 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
     @Override
     public boolean containsSingletonBean(String name) {
         return singletonObjects.containsKey(name);
+    }
+
+    @Override
+    public <T> String[] getBeanNamesForType(Class<T> type) {
+        List<String> result = new ArrayList<>();
+        beanDefinitionMap.forEach((beanName, beanDefinition) -> {
+            Class<?> beanClass = beanDefinition.getBeanClass();
+            if (type.isAssignableFrom(beanClass)) {
+                result.add(beanName);
+            }
+        });
+        return result.toArray(new String[0]);
+    }
+
+    @Override
+    public int getBeanDefinitionCount() {
+        return beanDefinitionMap.size();
     }
 
     @Override

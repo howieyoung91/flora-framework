@@ -12,8 +12,6 @@ import xyz.yanghaoyu.flora.core.convert.converter.*;
 import xyz.yanghaoyu.flora.core.convert.support.DefaultConversionService;
 import xyz.yanghaoyu.flora.exception.BeansException;
 
-import java.util.Set;
-
 /**
  * 类型转换
  *
@@ -22,9 +20,9 @@ import java.util.Set;
  */
 
 public class ConversionServiceFactoryBean implements FactoryBean<ConversionService>, InitializingBean, BeanFactoryAware {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConversionServiceFactoryBean.class);
-    private ConfigurableListableBeanFactory beanFactory;
-    private GenericConversionService conversionService;
+    private static final Logger                          LOGGER = LoggerFactory.getLogger(ConversionServiceFactoryBean.class);
+    private              ConfigurableListableBeanFactory beanFactory;
+    private              GenericConversionService        conversionService;
 
     @Override
     public ConversionService getObject() throws Exception {
@@ -51,7 +49,7 @@ public class ConversionServiceFactoryBean implements FactoryBean<ConversionServi
         String[] beanNames = beanFactory.getBeanDefinitionNames();
         for (String beanName : beanNames) {
             BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
-            Class<?> beanClass = beanDefinition.getBeanClass();
+            Class<?>       beanClass      = beanDefinition.getBeanClass();
             if (GenericConverter.class.isAssignableFrom(beanClass)) {
                 GenericConverter bean = (GenericConverter) beanFactory.getBean(beanName);
                 LOGGER.trace("register [GenericConverter] [{}]", beanName);

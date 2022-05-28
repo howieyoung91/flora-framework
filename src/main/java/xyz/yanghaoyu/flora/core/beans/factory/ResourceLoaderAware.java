@@ -5,9 +5,9 @@
 
 package xyz.yanghaoyu.flora.core.beans.factory;
 
-import xyz.yanghaoyu.flora.core.beans.factory.support.BeanDefinitionRegistry;
+import xyz.yanghaoyu.flora.core.io.ResourceLoader;
 import xyz.yanghaoyu.flora.exception.BeansException;
 
-public interface BeanDefinitionRegistryAware extends Aware {
-    void setBeanRegistry(BeanDefinitionRegistry registry) throws BeansException;
+public interface ResourceLoaderAware extends Aware {
+    void setResourceLoader(ResourceLoader resourceLoader) throws BeansException;
 }

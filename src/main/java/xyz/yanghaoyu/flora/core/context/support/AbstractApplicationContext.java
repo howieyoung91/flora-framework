@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.yanghaoyu.flora.core.OrderComparator;
 import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
+import xyz.yanghaoyu.flora.core.beans.factory.config.AutowireCapableBeanFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanFactoryPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.config.ConfigurationBeanBeanFactoryPostProcessor;
@@ -26,7 +27,8 @@ import static xyz.yanghaoyu.flora.constant.BuiltInBean.CONVERTER_FACTORY_BEAN;
  * @version 1.0
  */
 
-public abstract class AbstractApplicationContext extends DefaultResourceLoader implements ConfigurableApplicationContext {
+public abstract class AbstractApplicationContext
+        extends DefaultResourceLoader implements ConfigurableApplicationContext {
     public static final  String APPLICATION_EVENT_MULTICASTER_BEAN_NAME
                                        = BeanUtil.builtInBeanName(ApplicationEventMulticaster.class);
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractApplicationContext.class);
@@ -87,7 +89,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
 
     protected abstract void refreshBeanFactory() throws BeansException;
 
-    protected abstract ConfigurableListableBeanFactory getBeanFactory();
+    public abstract ConfigurableListableBeanFactory getBeanFactory();
 
     // 设置类型转换器、提前实例化单例Bean对象
     protected void finishBeanFactoryInitialization() {
@@ -247,5 +249,25 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader i
     @Override
     public boolean containsSingletonBean(String name) {
         return getBeanFactory().containsSingletonBean(name);
+    }
+
+    @Override
+    public <T> String[] getBeanNamesForType(Class<T> type) {
+        return getBeanFactory().getBeanNamesForType(type);
+    }
+
+    @Override
+    public boolean containsBeanDefinition(String beanName) {
+        return getBeanFactory().containsBeanDefinition(beanName);
+    }
+
+    @Override
+    public int getBeanDefinitionCount() {
+        return getBeanFactory().getBeanDefinitionCount();
+    }
+
+    @Override
+    public AutowireCapableBeanFactory getAutowireCapableBeanFactory() throws IllegalStateException {
+        return getBeanFactory();
     }
 }

@@ -1,6 +1,7 @@
 package xyz.yanghaoyu.flora.core.context;
 
 import xyz.yanghaoyu.flora.core.beans.factory.ListableBeanFactory;
+import xyz.yanghaoyu.flora.core.beans.factory.config.AutowireCapableBeanFactory;
 import xyz.yanghaoyu.flora.core.io.ResourceLoader;
 
 /**
@@ -10,4 +11,5 @@ import xyz.yanghaoyu.flora.core.io.ResourceLoader;
 
 
 public interface ApplicationContext extends ListableBeanFactory, ResourceLoader, ApplicationEventPublisher {
+    AutowireCapableBeanFactory getAutowireCapableBeanFactory();
 }

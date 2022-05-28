@@ -11,7 +11,8 @@ import xyz.yanghaoyu.flora.exception.BeansException;
  */
 
 
-public interface ConfigurableListableBeanFactory extends ListableBeanFactory, AutowireCapableBeanFactory, ConfigurableBeanFactory {
+public interface ConfigurableListableBeanFactory
+        extends ListableBeanFactory, AutowireCapableBeanFactory, ConfigurableBeanFactory {
 
     BeanDefinition getBeanDefinition(String beanName) throws BeansException;
 

@@ -1,7 +1,5 @@
 package xyz.yanghaoyu.flora.core.beans.factory.support;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import xyz.yanghaoyu.flora.core.OrderComparator;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.core.beans.factory.config.DestructionAwareBeanPostProcessor;
@@ -18,8 +16,6 @@ import java.util.List;
  */
 
 public class DisposableBeanAdapter implements DisposableBean {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DisposableBeanAdapter.class);
-
     private final Object                                  bean;
     private final String                                  beanName;
     private       String                                  destroyMethodName;

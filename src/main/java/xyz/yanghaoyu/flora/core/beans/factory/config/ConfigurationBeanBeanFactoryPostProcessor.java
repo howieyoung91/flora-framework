@@ -27,16 +27,21 @@ public class ConfigurationBeanBeanFactoryPostProcessor
         HashSet<String>            classes     = findConfigBeanName(beanFactory);
 
         LOGGER.trace("scan [Configuration] from {} ...", classes);
-        ConfigurationBeanClassScanner configurationClassParser =
-                new ConfigurationBeanClassScanner(beanFactory, classes);
-        Set<String> configBeanNames = configurationClassParser.scan();
-        LOGGER.trace("find [Configuration] -> {}", configBeanNames);
+        ConfigurationBeanClassScanner scanner
+                = new ConfigurationBeanClassScanner(beanFactory, classes);
+        Set<String> configBeanNames = scanner.scan();
 
+        LOGGER.trace("find [Configuration] -> {}", configBeanNames);
         ConfigurationBeanClassParser parser =
                 new ConfigurationBeanClassParser(beanFactory, configBeanNames);
-        parser.parse();
+        Set<ConfigurationClass> configurationClasses = parser.parse();
 
+        // load
+        ConfigurationClassBeanDefinitionReader reader
+                = new ConfigurationClassBeanDefinitionReader(beanFactory);
+        reader.loadBeanDefinitions(configurationClasses);
     }
+
 
     private HashSet<String> findConfigBeanName(DefaultListableBeanFactory beanFactory) {
         String[]        names   = beanFactory.getBeanDefinitionNames();

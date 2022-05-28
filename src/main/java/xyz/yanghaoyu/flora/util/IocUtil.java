@@ -60,10 +60,10 @@ public abstract class IocUtil {
      * 开启占位符替换
      */
     public static void enablePropertyPlaceholderConfigurer(BeanDefinitionRegistry registry, String... locations) {
-        BeanDefinition beanDef = null;
-        Class beanClass = BuiltInBean.PROPERTY_PLACEHOLDER_CONFIGURER;
-        String beanName = beanClass.getName();
-        String resourcesLocationsFieldName = PropertyPlaceholderConfigurer.LOCATIONS;
+        BeanDefinition beanDef                     = null;
+        Class          beanClass                   = BuiltInBean.PROPERTY_PLACEHOLDER_CONFIGURER;
+        String         beanName                    = BeanUtil.builtInBeanName(beanClass);
+        String         resourcesLocationsFieldName = PropertyPlaceholderConfigurer.LOCATIONS;
 
         if (!registry.containsBeanDefinition(beanName)) {
             beanDef = new BeanDefinition(beanClass);
@@ -78,8 +78,8 @@ public abstract class IocUtil {
         } else {
             beanDef = ((ConfigurableListableBeanFactory) registry).getBeanDefinition(beanName);
             PropertyValues propertyValues = beanDef.getPropertyValues();
-            PropertyValue pv = propertyValues.getPropertyValue(resourcesLocationsFieldName);
-            Set value = (Set) pv.getValue();
+            PropertyValue  pv             = propertyValues.getPropertyValue(resourcesLocationsFieldName);
+            Set            value          = (Set) pv.getValue();
             value.addAll(Arrays.asList(locations));
         }
     }

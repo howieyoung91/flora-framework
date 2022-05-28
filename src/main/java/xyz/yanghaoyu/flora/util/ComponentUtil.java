@@ -10,12 +10,6 @@ import java.lang.reflect.Method;
 import java.util.Objects;
 
 
-/**
- * The type Component util.
- *
- * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2021/12/6 13:19<i/>
- * @version 1.0
- */
 public abstract class ComponentUtil {
     /**
      * Parse bean definition.
@@ -27,8 +21,8 @@ public abstract class ComponentUtil {
         if (!clazz.isAnnotationPresent(Component.class) && !clazz.isAnnotationPresent(Configuration.class)) {
             return null;
         }
-        Component componentAnn = clazz.getAnnotation(Component.class);
-        Configuration configAnn = clazz.getAnnotation(Configuration.class);
+        Component     componentAnn = clazz.getAnnotation(Component.class);
+        Configuration configAnn    = clazz.getAnnotation(Configuration.class);
         if (componentAnn != null && configAnn != null) {
             throw new DuplicateDeclarationException("duplicate declaration [@Component] and [@Configuration] on class [" + clazz.getSimpleName() + "]");
         }
@@ -45,9 +39,9 @@ public abstract class ComponentUtil {
      * @return the string
      */
     public static String determineBeanName(BeanDefinition beanDefinition) {
-        Class<?> beanClass = beanDefinition.getBeanClass();
-        Component componentAnn = beanClass.getAnnotation(Component.class);
-        Configuration configAnn = beanClass.getAnnotation(Configuration.class);
+        Class<?>      beanClass    = beanDefinition.getBeanClass();
+        Component     componentAnn = beanClass.getAnnotation(Component.class);
+        Configuration configAnn    = beanClass.getAnnotation(Configuration.class);
         if (componentAnn != null && configAnn != null) {
             throw new DuplicateDeclarationException("the duplicate declaration [@Component] and [@Configuration] on " + beanDefinition.getBeanClass());
         }
@@ -73,9 +67,9 @@ public abstract class ComponentUtil {
      */
     public static void determineBeanInitMethodAndDestroyMethod(BeanDefinition beanDefinition) {
         Class<?> beanClass = beanDefinition.getBeanClass();
-        Method[] methods = beanClass.getMethods();
+        Method[] methods   = beanClass.getMethods();
 
-        boolean isImplInitBean = false;
+        boolean isImplInitBean       = false;
         boolean isImplDisposableBean = false;
         if (InitializingBean.class.isAssignableFrom(beanClass)) {
             isImplInitBean = true;
@@ -129,14 +123,15 @@ public abstract class ComponentUtil {
     /**
      * Determine bean name string when using FactoryMethod(@Bean)
      *
-     * @param method  the factory method
-     * @param beanAnn the @Bean Annotation
+     * @param factoryMethod the factory method
+     * @param beanAnn       the @Bean Annotation
      * @return beanName
      */
-    public static String determineBeanName(Method method, Bean beanAnn) {
+    public static String determineBeanName(Method factoryMethod, Bean beanAnn) {
         String beanName = beanAnn.value();
         if (Objects.equals(beanName, Component.DEFAULT_BEAN_NAME)) {
-            beanName = StringUtil.lowerFirstChar(method.getName());
+            // 直接使用函数名作为 beanName
+            beanName = factoryMethod.getName();
         }
         return beanName;
     }
@@ -163,7 +158,7 @@ public abstract class ComponentUtil {
      * @param beanDefinition the bean definition
      */
     public static void determineBeanScope(BeanDefinition beanDefinition) {
-        Class<?> aClass = beanDefinition.getBeanClass();
+        Class<?>        aClass        = beanDefinition.getBeanClass();
         Scope.Singleton singletonAnno = aClass.getAnnotation(Scope.Singleton.class);
         Scope.Prototype prototypeAnno = aClass.getAnnotation(Scope.Prototype.class);
         if (singletonAnno == null) {

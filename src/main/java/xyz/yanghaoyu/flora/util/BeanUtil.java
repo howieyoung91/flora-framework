@@ -8,6 +8,6 @@ package xyz.yanghaoyu.flora.util;
 
 public abstract class BeanUtil {
     public static String builtInBeanName(Class<?> builtInBeanClazz) {
-        return "flora$" + builtInBeanClazz.getSimpleName();
+        return "flora$" + builtInBeanClazz.getSimpleName() + "$";
     }
 }

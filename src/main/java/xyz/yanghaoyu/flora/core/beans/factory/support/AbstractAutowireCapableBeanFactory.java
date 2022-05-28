@@ -120,7 +120,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     /**
      * 在实例化之前
      */
-    private Object applyBeanPostProcessorsBeforeInstantiation(Class beanClass, String beanName) {
+    protected Object applyBeanPostProcessorsBeforeInstantiation(Class beanClass, String beanName) {
         for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
             if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
                 Object result = ((InstantiationAwareBeanPostProcessor) beanPostProcessor).postProcessBeforeInstantiation(beanClass, beanName);
@@ -136,7 +136,6 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
      * 实例化
      */
     protected Object createBeanInstance(BeanDefinition beanDefinition, String beanName, Object[] args) throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
-
         if (beanDefinition.getFactoryMethod() != null) {
             String configurationClassBeanName = beanDefinition.getConfigurationClassBeanName();
             Object configProxyBean            = getBean(configurationClassBeanName);
@@ -161,7 +160,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
      * 在实例化之后
      * Bean 实例化后对于返回 false 的对象，不在执行后续设置 Bean 对象属性的操作
      */
-    private boolean applyBeanPostProcessorsAfterInstantiation(String beanName, Object bean) {
+    protected boolean applyBeanPostProcessorsAfterInstantiation(String beanName, Object bean) {
         for (BeanPostProcessor beanPostProcessor : getBeanPostProcessors()) {
             if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
                 if (!((InstantiationAwareBeanPostProcessor) beanPostProcessor).postProcessAfterInstantiation(bean, beanName)) {
@@ -221,7 +220,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         }
     }
 
-    private Object initializeBean(String beanName, Object bean, BeanDefinition beanDefinition) {
+    protected Object initializeBean(String beanName, Object bean, BeanDefinition beanDefinition) {
         // 处理与BeanFactory有关的容器感知对象,
         if (bean instanceof Aware) {
             if (bean instanceof BeanFactoryAware) {
@@ -252,7 +251,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     /**
      * 在初始化之前
      */
-    public Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName) throws BeansException {
+    protected Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName) throws BeansException {
         Object result = existingBean;
         for (BeanPostProcessor processor : getBeanPostProcessors()) {
             Object current = processor.postProcessBeforeInitialization(result, beanName);
@@ -267,7 +266,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     /**
      * 触发初始化方法
      */
-    private void invokeInitMethods(String beanName, Object wrappedBean, BeanDefinition beanDefinition) throws Exception {
+    protected void invokeInitMethods(String beanName, Object wrappedBean, BeanDefinition beanDefinition) throws Exception {
         if (wrappedBean instanceof InitializingBean) {
             ((InitializingBean) wrappedBean).afterPropertiesSet();
         }
@@ -287,7 +286,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
     /**
      * 在初始化之后
      */
-    public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName) throws BeansException {
+    protected Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName) throws BeansException {
         Object result = existingBean;
         for (BeanPostProcessor processor : getBeanPostProcessors()) {
             Object current = processor.postProcessAfterInitialization(result, beanName);

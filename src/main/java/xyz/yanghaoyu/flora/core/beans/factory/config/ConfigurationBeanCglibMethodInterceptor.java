@@ -2,6 +2,8 @@ package xyz.yanghaoyu.flora.core.beans.factory.config;
 
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import xyz.yanghaoyu.flora.annotation.Bean;
 import xyz.yanghaoyu.flora.annotation.Component;
 import xyz.yanghaoyu.flora.annotation.Inject;
@@ -19,6 +21,8 @@ import java.util.Map;
 import java.util.Set;
 
 public class ConfigurationBeanCglibMethodInterceptor implements MethodInterceptor {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationBeanCglibMethodInterceptor.class);
+
     private final DefaultListableBeanFactory beanFactory;
     private final Set<Method>                cache = new HashSet(3);
 
@@ -47,9 +51,7 @@ public class ConfigurationBeanCglibMethodInterceptor implements MethodIntercepto
                 Inject.ByType byTypeAnn = parameter.getAnnotation(Inject.ByType.class);
                 if (byNameAnn != null && byTypeAnn != null) {
                     throw new DuplicateDeclarationException(
-                            "duplicate declaration [@Inject.ByName],[@Inject.ByType] on "
-                            + parameter.getName()
-                            + " when creating bean [" + beanName + "]"
+                            "duplicate declaration [@Inject.ByName],[@Inject.ByType] on " + parameter.getName() + " when creating bean [" + beanName + "]"
                     );
                 }
                 Object bean = getBeanFromBeanFactory(beanName, parameter, byNameAnn, byTypeAnn);
@@ -61,7 +63,7 @@ public class ConfigurationBeanCglibMethodInterceptor implements MethodIntercepto
     }
 
     private Object getBeanFromBeanFactory(String beanName, Parameter parameter, Inject.ByName byNameAnn, Inject.ByType byTypeAnn) {
-        Object bean;
+        Object bean = null;
         if (byTypeAnn != null) {
             Class dependOnBeanClass = determineDependOnBeanClass(parameter, byTypeAnn);
             // FIXME 依赖于和 Bean 相同的类型 这里就会出现循环依赖
@@ -85,8 +87,11 @@ public class ConfigurationBeanCglibMethodInterceptor implements MethodIntercepto
                 dependOnBeanName = determineDependOnBeanName(parameter, byNameAnn);
                 required = byNameAnn.required();
             }
-            bean = beanFactory.getBean(dependOnBeanName);
-            if (bean == null) {
+
+            try {
+                bean = beanFactory.getBean(dependOnBeanName);
+            } catch (Exception e) {
+                LOGGER.warn("{}", e.toString());
                 if (required) {
                     throw new BeanCandidatesException("find no candidate [" + dependOnBeanName + "] when creating bean [" + beanName + "]");
                 }
