@@ -12,6 +12,7 @@ import xyz.yanghaoyu.flora.core.beans.factory.PropertyValues;
 import xyz.yanghaoyu.flora.exception.BeansException;
 import xyz.yanghaoyu.flora.exception.DuplicateDeclarationException;
 import xyz.yanghaoyu.flora.util.ConversionUtil;
+import xyz.yanghaoyu.flora.util.PropertyUtil;
 import xyz.yanghaoyu.flora.util.ReflectUtil;
 import xyz.yanghaoyu.flora.util.StringUtil;
 
@@ -115,25 +116,24 @@ public class AutowiredAnnotationBeanPostProcessor
 
     private void handleValueAnnotation(Object bean, Field field, Class<?> clazz) {
         Value valueAnn = field.getAnnotation(Value.class);
-        if (null != valueAnn) {
-            Object value = valueAnn.value();
-            value = beanFactory.resolveEmbeddedValue((String) value);
+        if (valueAnn != null) {
+            String key   = valueAnn.value();
+            String value = beanFactory.resolveEmbeddedValue(key);
 
-            if (StringUtil.isEmpty((String) value)
-                || ((String) value).charAt(0) == '$') {
-                // String defaultValue = valueAnn.defaultValue();
+            if (StringUtil.isEmpty(value) ||
+                (PropertyUtil.isPropertyKey(key) &&
+                 PropertyUtil.isPropertyKey(value))
+            ) {
                 if (valueAnn.required()) {
-                    // if (defaultValue.equals(Value.NULL_DEFAULT_VALUE)) {
                     throw new BeansException("Fail to find the value [" + valueAnn.value() + "]");
-                    // }
                 }
                 value = null;
-                // value = defaultValue;
+                ReflectUtil.setFieldValue(bean, clazz, field.getName(), null);
             } else {
                 // 类型转换
-                value = ConversionUtil.convertField(field, value, beanFactory.getConversionService());
+                Object v = ConversionUtil.convertField(field, value, beanFactory.getConversionService());
+                ReflectUtil.setFieldValue(bean, clazz, field.getName(), v);
             }
-            ReflectUtil.setFieldValue(bean, clazz, field.getName(), value);
         }
     }
 }

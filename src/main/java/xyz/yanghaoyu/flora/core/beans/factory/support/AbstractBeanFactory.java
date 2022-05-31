@@ -14,6 +14,7 @@ import xyz.yanghaoyu.flora.util.StringUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * 基本实现 BeanFactory 的流程
@@ -23,7 +24,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
     private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
 
-    private final List<StringValueResolver> embeddedValueResolvers = new ArrayList<>();
+    private final List<StringValueResolver> embeddedValueResolvers = new CopyOnWriteArrayList<>();
 
     private Set<String> currentlyCreatingBeans = new ConcurrentHashSet<>();
 
@@ -90,13 +91,17 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 
     @Override
     public void addEmbeddedValueResolver(StringValueResolver valueResolver) {
-        this.embeddedValueResolvers.add(valueResolver);
+        embeddedValueResolvers.add(valueResolver);
     }
 
     @Override
     public String resolveEmbeddedValue(String value) {
+        if (value == null) {
+            return null;
+        }
+
         String result = value;
-        for (StringValueResolver resolver : this.embeddedValueResolvers) {
+        for (StringValueResolver resolver : embeddedValueResolvers) {
             result = resolver.resolveStringValue(result);
         }
         return result;
@@ -139,7 +144,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
         return this.beanPostProcessors;
     }
 
-    public boolean isCurrentlyCreating(String beanName) {
+    public boolean isCreatingCurrently() {
+        return this.currentlyCreatingBeans.size() != 0;
+    }
+
+    public boolean isCreatingCurrently(String beanName) {
         return this.currentlyCreatingBeans.contains(beanName);
     }
 

@@ -11,5 +11,7 @@ import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
 public interface BeanDefinitionRegistry {
     void registerBeanDefinition(String beanName, BeanDefinition beanDefinition);
 
+    void removeBeanDefinition(String beanName);
+
     boolean containsBeanDefinition(String beanName);
 }

@@ -39,7 +39,7 @@ public class ConfigurationBeanCglibMethodInterceptor implements MethodIntercepto
         }
         if (cache.contains(method)) {
             String beanName = ComponentUtil.determineBeanName(method, method.getAnnotation(Bean.class));
-            if (!beanFactory.isCurrentlyCreating(beanName)) {
+            if (!beanFactory.isCreatingCurrently(beanName)) {
                 return beanFactory.getBean(beanName);
             }
 

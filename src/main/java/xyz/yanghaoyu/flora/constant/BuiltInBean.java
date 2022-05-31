@@ -26,7 +26,7 @@ public interface BuiltInBean {
     Class<?> PROPERTY_PLACEHOLDER_CONFIGURER
             = PropertyPlaceholderConfigurer.class;
     Class<?> CONFIGURATION_BEAN_BEAN_FACTORY_POST_PROCESSOR
-            = ConfigurationBeanBeanFactoryPostProcessor.class;
+            = ConfigurationClassBeanFactoryPostProcessor.class;
     Class<?> INIT_DESTROY_ANNOTATION_BEAN_POST_PROCESSOR
             = InitDestroyAnnotationBeanPostProcessor.class;
     Class<?> CONFIGURATION_PROPERTIES_BINDING_POST_PROCESSOR

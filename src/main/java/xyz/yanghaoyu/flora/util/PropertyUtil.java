@@ -12,4 +12,9 @@ public abstract class PropertyUtil {
     public static String createPropertyKey(String key) {
         return PropertyPlaceholderConfigurer.DEFAULT_PLACEHOLDER_PREFIX + key + PropertyPlaceholderConfigurer.DEFAULT_PLACEHOLDER_SUFFIX;
     }
+
+    public static boolean isPropertyKey(String key) {
+        return key.startsWith(PropertyPlaceholderConfigurer.DEFAULT_PLACEHOLDER_PREFIX)
+               && key.endsWith(PropertyPlaceholderConfigurer.DEFAULT_PLACEHOLDER_SUFFIX);
+    }
 }

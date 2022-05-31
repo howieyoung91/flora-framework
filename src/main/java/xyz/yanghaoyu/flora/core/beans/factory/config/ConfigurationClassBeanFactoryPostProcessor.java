@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.yanghaoyu.flora.annotation.Configuration;
 import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
+import xyz.yanghaoyu.flora.core.beans.factory.PropertyValue;
+import xyz.yanghaoyu.flora.core.beans.factory.PropertyValues;
 import xyz.yanghaoyu.flora.core.beans.factory.support.DefaultListableBeanFactory;
 import xyz.yanghaoyu.flora.exception.BeansException;
 
@@ -17,9 +19,9 @@ import java.util.Set;
  * @version 1.0
  */
 
-public class ConfigurationBeanBeanFactoryPostProcessor
+public class ConfigurationClassBeanFactoryPostProcessor
         implements BeanFactoryPostProcessor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationBeanBeanFactoryPostProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationClassBeanFactoryPostProcessor.class);
 
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory configBeanFactory) throws BeansException {
@@ -27,21 +29,30 @@ public class ConfigurationBeanBeanFactoryPostProcessor
         HashSet<String>            classes     = findConfigBeanName(beanFactory);
 
         LOGGER.trace("scan [Configuration] from {} ...", classes);
-        ConfigurationBeanClassScanner scanner
-                = new ConfigurationBeanClassScanner(beanFactory, classes);
+        ConfigurationBeanClassScanner scanner = new ConfigurationBeanClassScanner(beanFactory, classes);
+
         Set<String> configBeanNames = scanner.scan();
 
         LOGGER.trace("find [Configuration] -> {}", configBeanNames);
-        ConfigurationBeanClassParser parser =
-                new ConfigurationBeanClassParser(beanFactory, configBeanNames);
+        ConfigurationBeanClassParser parser = new ConfigurationBeanClassParser(beanFactory, configBeanNames);
+
         Set<ConfigurationClass> configurationClasses = parser.parse();
 
+        LOGGER.trace("loading configurations...");
+        GreedyConfigurationClassBeanDefinitionReader reader = new GreedyConfigurationClassBeanDefinitionReader(beanFactory);
+
         // load
-        ConfigurationClassBeanDefinitionReader reader
-                = new ConfigurationClassBeanDefinitionReader(beanFactory);
-        reader.loadBeanDefinitions(configurationClasses);
+        Set<String> skippedStringNames = reader.loadBeanDefinitions(configurationClasses);
+
+        registerConditionalSupportBeanFactoryPostProcessor(beanFactory, skippedStringNames);
     }
 
+    private void registerConditionalSupportBeanFactoryPostProcessor(DefaultListableBeanFactory beanFactory, Set<String> skippedStringNames) {
+        PropertyValues propertyValues = new PropertyValues()
+                .addPropertyValue(new PropertyValue("skippedBeanNames", skippedStringNames));
+        BeanDefinition beanDef = new BeanDefinition(ConditionalSupportBeanFactoryProcessor.class, propertyValues);
+        beanFactory.registerBeanDefinition("flora$ConditionalSupportBeanFactoryPostProcessor$", beanDef);
+    }
 
     private HashSet<String> findConfigBeanName(DefaultListableBeanFactory beanFactory) {
         String[]        names   = beanFactory.getBeanDefinitionNames();
@@ -56,5 +67,4 @@ public class ConfigurationBeanBeanFactoryPostProcessor
         }
         return classes;
     }
-
 }

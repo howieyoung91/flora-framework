@@ -25,6 +25,14 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
     }
 
     @Override
+    public void removeBeanDefinition(String beanName) {
+        if (isCreatingCurrently()) {
+            throw new IllegalStateException("bean factory is creating bean!");
+        }
+        beanDefinitionMap.remove(beanName);
+    }
+
+    @Override
     public boolean containsBeanDefinition(String beanName) {
         return beanDefinitionMap.containsKey(beanName);
     }

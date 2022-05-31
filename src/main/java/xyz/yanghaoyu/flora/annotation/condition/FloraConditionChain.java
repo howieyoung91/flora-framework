@@ -7,25 +7,62 @@ package xyz.yanghaoyu.flora.annotation.condition;
 
 import xyz.yanghaoyu.flora.annotation.Condition;
 import xyz.yanghaoyu.flora.annotation.ConditionContext;
+import xyz.yanghaoyu.flora.annotation.Conditional;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public class FloraConditionChain extends FloraCondition {
-    private LinkedList<Condition> conditions = new LinkedList<>();
+    private LinkedList<Condition>        builtInConditions    = new LinkedList<>();
+    private HashMap<Class<?>, Condition> customizedConditions = new HashMap<>();
 
     public FloraConditionChain() {
-        conditions.add(new OnBeanCondition());
-        conditions.add(new OnMissingBeanCondition());
+        builtInConditions.add(new OnBeanCondition());
+        builtInConditions.add(new OnMissingBeanCondition());
+        builtInConditions.add(new OnPropertyCondition());
     }
 
     @Override
     public boolean matches(ConditionContext context, BeanDefinition beanDef) {
-        for (Condition condition : conditions) {
+        return filterByCustomizedConditions(context, beanDef)
+               && filterByBuiltInConditions(context, beanDef);
+    }
+
+    private boolean filterByBuiltInConditions(ConditionContext context, BeanDefinition beanDef) {
+        for (Condition condition : builtInConditions) {
             if (!condition.matches(context, beanDef)) {
                 return false;
             }
         }
         return true;
+    }
+
+    private boolean filterByCustomizedConditions(ConditionContext context, BeanDefinition beanDef) {
+        Conditional conditional = beanDef.getFactoryMethod().getAnnotation(Conditional.class);
+        if (conditional == null) {
+            return true;
+        }
+
+        // filter
+        try {
+            for (Class<? extends Condition> conditionClass : conditional.value()) {
+                if (!getCondition(conditionClass).matches(context, beanDef)) {
+                    return false;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    private Condition getCondition(Class<? extends Condition> conditionClass) throws InstantiationException, IllegalAccessException {
+        Condition condition = customizedConditions.get(conditionClass);
+        if (condition == null) {
+            condition = conditionClass.newInstance();
+            customizedConditions.put(conditionClass, condition);
+        }
+        return condition;
     }
 }

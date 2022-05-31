@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import xyz.yanghaoyu.flora.annotation.Aop;
 import xyz.yanghaoyu.flora.annotation.Order;
 import xyz.yanghaoyu.flora.core.Ordered;
+import xyz.yanghaoyu.flora.core.PriorityOrdered;
 import xyz.yanghaoyu.flora.core.aop.aspectj.AnnotationAspectJExpressionPointcutAdvisorManager;
 import xyz.yanghaoyu.flora.core.aop.interceptor.AdviceChain;
 import xyz.yanghaoyu.flora.core.aop.interceptor.AdvicePoint;
@@ -24,7 +25,7 @@ import java.lang.reflect.Method;
  */
 
 public class AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor
-        implements BeanFactoryPostProcessor {
+        implements BeanFactoryPostProcessor, PriorityOrdered {
     private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor.class);
 
     @Override
@@ -76,6 +77,11 @@ public class AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor
         // 解析 @Order
         Order orderAnn = method.getAnnotation(Order.class);
         return orderAnn == null ? Ordered.LOWEST_PRECEDENCE : orderAnn.value();
+    }
+
+    @Override
+    public int getOrder() {
+        return Ordered.LOWEST_PRECEDENCE;
     }
 
     private static class Point implements AdvicePoint {

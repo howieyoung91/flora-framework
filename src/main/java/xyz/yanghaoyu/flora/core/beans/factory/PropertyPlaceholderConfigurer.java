@@ -3,6 +3,7 @@ package xyz.yanghaoyu.flora.core.beans.factory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import xyz.yanghaoyu.flora.core.Ordered;
+import xyz.yanghaoyu.flora.core.PriorityOrdered;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanFactoryPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.support.InitializingBean;
@@ -19,7 +20,7 @@ import java.util.*;
  * 这个执行优先级尽可能地高
  */
 public class PropertyPlaceholderConfigurer
-        implements BeanFactoryPostProcessor, InitializingBean, Ordered {
+        implements BeanFactoryPostProcessor, InitializingBean, PriorityOrdered {
     public static final String DEFAULT_PLACEHOLDER_PREFIX = "${";
     public static final String DEFAULT_PLACEHOLDER_SUFFIX = "}";
     public static final String LOCATIONS                  = "locations";
@@ -141,7 +142,6 @@ public class PropertyPlaceholderConfigurer
 
     // 对 @Value 做支持
     private class PlaceholderResolvingStringValueResolver implements StringValueResolver {
-
         private final Map<String, String> properties;
 
         public PlaceholderResolvingStringValueResolver(Map<String, String> properties) {
@@ -153,7 +153,5 @@ public class PropertyPlaceholderConfigurer
             return PropertyPlaceholderConfigurer.this.resolvePlaceholder(value, properties);
         }
     }
-
-
 }
 

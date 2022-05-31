@@ -5,7 +5,7 @@ package xyz.yanghaoyu.flora.core.beans.factory;
  * @version 1.0
  */
 
-
+@FunctionalInterface
 public interface StringValueResolver {
     String resolveStringValue(String strVal);
 }

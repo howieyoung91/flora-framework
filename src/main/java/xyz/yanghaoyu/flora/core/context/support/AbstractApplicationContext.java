@@ -7,7 +7,7 @@ import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.config.AutowireCapableBeanFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanFactoryPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanPostProcessor;
-import xyz.yanghaoyu.flora.core.beans.factory.config.ConfigurationBeanBeanFactoryPostProcessor;
+import xyz.yanghaoyu.flora.core.beans.factory.config.ConfigurationClassBeanFactoryPostProcessor;
 import xyz.yanghaoyu.flora.core.beans.factory.support.ApplicationContextAwareProcessor;
 import xyz.yanghaoyu.flora.core.context.ApplicationListener;
 import xyz.yanghaoyu.flora.core.context.ConfigurableApplicationContext;
@@ -159,7 +159,7 @@ public abstract class AbstractApplicationContext
     private void additionallyLoadBeanDefinition() {
         LOGGER.trace("start resolve [Configuration] ...");
         ConfigurableListableBeanFactory beanFactory = getBeanFactory();
-        beanFactory.getBeansOfType(ConfigurationBeanBeanFactoryPostProcessor.class).values()
+        beanFactory.getBeansOfType(ConfigurationClassBeanFactoryPostProcessor.class).values()
                 .forEach(processor -> processor.postProcessBeanFactory(beanFactory));
         LOGGER.trace("finish resolve [Configuration]");
     }
@@ -175,7 +175,7 @@ public abstract class AbstractApplicationContext
         // 跳过 @Configuration 的处理器 已经调用过了
         processors.stream()
                 .sorted(OrderComparator.INSTANCE)  // sort
-                .filter(processor -> !(processor instanceof ConfigurationBeanBeanFactoryPostProcessor))
+                .filter(processor -> !(processor instanceof ConfigurationClassBeanFactoryPostProcessor))
                 .forEach(processor -> processor.postProcessBeanFactory(beanFactory));
         LOGGER.trace("finish register [BeanFactoryPostProcessor] ...");
     }

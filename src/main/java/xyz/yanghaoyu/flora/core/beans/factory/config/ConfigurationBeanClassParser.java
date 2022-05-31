@@ -65,6 +65,7 @@ public class ConfigurationBeanClassParser {
     private static boolean shouldSkip(Method factoryMethod) {
         return factoryMethod.isAnnotationPresent(Conditional.class)
                || factoryMethod.isAnnotationPresent(Conditional.OnBean.class)
-               || factoryMethod.isAnnotationPresent(Conditional.OnMissingBean.class);
+               || factoryMethod.isAnnotationPresent(Conditional.OnMissingBean.class)
+               || factoryMethod.isAnnotationPresent(Conditional.OnProperty.class);
     }
 }

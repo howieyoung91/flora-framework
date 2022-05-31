@@ -34,7 +34,8 @@ import java.util.stream.Collectors;
  * @version 1.0
  */
 
-public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFactory implements AutowireCapableBeanFactory {
+public abstract class AbstractAutowireCapableBeanFactory
+        extends AbstractBeanFactory implements AutowireCapableBeanFactory {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractAutowireCapableBeanFactory.class);
 
     // 实例化策略
@@ -82,6 +83,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
             // 执行 Bean 的初始化方法和 BeanPostProcessor 的前置和后置处理方法
             bean = initializeBean(beanName, bean, beanDefinition);
         } catch (Exception e) {
+            e.printStackTrace();
             throw new BeanCreateException("Instantiation of bean failed when creating bean [" + beanName + "]", e);
         }
         registerDisposableBeanIfNecessary(beanName, bean, beanDefinition);
@@ -151,6 +153,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
         try {
             constructor = ReflectUtil.selectConstructorByArgsType(beanDefinition.getBeanClass(), args);
         } catch (NoSuchMethodException e) {
+            e.printStackTrace();
             throw new BeanCreateException("Error creating bean instance " + beanName);
         }
         return instantiationStrategy.instantiate(beanDefinition, constructor, args);
