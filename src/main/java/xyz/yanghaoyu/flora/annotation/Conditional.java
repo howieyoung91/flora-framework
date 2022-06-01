@@ -5,9 +5,10 @@
 
 package xyz.yanghaoyu.flora.annotation;
 
-import org.apache.logging.log4j.core.filter.CompositeFilter;
-
-import java.lang.annotation.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * 条件注入
@@ -41,6 +42,18 @@ public @interface Conditional {
     @Target({ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
     @interface OnProperty {
+        String[] value() default {};
+    }
+
+    @Target({ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface OnClass {
+        String[] value() default {};
+    }
+
+    @Target({ElementType.METHOD})
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface OnMissingClass {
         String[] value() default {};
     }
 }

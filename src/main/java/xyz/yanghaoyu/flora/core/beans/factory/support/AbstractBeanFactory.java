@@ -95,6 +95,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
     }
 
     @Override
+    public boolean hasEmbeddedValueResolver() {
+        return !embeddedValueResolvers.isEmpty();
+    }
+
+    @Override
     public String resolveEmbeddedValue(String value) {
         if (value == null) {
             return null;

@@ -8,7 +8,7 @@ package xyz.yanghaoyu.flora.core.beans.factory.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.yanghaoyu.flora.annotation.ConditionContext;
-import xyz.yanghaoyu.flora.annotation.condition.FloraConditionChain;
+import xyz.yanghaoyu.flora.annotation.condition.FloraFrameworkConditionChain;
 import xyz.yanghaoyu.flora.core.Ordered;
 import xyz.yanghaoyu.flora.core.PriorityOrdered;
 import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
@@ -26,8 +26,8 @@ public class ConditionalSupportBeanFactoryProcessor
         implements BeanFactoryPostProcessor, PriorityOrdered {
     private static final Logger LOGGER = LoggerFactory.getLogger(ConditionalSupportBeanFactoryProcessor.class);
 
-    private Set<String>         skippedBeanNames;
-    private FloraConditionChain conditionChain = new FloraConditionChain();
+    private Set<String>                  skippedBeanNames;
+    private FloraFrameworkConditionChain conditionChain = new FloraFrameworkConditionChain();
 
     @Override
     public int getOrder() {

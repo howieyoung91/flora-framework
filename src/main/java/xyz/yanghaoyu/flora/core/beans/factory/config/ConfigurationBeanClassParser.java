@@ -66,6 +66,8 @@ public class ConfigurationBeanClassParser {
         return factoryMethod.isAnnotationPresent(Conditional.class)
                || factoryMethod.isAnnotationPresent(Conditional.OnBean.class)
                || factoryMethod.isAnnotationPresent(Conditional.OnMissingBean.class)
-               || factoryMethod.isAnnotationPresent(Conditional.OnProperty.class);
+               || factoryMethod.isAnnotationPresent(Conditional.OnProperty.class)
+               || factoryMethod.isAnnotationPresent(Conditional.OnClass.class)
+               || factoryMethod.isAnnotationPresent(Conditional.OnMissingClass.class);
     }
 }

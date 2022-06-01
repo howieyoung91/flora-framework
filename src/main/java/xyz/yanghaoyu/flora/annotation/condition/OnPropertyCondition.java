@@ -13,7 +13,7 @@ import xyz.yanghaoyu.flora.util.PropertyUtil;
 
 import java.lang.reflect.Method;
 
-public class OnPropertyCondition extends FloraCondition {
+public class OnPropertyCondition extends FloraFrameworkCondition {
     @Override
     public boolean matches(ConditionContext context, BeanDefinition beanDef) {
         Method                 factoryMethod = beanDef.getFactoryMethod();
@@ -26,6 +26,9 @@ public class OnPropertyCondition extends FloraCondition {
 
     private boolean doMatch(ConditionContext context, Conditional.OnProperty onPropertyAnn) {
         ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+        if (!beanFactory.hasEmbeddedValueResolver()) {
+            return false;
+        }
         for (String property : onPropertyAnn.value()) {
             String propertyKey = PropertyUtil.createPropertyKey(property);
             String s           = beanFactory.resolveEmbeddedValue(propertyKey);

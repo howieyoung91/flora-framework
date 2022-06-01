@@ -13,7 +13,7 @@ import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-public class OnMissingBeanCondition extends FloraCondition {
+public class OnMissingBeanCondition extends FloraFrameworkCondition {
     @Override
     public boolean matches(ConditionContext context, BeanDefinition beanDef) {
         Method factoryMethod = beanDef.getFactoryMethod();

@@ -7,5 +7,5 @@ package xyz.yanghaoyu.flora.annotation.condition;
 
 import xyz.yanghaoyu.flora.annotation.Condition;
 
-public abstract class FloraCondition implements Condition {
+public abstract class FloraFrameworkCondition implements Condition {
 }

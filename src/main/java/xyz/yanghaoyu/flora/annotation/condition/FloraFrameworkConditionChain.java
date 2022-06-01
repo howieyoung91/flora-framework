@@ -13,14 +13,16 @@ import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
 import java.util.HashMap;
 import java.util.LinkedList;
 
-public class FloraConditionChain extends FloraCondition {
+public class FloraFrameworkConditionChain extends FloraFrameworkCondition {
     private LinkedList<Condition>        builtInConditions    = new LinkedList<>();
     private HashMap<Class<?>, Condition> customizedConditions = new HashMap<>();
 
-    public FloraConditionChain() {
+    public FloraFrameworkConditionChain() {
         builtInConditions.add(new OnBeanCondition());
         builtInConditions.add(new OnMissingBeanCondition());
         builtInConditions.add(new OnPropertyCondition());
+        builtInConditions.add(new OnClassCondition());
+        builtInConditions.add(new OnMissingClassCondition());
     }
 
     @Override

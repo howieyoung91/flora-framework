@@ -13,12 +13,11 @@ import xyz.yanghaoyu.flora.core.beans.factory.config.BeanDefinition;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 
-public class OnBeanCondition extends FloraCondition {
+public class OnBeanCondition extends FloraFrameworkCondition {
     @Override
     public boolean matches(ConditionContext context, BeanDefinition beanDef) {
-        Method factoryMethod = beanDef.getFactoryMethod();
-
-        Conditional.OnBean onBeanAnn = factoryMethod.getAnnotation(Conditional.OnBean.class);
+        Method             factoryMethod = beanDef.getFactoryMethod();
+        Conditional.OnBean onBeanAnn     = factoryMethod.getAnnotation(Conditional.OnBean.class);
         if (onBeanAnn == null) {
             return true;
         }
