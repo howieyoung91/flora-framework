@@ -7,7 +7,6 @@ import xyz.yanghaoyu.flora.core.beans.factory.BeanFactoryAware;
 import xyz.yanghaoyu.flora.exception.BeansException;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,8 +20,7 @@ public class AnnotationAspectJExpressionPointcutAdvisorManager implements BeanFa
             = new ConcurrentHashMap<>(8);
     private       Collection<AnnotationAspectJExpressionPointcutAdvisor>  advisorsCache
             = map.values();
-
-    private BeanFactory beanFactory;
+    private       BeanFactory                                             beanFactory;
 
     @Override
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
@@ -32,9 +30,7 @@ public class AnnotationAspectJExpressionPointcutAdvisorManager implements BeanFa
     public void addMethodEnhanceAdvice(String pointCutExpr, AdvicePoint point) {
         AnnotationAspectJExpressionPointcutAdvisor advisor = map.get(pointCutExpr);
         if (advisor == null) {
-            advisor = new AnnotationAspectJExpressionPointcutAdvisor(
-                    pointCutExpr, new MethodEnhanceAdviceInterceptor()
-            );
+            advisor = new AnnotationAspectJExpressionPointcutAdvisor(pointCutExpr, new MethodEnhanceAdviceInterceptor());
             map.put(pointCutExpr, advisor);
         }
         advisor.addAdvicePoint(point);

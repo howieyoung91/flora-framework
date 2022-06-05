@@ -20,7 +20,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * 基本实现 BeanFactory 的流程
  * 具体逻辑由子类实现
  */
-public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport implements ConfigurableBeanFactory {
+public abstract class AbstractBeanFactory
+        extends FactoryBeanRegistrySupport implements ConfigurableBeanFactory {
 
     private final List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
 
@@ -120,6 +121,11 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
     @Override
     public Object getBean(String name, Object... args) throws BeansException {
         return doGetBean(name, args);
+    }
+
+    @Override
+    public <T> T getBean(Class<T> type) {
+        return doGetBean(StringUtil.lowerFirstChar(type.getSimpleName()), null);
     }
 
     @Override

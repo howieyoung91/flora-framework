@@ -32,7 +32,7 @@ public class AnnotationJdkDynamicAopProxy extends AnnotationAopProxy implements 
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         MultiMethodInterceptor interceptor = cache.get(method);
         if (interceptor != null) {
-            return invokeProxyMethod(method, args, interceptor);
+            return invokeProxyMethod(proxy, method, args, interceptor);
         }
 
         interceptor = getEnhanceMethodInterceptor(method);
@@ -41,14 +41,14 @@ public class AnnotationJdkDynamicAopProxy extends AnnotationAopProxy implements 
             return method.invoke(advisedSupport.getTargetSource().getTarget(), args);
         } else {
             cache.put(method, interceptor);
-            return invokeProxyMethod(method, args, interceptor);
+            return invokeProxyMethod(proxy, method, args, interceptor);
         }
     }
 
-    private Object invokeProxyMethod(Method method, Object[] args, MultiMethodInterceptor interceptor) throws Throwable {
+    private Object invokeProxyMethod(Object proxy, Method method, Object[] args, MultiMethodInterceptor interceptor) throws Throwable {
         return interceptor.invoke(
                 new ReflectiveMethodInvocation(
-                        advisedSupport.getTargetSource().getTarget(),
+                        advisedSupport.getTargetSource().getTarget(), proxy,
                         method, args
                 ));
     }

@@ -97,6 +97,10 @@ public abstract class IocUtil {
         registerBuiltinBeanIfNecessary(registry, BuiltInBean.INIT_DESTROY_ANNOTATION_BEAN_POST_PROCESSOR);
     }
 
+    public static void enableTransaction(BeanDefinitionRegistry registry) {
+        registerBuiltinBeanIfNecessary(registry, BuiltInBean.TRANSACTION_BEAN_FACTORY_POST_PROCESSOR);
+    }
+
     private static void registerBuiltinBeanIfNecessary(BeanDefinitionRegistry registry, Class<?> clazz) {
         String beanName = BeanUtil.builtInBeanName(clazz);
         if (!registry.containsBeanDefinition(beanName)) {

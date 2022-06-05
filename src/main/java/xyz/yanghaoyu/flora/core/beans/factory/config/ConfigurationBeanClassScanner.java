@@ -75,6 +75,7 @@ public class ConfigurationBeanClassScanner {
 
         parseComponentScan(clazz);
         parseAop(clazz);
+        parseTransaction(clazz);
         parsePropertyPlaceholder(clazz);
         parseImportConfiguration(clazz);
         parseImportResources(clazz);
@@ -84,6 +85,7 @@ public class ConfigurationBeanClassScanner {
     }
 
     boolean parsed = false;
+
 
     // 解析 META-INF/flora.yaml
     private void parseEnableAutoConfiguration(Class<?> clazz) {
@@ -151,6 +153,12 @@ public class ConfigurationBeanClassScanner {
     private void parseAop(Class<?> clazz) {
         if (clazz.isAnnotationPresent(Enable.Aop.class)) {
             IocUtil.enableAop(beanFactory);
+        }
+    }
+
+    private void parseTransaction(Class<?> clazz) {
+        if (clazz.isAnnotationPresent(Enable.Transaction.class)) {
+            IocUtil.enableTransaction(beanFactory);
         }
     }
 

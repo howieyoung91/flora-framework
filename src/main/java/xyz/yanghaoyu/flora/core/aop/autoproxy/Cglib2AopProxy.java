@@ -40,11 +40,11 @@ public class Cglib2AopProxy implements AopProxy, MethodInterceptor {
                     advisedSupport.getMethodInterceptor();
             return methodInterceptor.invoke(
                     new CglibMethodInvocation(
-                            advisedSupport.getTargetSource().getTarget(),
+                            advisedSupport.getTargetSource().getTarget(), o,
                             method, args, methodProxy
                     ));
         }
-        // 不使用增强,直接调用真实对象的方法
+        // 不使用增强, 直接调用真实对象的方法
         return methodProxy.invoke(advisedSupport.getTargetSource().getTarget(), args);
     }
 }

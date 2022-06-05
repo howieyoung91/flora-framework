@@ -13,6 +13,7 @@ import xyz.yanghaoyu.flora.core.beans.factory.support.DefaultListableBeanFactory
 import xyz.yanghaoyu.flora.exception.BeansException;
 import xyz.yanghaoyu.flora.util.ReflectUtil;
 
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -44,10 +45,12 @@ public class AnnotationAwareAspectJAutoProxyCreator
     }
 
     private boolean isInfrastructureClass(Class<?> beanClass) {
+        int modifiers = beanClass.getModifiers();
         return ReflectUtil.isCglibProxyClass(beanClass)
                || Advice.class.isAssignableFrom(beanClass)
                || Pointcut.class.isAssignableFrom(beanClass)
-               || Advisor.class.isAssignableFrom(beanClass);
+               || Advisor.class.isAssignableFrom(beanClass)
+               || Modifier.isFinal(modifiers);
     }
 
     @Override
@@ -71,7 +74,7 @@ public class AnnotationAwareAspectJAutoProxyCreator
                 = manager.getAdvisorCandidates(bean.getClass());
 
         // 没有找到
-        if (!shouldProxy(candidates)) {
+        if (!shouldProxy(candidates, bean)) {
             return bean;
         }
 
@@ -92,7 +95,7 @@ public class AnnotationAwareAspectJAutoProxyCreator
         return bean;
     }
 
-    private boolean shouldProxy(Collection<AnnotationAspectJExpressionPointcutAdvisor> candidates) {
+    private boolean shouldProxy(Collection<AnnotationAspectJExpressionPointcutAdvisor> candidates, Object bean) {
         return candidates.size() != 0;
     }
 

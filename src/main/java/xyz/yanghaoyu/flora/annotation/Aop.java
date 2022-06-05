@@ -10,7 +10,6 @@ import java.lang.annotation.*;
 public @interface Aop {
     @Target({ElementType.METHOD})
     @Retention(RetentionPolicy.RUNTIME)
-    @Documented
     @interface Enhance {
         String value();
     }

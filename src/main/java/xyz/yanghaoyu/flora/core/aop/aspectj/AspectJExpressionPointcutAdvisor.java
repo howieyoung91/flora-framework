@@ -5,13 +5,14 @@ import org.aopalliance.intercept.MethodInterceptor;
 import xyz.yanghaoyu.flora.core.aop.Pointcut;
 import xyz.yanghaoyu.flora.core.aop.PointcutAdvisor;
 
+@Deprecated
 public class AspectJExpressionPointcutAdvisor implements PointcutAdvisor {
     // 切入点
     private AspectJExpressionPointcut pointcut;
     // 拦截器
-    private MethodInterceptor methodInterceptor;
+    private MethodInterceptor         methodInterceptor;
     // 表达式
-    private String expression;
+    private String                    expression;
 
     @Override
     public Pointcut getPointcut() {

@@ -12,24 +12,35 @@ import java.util.Collection;
 
 
 public class AdviceChain extends Chain {
-    private MethodInvocation methodInvocation;
+    private ThreadLocal<MethodInvocation> methodInvocationThreadLocal = new ThreadLocal<>();
 
     public AdviceChain(Collection<AdvicePoint> points) {
         super((Collection) points);
     }
 
     public MethodInvocation getMethodInvocation() {
-        return methodInvocation;
+        return methodInvocationThreadLocal.get();
     }
 
     public AdviceChain setMethodInvocation(MethodInvocation methodInvocation) {
-        this.methodInvocation = methodInvocation;
+        methodInvocationThreadLocal.set(methodInvocation);
         return this;
     }
 
     @Override
     protected Object doEnd() throws Throwable {
+        MethodInvocation methodInvocation = methodInvocationThreadLocal.get();
         // 在执行链的最后调用真实的方法
-        return methodInvocation.getMethod().invoke(methodInvocation.getThis(), methodInvocation.getArguments());
+        Object result = null;
+        try {
+            // CglibMethodInvocation invocation = (CglibMethodInvocation) methodInvocation;
+            // result = invocation.getMethodProxy().invokeSuper(invocation.getProxy(), invocation.getArguments());
+
+            result = methodInvocation.proceed();
+            // result = methodInvocation.getMethod().invoke(methodInvocation.getThis(), methodInvocation.getArguments());
+        } finally {
+            methodInvocationThreadLocal.remove();
+        }
+        return result;
     }
 }

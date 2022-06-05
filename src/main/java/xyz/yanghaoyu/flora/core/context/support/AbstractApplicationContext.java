@@ -242,6 +242,11 @@ public abstract class AbstractApplicationContext
     }
 
     @Override
+    public <T> T getBean(Class<T> type) {
+        return getBeanFactory().getBean(type);
+    }
+
+    @Override
     public boolean containsBean(String name) {
         return getBeanFactory().containsBean(name);
     }

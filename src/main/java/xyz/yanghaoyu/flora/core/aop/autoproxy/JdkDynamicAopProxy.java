@@ -40,7 +40,7 @@ public class JdkDynamicAopProxy implements AopProxy, InvocationHandler {
             // 触发增强
             res = methodInterceptor.invoke(
                     new ReflectiveMethodInvocation(
-                            advisedSupport.getTargetSource().getTarget(), method, args
+                            advisedSupport.getTargetSource().getTarget(),proxy, method, args
                     )
             );
             return res;

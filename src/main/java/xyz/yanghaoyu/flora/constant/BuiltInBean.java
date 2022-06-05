@@ -5,6 +5,7 @@ import xyz.yanghaoyu.flora.core.aop.autoproxy.DefaultAdvisorAutoProxyCreator;
 import xyz.yanghaoyu.flora.core.beans.factory.PropertyPlaceholderConfigurer;
 import xyz.yanghaoyu.flora.core.beans.factory.config.*;
 import xyz.yanghaoyu.flora.core.context.support.ConversionServiceFactoryBean;
+import xyz.yanghaoyu.flora.transaction.config.TransactionBeanFactoryPostProcessor;
 
 /**
  * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2021/11/22 10:36<i/>
@@ -31,4 +32,6 @@ public interface BuiltInBean {
             = InitDestroyAnnotationBeanPostProcessor.class;
     Class<?> CONFIGURATION_PROPERTIES_BINDING_POST_PROCESSOR
             = ConfigurationPropertiesBindingPostProcessor.class;
+    Class<?> TRANSACTION_BEAN_FACTORY_POST_PROCESSOR
+            = TransactionBeanFactoryPostProcessor.class;
 }

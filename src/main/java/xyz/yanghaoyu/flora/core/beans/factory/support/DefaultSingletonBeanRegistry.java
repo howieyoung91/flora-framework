@@ -11,15 +11,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
     protected static final Object NULL_OBJECT = new Object();
-    // 成品
-    protected Map<String, Object> singletonObjects = new ConcurrentHashMap<>();
-    // 半成品
-    protected final Map<String, Object> earlySingletonObjects = new ConcurrentHashMap<>();
-    // 代理对象
-    protected final Map<String, ObjectFactory<?>> singletonFactories = new ConcurrentHashMap<>();
 
-    private Map<String, DisposableBean> disposableBeans = new ConcurrentHashMap<>();
-
+    protected final Map<String, Object>           singletonObjects      = new ConcurrentHashMap<>(); // 成品
+    protected final Map<String, Object>           earlySingletonObjects = new ConcurrentHashMap<>(); // 半成品
+    protected final Map<String, ObjectFactory<?>> singletonFactories    = new ConcurrentHashMap<>(); // 代理对象
+    protected final Map<String, DisposableBean>   disposableBeans       = new ConcurrentHashMap<>();
 
     @Override
     public Object getSingleton(String beanName) {
@@ -63,11 +59,11 @@ public class DefaultSingletonBeanRegistry implements SingletonBeanRegistry {
      * 在容器关闭时销毁bean
      */
     public void destroySingletons() {
-        Set<String> keySet = this.disposableBeans.keySet();
-        Object[] disposableBeanNames = keySet.toArray();
+        Set<String> keySet              = this.disposableBeans.keySet();
+        Object[]    disposableBeanNames = keySet.toArray();
 
         for (int i = disposableBeanNames.length - 1; i >= 0; i--) {
-            Object beanName = disposableBeanNames[i];
+            Object         beanName       = disposableBeanNames[i];
             DisposableBean disposableBean = disposableBeans.remove(beanName);
             try {
                 disposableBean.destroy();

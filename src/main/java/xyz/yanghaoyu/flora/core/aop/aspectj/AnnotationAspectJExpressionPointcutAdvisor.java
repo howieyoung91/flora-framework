@@ -12,13 +12,9 @@ import xyz.yanghaoyu.flora.core.aop.interceptor.MultiMethodInterceptor;
  */
 
 public class AnnotationAspectJExpressionPointcutAdvisor implements PointcutAdvisor {
-    // 切入点
-    private AspectJExpressionPointcut pointcut;
-    // 拦截器
-    private MultiMethodInterceptor methodInterceptor;
-    // 表达式
-    private String expression;
-
+    private AspectJExpressionPointcut pointcut;          // 切入点
+    private MultiMethodInterceptor    methodInterceptor; // 拦截器
+    private String                    expression;        // 表达式
 
     public AnnotationAspectJExpressionPointcutAdvisor(String expression, MultiMethodInterceptor methodInterceptor) {
         this.methodInterceptor = methodInterceptor;

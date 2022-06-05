@@ -16,7 +16,7 @@ public interface AdvicePoint extends Chain.Point, Comparable<AdvicePoint> {
         return proceed((AdviceChain) chain);
     }
 
-    int getOrder();
-
     Object proceed(AdviceChain chain) throws Throwable;
+
+    int getOrder();
 }

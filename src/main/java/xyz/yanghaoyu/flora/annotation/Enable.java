@@ -32,4 +32,9 @@ public @interface Enable {
     @Retention(RetentionPolicy.RUNTIME)
     @interface AutoConfiguration {
     }
+
+    @Target({ElementType.TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface Transaction {
+    }
 }

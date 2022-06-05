@@ -63,10 +63,9 @@ public abstract class AbstractAutowireCapableBeanFactory
             // 先把 bean 暴露在三级缓存中, 解决循环依赖
             if (beanDefinition.isSingleton()) {
                 Object finalBean = bean;
-                addSingletonFactory(beanName, () -> {
-                    return AbstractAutowireCapableBeanFactory.
-                            this.getEarlyBeanReference(beanName, beanDefinition, finalBean);
-                });
+                addSingletonFactory(
+                        beanName, () -> getEarlyBeanReference(beanName, beanDefinition, finalBean)
+                );
             }
 
             // 实例化后, 返回 false 不再向下执行
@@ -87,9 +86,14 @@ public abstract class AbstractAutowireCapableBeanFactory
             throw new BeanCreateException("Instantiation of bean failed when creating bean [" + beanName + "]", e);
         }
         registerDisposableBeanIfNecessary(beanName, bean, beanDefinition);
+
         Object exposedObject = bean;
         // 注册进入单例容器
         if (beanDefinition.isSingleton()) {
+            // 此时的 bean 有可能还不是代理对象
+            // 先从容器中拿一下 确保获取到代理对象
+            exposedObject = getSingleton(beanName);
+            // 再注入容器
             registerSingleton(beanName, exposedObject);
         }
         removeCurrentlyCreatingBean(beanName);

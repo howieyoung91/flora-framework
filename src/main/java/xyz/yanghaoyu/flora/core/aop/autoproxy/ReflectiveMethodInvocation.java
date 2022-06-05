@@ -12,19 +12,19 @@ import java.lang.reflect.Method;
 
 
 public class ReflectiveMethodInvocation implements MethodInvocation {
-    // List<MethodInterceptor> methodInterceptors;
-    // int index = -1;
     // 目标对象
     protected final Object   target;
     // 方法
     protected final Method   method;
     // 入参
     protected final Object[] arguments;
+    protected final Object   proxy;
 
-    public ReflectiveMethodInvocation(Object target, Method method, Object[] arguments) {
+    public ReflectiveMethodInvocation(Object target, Object proxy, Method method, Object[] arguments) {
         this.target = target;
         this.method = method;
         this.arguments = arguments;
+        this.proxy = proxy;
     }
 
     @Override
@@ -39,14 +39,6 @@ public class ReflectiveMethodInvocation implements MethodInvocation {
 
     @Override
     public Object proceed() throws Throwable {
-        // Object res = null;
-        // if (++index == methodInterceptors.size()) {
-        //     res = invokeObjectMethod();
-        // } else {
-        //     MethodInterceptor methodInterceptor = methodInterceptors.get(index);
-        //     res = methodInterceptor.invoke(this);
-        // }
-        // return res;
         return invokeObjectMethod();
     }
 
@@ -62,5 +54,9 @@ public class ReflectiveMethodInvocation implements MethodInvocation {
     @Override
     public AccessibleObject getStaticPart() {
         return method;
+    }
+
+    public Object getProxy() {
+        return proxy;
     }
 }

@@ -5,33 +5,37 @@
 
 package xyz.yanghaoyu.flora.transaction;
 
-import com.sun.istack.internal.Nullable;
-
 import java.io.Serializable;
+import java.util.Objects;
 
-public class RollbackRule implements Serializable {
-    private final String exceptionName;
+/**
+ * copied from spring
+ */
+public class RollbackRuleAttribute implements Serializable {
+    private final Class<?> exceptionClass;
 
-    public RollbackRule(Class<?> clazz) {
-        this.exceptionName = clazz.getName();
+    public RollbackRuleAttribute(Class<?> clazz) {
+        if (!Throwable.class.isAssignableFrom(clazz)) {
+            throw new IllegalArgumentException("Cannot construct rollback rule from [" + clazz.getName() + "]: it's not a Throwable");
+        }
+        exceptionClass = clazz;
     }
 
-    public boolean equals(@Nullable Object other) {
-        if (this == other) {
+    public Class<?> getExceptionClass() {
+        return exceptionClass;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
             return true;
-        } else if (!(other instanceof RollbackRuleAttribute)) {
+        if (o == null || getClass() != o.getClass())
             return false;
-        } else {
-            RollbackRuleAttribute rhs = (RollbackRuleAttribute) other;
-            return this.exceptionName.equals(rhs.exceptionName);
-        }
+        RollbackRuleAttribute that = (RollbackRuleAttribute) o;
+        return Objects.equals(exceptionClass, that.exceptionClass);
     }
 
     public int hashCode() {
-        return this.exceptionName.hashCode();
-    }
-
-    public String toString() {
-        return "RollbackRuleAttribute with pattern [" + this.exceptionName + "]";
+        return this.getClass().hashCode();
     }
 }

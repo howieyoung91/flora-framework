@@ -1,5 +1,6 @@
-package xyz.yanghaoyu.flora.transaction.proxy;
+package xyz.yanghaoyu.flora.transaction.interceptor;
 
+import net.sf.cglib.proxy.MethodProxy;
 import xyz.yanghaoyu.flora.core.beans.factory.BeanFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.BeanFactoryAware;
 import xyz.yanghaoyu.flora.exception.BeansException;
@@ -29,7 +30,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware {
         this.beanFactory = beanFactory;
     }
 
-    public Object invokeWithinTransaction(Method method, Class<?> targetClass, InvocationCallback invocation) throws Throwable {
+    public Object invokeWithinTransaction(Method method, MethodProxy methodProxy, Class<?> targetClass, InvocationCallback invocation) throws Throwable {
         TransactionAttribute       attribute          = source.getTransactionAttribute(method, targetClass);
         PlatformTransactionManager transactionManager = determineTransactionManager(attribute);
 

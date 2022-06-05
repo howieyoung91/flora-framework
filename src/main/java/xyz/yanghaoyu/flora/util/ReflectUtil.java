@@ -1,9 +1,9 @@
 package xyz.yanghaoyu.flora.util;
 
+import cn.hutool.core.lang.Assert;
+
 import java.lang.annotation.Annotation;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.*;
 import java.util.Set;
 
 /**
@@ -117,6 +117,19 @@ public abstract class ReflectUtil {
             }
         }
         return null;
+    }
+
+    public static boolean belongToObjectClass(Method method) {
+        return method.getDeclaringClass() == Object.class;
+    }
+
+    public static String getQualifiedMethodName(Method method, Class<?> clazz) {
+        Assert.notNull(method, "Method must not be null");
+        return (clazz != null ? clazz : method.getDeclaringClass()).getName() + "." + method.getName();
+    }
+
+    public static boolean isPublic(Method method) {
+        return Modifier.isPublic(method.getModifiers());
     }
 
     /**

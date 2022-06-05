@@ -2,10 +2,10 @@
  * Copyright ©2022-2022 Howie Young, All rights reserved.
  * Copyright ©2022-2022 杨浩宇，保留所有权利。
  */
-package xyz.yanghaoyu.flora.transaction.proxy;
+package xyz.yanghaoyu.flora.transaction.interceptor;
 
-import org.aopalliance.intercept.MethodInvocation;
 import xyz.yanghaoyu.flora.core.Ordered;
+import xyz.yanghaoyu.flora.core.aop.autoproxy.CglibMethodInvocation;
 import xyz.yanghaoyu.flora.core.aop.interceptor.AdviceChain;
 import xyz.yanghaoyu.flora.core.aop.interceptor.AdvicePoint;
 
@@ -14,8 +14,8 @@ public class TransactionInterceptor extends TransactionAspectSupport implements 
 
     @Override
     public Object proceed(AdviceChain chain) throws Throwable {
-        MethodInvocation invocation = chain.getMethodInvocation();
-        return invokeWithinTransaction(invocation.getMethod(), invocation.getThis().getClass(), chain::proceed);
+        CglibMethodInvocation invocation = (CglibMethodInvocation) chain.getMethodInvocation();
+        return invokeWithinTransaction(invocation.getMethod(), invocation.getMethodProxy(), invocation.getThis().getClass(), chain::proceed);
     }
 
     @Override

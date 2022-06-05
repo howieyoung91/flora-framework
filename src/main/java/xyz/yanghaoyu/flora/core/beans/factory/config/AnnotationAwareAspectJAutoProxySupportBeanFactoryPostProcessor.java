@@ -31,23 +31,18 @@ public class AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         LOGGER.trace("init [Aspect] ...");
-        AnnotationAspectJExpressionPointcutAdvisorManager manager;
-        try {
-            manager = beanFactory.getBean(
-                    AnnotationAspectJExpressionPointcutAdvisorManager.class.getName(),
-                    AnnotationAspectJExpressionPointcutAdvisorManager.class
-            );
-        } catch (BeansException e) {
+        AnnotationAspectJExpressionPointcutAdvisorManager manager = null;
+        if (beanFactory.containsSingletonBean(AnnotationAspectJExpressionPointcutAdvisorManager.class.getName())) {
+            manager = beanFactory.getBean(AnnotationAspectJExpressionPointcutAdvisorManager.class.getName(), AnnotationAspectJExpressionPointcutAdvisorManager.class);
+        } else {
             manager = new AnnotationAspectJExpressionPointcutAdvisorManager();
-            beanFactory.registerSingleton(
-                    AnnotationAspectJExpressionPointcutAdvisorManager.class.getName(),
-                    manager
-            );
+            beanFactory.registerSingleton(AnnotationAspectJExpressionPointcutAdvisorManager.class.getName(), manager);
         }
+
+
         String[] names = beanFactory.getBeanDefinitionNames();
         for (String name : names) {
             // 首先 生成 Aspect
-
             Class<?> clazz = beanFactory.getBeanDefinition(name).getBeanClass();
             // 是否标记 @Aspect
             Annotation annotation = clazz.getAnnotation(Aspect.class);
@@ -85,9 +80,9 @@ public class AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor
     }
 
     private static class Point implements AdvicePoint {
-        Object aspectBean;
-        Method enhance;
-        int    order;
+        private final Object aspectBean;
+        private final Method enhance;
+        private final int    order;
 
         public Point(Object aspectBean, Method enhance, int order) {
             this.aspectBean = aspectBean;

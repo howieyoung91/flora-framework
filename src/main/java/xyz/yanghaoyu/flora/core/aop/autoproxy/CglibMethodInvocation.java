@@ -11,16 +11,19 @@ import java.lang.reflect.Method;
 
 
 public class CglibMethodInvocation extends ReflectiveMethodInvocation {
-
     private final MethodProxy methodProxy;
 
-    public CglibMethodInvocation(Object target, Method method, Object[] arguments, MethodProxy methodProxy) {
-        super(target, method, arguments);
+    public CglibMethodInvocation(Object target, Object proxy, Method method, Object[] arguments, MethodProxy methodProxy) {
+        super(target, proxy, method, arguments);
         this.methodProxy = methodProxy;
     }
 
     @Override
     public Object proceed() throws Throwable {
-        return this.methodProxy.invoke(this.target, this.arguments);
+        return methodProxy.invoke(target, arguments);
+    }
+
+    public MethodProxy getMethodProxy() {
+        return methodProxy;
     }
 }
