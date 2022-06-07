@@ -8,19 +8,19 @@ package xyz.yanghaoyu.flora.transaction.support;
 import xyz.yanghaoyu.flora.transaction.TransactionDefinition;
 
 public class DefaultTransactionDefinition implements TransactionDefinition {
-    private String  name;
-    private int     propagationBehavior = PROPAGATION_REQUIRED;
-    private int     isolationLevel      = DEFAULT_ISOLATION;
-    private int     timeout             = DEFAULT_TIMEOUT;
-    private boolean readOnly            = false;
+    private String name;
+    private int    propagationBehavior = PROPAGATION_REQUIRED;
+    // private int     isolationLevel      = DEFAULT_ISOLATION;
+    private int    timeout             = DEFAULT_TIMEOUT;
+    // private boolean readOnly            = false;
 
     public DefaultTransactionDefinition() {}
 
     public DefaultTransactionDefinition(TransactionDefinition other) {
         this.propagationBehavior = other.getPropagationBehavior();
-        this.isolationLevel = other.getIsolationLevel();
+        // this.isolationLevel = other.getIsolationLevel();
         this.timeout = other.getTimeout();
-        this.readOnly = other.isReadOnly();
+        // this.readOnly = other.isReadOnly();
         this.name = other.getName();
     }
 
@@ -37,14 +37,14 @@ public class DefaultTransactionDefinition implements TransactionDefinition {
         return this.propagationBehavior;
     }
 
-    public final void setIsolationLevel(int isolationLevel) {
-        this.isolationLevel = isolationLevel;
-    }
-
-    @Override
-    public final int getIsolationLevel() {
-        return this.isolationLevel;
-    }
+    // public final void setIsolationLevel(int isolationLevel) {
+    //     this.isolationLevel = isolationLevel;
+    // }
+    //
+    // @Override
+    // public final int getIsolationLevel() {
+    //     return this.isolationLevel;
+    // }
 
     public final void setTimeout(int timeout) {
         if (timeout < DEFAULT_TIMEOUT) {
@@ -58,14 +58,14 @@ public class DefaultTransactionDefinition implements TransactionDefinition {
         return this.timeout;
     }
 
-    public final void setReadOnly(boolean readOnly) {
-        this.readOnly = readOnly;
-    }
+    // public final void setReadOnly(boolean readOnly) {
+    //     this.readOnly = readOnly;
+    // }
 
-    @Override
-    public final boolean isReadOnly() {
-        return this.readOnly;
-    }
+    // @Override
+    // public final boolean isReadOnly() {
+    //     return this.readOnly;
+    // }
 
     public final void setName(String name) {
         this.name = name;

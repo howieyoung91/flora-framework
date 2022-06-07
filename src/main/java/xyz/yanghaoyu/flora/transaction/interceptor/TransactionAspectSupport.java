@@ -1,6 +1,5 @@
 package xyz.yanghaoyu.flora.transaction.interceptor;
 
-import net.sf.cglib.proxy.MethodProxy;
 import xyz.yanghaoyu.flora.core.beans.factory.BeanFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.BeanFactoryAware;
 import xyz.yanghaoyu.flora.exception.BeansException;
@@ -9,6 +8,7 @@ import xyz.yanghaoyu.flora.transaction.PlatformTransactionManager;
 import xyz.yanghaoyu.flora.transaction.TransactionAttribute;
 import xyz.yanghaoyu.flora.transaction.TransactionAttributeSource;
 import xyz.yanghaoyu.flora.transaction.TransactionStatus;
+import xyz.yanghaoyu.flora.transaction.support.DelegatingTransactionAttribute;
 import xyz.yanghaoyu.flora.util.NamedThreadLocal;
 import xyz.yanghaoyu.flora.util.ReflectUtil;
 import xyz.yanghaoyu.flora.util.StringUtil;
@@ -30,7 +30,7 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware {
         this.beanFactory = beanFactory;
     }
 
-    public Object invokeWithinTransaction(Method method, MethodProxy methodProxy, Class<?> targetClass, InvocationCallback invocation) throws Throwable {
+    public Object invokeWithinTransaction(Method method, Class<?> targetClass, InvocationCallback invocation) throws Throwable {
         TransactionAttribute       attribute          = source.getTransactionAttribute(method, targetClass);
         PlatformTransactionManager transactionManager = determineTransactionManager(attribute);
 
@@ -38,10 +38,12 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware {
         Object          result = null;
         try {
             result = invocation.proceedWithInvocation();
-        } catch (Throwable ex) {
+        }
+        catch (Throwable ex) {
             completeTransactionAfterThrowing(info, ex);
             throw ex;
-        } finally {
+        }
+        finally {
             cleanupTransactionInfo(info);
         }
         commitTransactionAfterReturning(info);
@@ -71,10 +73,22 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware {
 
     private TransactionInfo createTransactionIfNecessary(PlatformTransactionManager manager, TransactionAttribute attribute, String id) {
         TransactionStatus status = null;
+        if (attribute != null && attribute.getName() == null) {
+            attribute = wrapTransactionAttribute(attribute, id);
+        }
         if (attribute != null && manager != null) {
             status = manager.getTransaction(attribute);
         }
         return prepareTransactionInfo(manager, attribute, id, status);
+    }
+
+    private TransactionAttribute wrapTransactionAttribute(TransactionAttribute attribute, String id) {
+        return new DelegatingTransactionAttribute(attribute) {
+            @Override
+            public String getName() {
+                return id;
+            }
+        };
     }
 
     protected TransactionInfo prepareTransactionInfo(PlatformTransactionManager manager, TransactionAttribute attribute, String id, TransactionStatus status) {
@@ -104,7 +118,8 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware {
         Throwable throwable = getActualException(ex);
         if (attribute.rollbackOn(throwable)) {
             manager.rollback(status);
-        } else {
+        }
+        else {
             manager.commit(status);
         }
     }

@@ -157,7 +157,7 @@ public class ConfigurationBeanClassScanner {
     }
 
     private void parseTransaction(Class<?> clazz) {
-        if (clazz.isAnnotationPresent(Enable.Transaction.class)) {
+        if (clazz.isAnnotationPresent(Enable.TransactionManagement.class)) {
             IocUtil.enableTransaction(beanFactory);
         }
     }

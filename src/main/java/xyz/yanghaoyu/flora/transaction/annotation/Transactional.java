@@ -9,10 +9,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Transactional {
     String transactionManager();
-    
+
     // int timeout() default -1;
     //
     // boolean readOnly() default false;
+
+    Propagation propagation() default Propagation.REQUIRED;
 
     Class<? extends Throwable>[] rollbackFor() default {RuntimeException.class};
 }

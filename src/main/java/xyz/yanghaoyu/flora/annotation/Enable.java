@@ -35,6 +35,6 @@ public @interface Enable {
 
     @Target({ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
-    @interface Transaction {
+    @interface TransactionManagement {
     }
 }

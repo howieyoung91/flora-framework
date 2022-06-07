@@ -15,7 +15,7 @@ public class TransactionInterceptor extends TransactionAspectSupport implements 
     @Override
     public Object proceed(AdviceChain chain) throws Throwable {
         CglibMethodInvocation invocation = (CglibMethodInvocation) chain.getMethodInvocation();
-        return invokeWithinTransaction(invocation.getMethod(), invocation.getMethodProxy(), invocation.getThis().getClass(), chain::proceed);
+        return invokeWithinTransaction(invocation.getMethod(), invocation.getThis().getClass(), chain::proceed);
     }
 
     @Override

@@ -30,6 +30,7 @@ public class FloraTransactionAnnotationParser implements TransactionAnnotationPa
 
         attribute.setTransactionManager(transactionalAnn.transactionManager());
         attribute.setRollbackRules(rollbackRules);
+        attribute.setPropagationBehavior(transactionalAnn.propagation().value());
         return attribute;
     }
 }

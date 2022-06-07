@@ -8,10 +8,13 @@ package xyz.yanghaoyu.flora.transaction.support;
 public class DefaultTransactionStatus extends AbstractTransactionStatus {
     private final Object  transaction;
     private final boolean newTransaction;
+    private final boolean newSynchronization;
+    private       Object  suspendedResources;
 
-    public DefaultTransactionStatus(Object transaction, boolean newTransaction) {
+    public DefaultTransactionStatus(Object transaction, boolean newTransaction, boolean newSynchronization) {
         this.transaction = transaction;
         this.newTransaction = newTransaction;
+        this.newSynchronization = newSynchronization;
     }
 
     public Object getTransaction() {
@@ -25,5 +28,17 @@ public class DefaultTransactionStatus extends AbstractTransactionStatus {
     @Override
     public boolean isNewTransaction() {
         return hasTransaction() && this.newTransaction;
+    }
+
+    public boolean isNewSynchronization() {
+        return newSynchronization;
+    }
+
+    public Object getSuspendedResources() {
+        return suspendedResources;
+    }
+
+    public void setSuspendedResources(Object suspendedResources) {
+        this.suspendedResources = suspendedResources;
     }
 }

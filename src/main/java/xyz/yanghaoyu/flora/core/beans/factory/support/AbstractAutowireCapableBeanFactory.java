@@ -119,7 +119,6 @@ public abstract class AbstractAutowireCapableBeanFactory
                 }
             }
         }
-
         return exposedObject;
     }
 
@@ -208,13 +207,15 @@ public abstract class AbstractAutowireCapableBeanFactory
                 Object value = propertyValue.getValue();
                 if (value instanceof BeanReference) {
                     value = getBean(((BeanReference) value).getBeanName());
-                } else {
+                }
+                else {
                     Class<?> sourceType = value.getClass();
                     Class<?> targetType = null;
                     Type     fieldType  = TypeUtil.getFieldType(bean.getClass(), name);
                     if (fieldType instanceof ParameterizedTypeImpl) {
                         targetType = ((ParameterizedTypeImpl) fieldType).getRawType();
-                    } else {
+                    }
+                    else {
                         targetType = ((Class<?>) fieldType);
                     }
                     ConversionUtil.convert(value, targetType, sourceType, ((ConfigurableListableBeanFactory) this).getConversionService());
@@ -232,11 +233,14 @@ public abstract class AbstractAutowireCapableBeanFactory
         if (bean instanceof Aware) {
             if (bean instanceof BeanFactoryAware) {
                 ((BeanFactoryAware) bean).setBeanFactory(this);
-            } else if (bean instanceof BeanNameAware) {
+            }
+            else if (bean instanceof BeanNameAware) {
                 ((BeanNameAware) bean).setBeanName(beanName);
-            } else if (bean instanceof BeanClassLoaderAware) {
+            }
+            else if (bean instanceof BeanClassLoaderAware) {
                 ((BeanClassLoaderAware) bean).setBeanClassLoader(bean.getClass().getClassLoader());
-            } else if (bean instanceof BeanDefinitionRegistryAware) {
+            }
+            else if (bean instanceof BeanDefinitionRegistryAware) {
                 ((BeanDefinitionRegistryAware) bean).setBeanRegistry((BeanDefinitionRegistry) this);
             }
         }

@@ -7,6 +7,7 @@ package xyz.yanghaoyu.flora.transaction.support;
 
 import xyz.yanghaoyu.flora.exception.NestedTransactionNotSupportedException;
 import xyz.yanghaoyu.flora.exception.TransactionException;
+import xyz.yanghaoyu.flora.exception.TransactionUsageException;
 import xyz.yanghaoyu.flora.transaction.SavepointManager;
 import xyz.yanghaoyu.flora.transaction.TransactionStatus;
 
@@ -68,6 +69,10 @@ public abstract class AbstractTransactionStatus implements TransactionStatus {
         return getSavepointManager().createSavepoint();
     }
 
+    public void createAndHoldSavepoint() throws TransactionException {
+        setSavepoint(getSavepointManager().createSavepoint());
+    }
+
     @Override
     public void rollbackToSavepoint(Object savepoint) throws TransactionException {
         getSavepointManager().rollbackToSavepoint(savepoint);
@@ -76,6 +81,25 @@ public abstract class AbstractTransactionStatus implements TransactionStatus {
     @Override
     public void releaseSavepoint(Object savepoint) throws TransactionException {
         getSavepointManager().releaseSavepoint(savepoint);
+    }
+
+    public void releaseHeldSavepoint() throws TransactionException {
+        Object savepoint = getSavepoint();
+        if (savepoint == null) {
+            throw new TransactionUsageException("Cannot release savepoint - no savepoint associated with current transaction");
+        }
+        getSavepointManager().releaseSavepoint(savepoint);
+        setSavepoint(null);
+    }
+
+    public void rollbackToHeldSavepoint() throws TransactionException {
+        Object savepoint = getSavepoint();
+        if (savepoint == null) {
+            throw new TransactionUsageException("Cannot roll back to savepoint - no savepoint associated with current transaction");
+        }
+        getSavepointManager().rollbackToSavepoint(savepoint);
+        getSavepointManager().releaseSavepoint(savepoint);
+        setSavepoint(null);
     }
 
     protected SavepointManager getSavepointManager() {

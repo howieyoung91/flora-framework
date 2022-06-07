@@ -7,7 +7,7 @@ package xyz.yanghaoyu.flora.transaction;
 
 import xyz.yanghaoyu.flora.exception.TransactionException;
 
-public interface PlatformTransactionManager {
+public interface PlatformTransactionManager extends TransactionManager {
     TransactionStatus getTransaction(TransactionDefinition definition) throws TransactionException;
 
     void commit(TransactionStatus status) throws TransactionException;

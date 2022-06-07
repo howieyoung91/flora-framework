@@ -30,11 +30,12 @@ public interface TransactionDefinition {
 
     int getPropagationBehavior();
 
-    int getIsolationLevel();
+    // int getIsolationLevel();
 
     int getTimeout();
 
-    boolean isReadOnly();
+    // boolean isReadOnly();
 
     String getName();
 }
+ 
