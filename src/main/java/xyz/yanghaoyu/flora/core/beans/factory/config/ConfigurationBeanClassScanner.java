@@ -12,12 +12,14 @@ import xyz.yanghaoyu.flora.util.ComponentUtil;
 import xyz.yanghaoyu.flora.util.IocUtil;
 import xyz.yanghaoyu.flora.util.StringUtil;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 /**
  * 这个类扫描 被 @Configuration 标记的类
+ * <p>
  * ConfigurationBeanClassParser#parse 会从给出的配置类中解析出其他被包含的配置类
  *
  * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2021/12/6 13:55<i/>
@@ -25,102 +27,116 @@ import java.util.Set;
  */
 
 public class ConfigurationBeanClassScanner {
-    private final DefaultListableBeanFactory beanFactory;
-    private final Set<String>                startBeanNames;
-    // 正在扫描的 Config Bean 用于打破递归
-    private final Set<String>                current
-            = new HashSet<>(6);
-    // 已经完成的 Config Bean
-    private final Set<String>                already
-            = new HashSet<>(6);
-    // 新添加的 Config Bean
-    private final Set<String>                waitingConfigBeanNames
-            = new HashSet<>(0);
+    public static final String                     AUTOCONFIGURATION_KEY = "flora.framework.autoconfiguration";
+    private final       DefaultListableBeanFactory beanFactory;
+
+    private final Set<String> start; // 已知的 Config Bean
+    private final Set<String> current = new HashSet<>(6); // 正在扫描的 Config Bean
+    private final Set<String> already = new HashSet<>(6); // 已经完成的 Config Bean
+    private final Set<String> waiting = new HashSet<>(0); // 新添加的   Config Bean
+
+    private final Set<Class> enabledAutoConfigurations = new HashSet<>();
 
     public ConfigurationBeanClassScanner(DefaultListableBeanFactory beanFactory, Set<String> startClasses) {
         this.beanFactory = beanFactory;
-        this.startBeanNames = startClasses;
+        this.start = startClasses;
     }
 
     public Set<String> scan() {
         do {
-            for (String startClass : startBeanNames) {
-                scan(startClass, beanFactory.getBeanDefinition(startClass));
+            for (String startClass : start) {
+                doScan(startClass, beanFactory.getBeanDefinition(startClass));
             }
         } while (transfer());
 
+        parseEnableAutoConfiguration();
+        while (transfer()) {
+            for (String startClass : start) {
+                doScan(startClass, beanFactory.getBeanDefinition(startClass));
+            }
+        }
         return already;
     }
 
-    public boolean transfer() {
-        if (waitingConfigBeanNames.isEmpty()) {
+    private boolean transfer() {
+        if (waiting.isEmpty()) {
             return false;
         }
-        waitingConfigBeanNames.removeIf(beanName -> already.contains(beanName) || current.contains(beanName));
-        startBeanNames.clear();
-        startBeanNames.addAll(waitingConfigBeanNames);
-        waitingConfigBeanNames.clear();
+        waiting.removeIf(beanName -> already.contains(beanName) || current.contains(beanName));
+        start.clear();
+        start.addAll(waiting);
+        waiting.clear();
         return true;
     }
 
-    private void scan(String beanDefName, BeanDefinition configBeanDef) {
-        if (already.contains(beanDefName)) {
+    private void doScan(String beanName, BeanDefinition configBeanDef) {
+        if (already.contains(beanName) || current.contains(beanName)) {
             return;
         }
-        if (current.contains(beanDefName)) {
-            return;
-        }
-        current.add(beanDefName);
-        Class<?> clazz = configBeanDef.getBeanClass();
+        current.add(beanName);
 
+        Class<?> clazz = configBeanDef.getBeanClass();
         parseComponentScan(clazz);
+        parseImportConfiguration(clazz);
+        parseImportResources(clazz);
         parseAop(clazz);
         parseTransaction(clazz);
         parsePropertyPlaceholder(clazz);
-        parseImportConfiguration(clazz);
-        parseImportResources(clazz);
         parseEnableAutoConfiguration(clazz);
-        current.remove(beanDefName);
-        already.add(beanDefName);
+
+        current.remove(beanName);
+        already.add(beanName);
     }
 
-    boolean parsed = false;
-
-
     // 解析 META-INF/flora.yaml
-    private void parseEnableAutoConfiguration(Class<?> clazz) {
-        if (clazz.isAnnotationPresent(Enable.AutoConfiguration.class)) {
-            if (parsed) {
-                return;
-            }
-            Map<String, Map<String, String>> factories =
-                    FloraFactoriesLoader.loadFactories(null);
-            try {
-                for (Map<String, String> factory : factories.values()) {
-                    String classes = factory.get("flora.framework.autoconfiguration");
-                    if (classes == null) {
-                        continue;
+    private void parseEnableAutoConfiguration() {
+        boolean enabledAll = enabledAutoConfigurations.contains(Object.class);
+
+        Map<String, Map<String, String>> factories = FloraFactoriesLoader.loadFactories(null);
+        try {
+            for (Map<String, String> factory : factories.values()) {
+                String classes = factory.get(AUTOCONFIGURATION_KEY);
+                if (classes == null) {
+                    continue;
+                }
+                String[] classNames = StringUtil.commaDelimitedListToStringArray(classes);
+                for (String className : classNames) {
+                    className = className.trim();
+                    Class<?> configClass = Class.forName(className);
+                    if (enabledAll) {
+                        registerBeanDefinition(configClass);
                     }
-                    String[] classNames = StringUtil.commaDelimitedListToStringArray(classes);
-                    for (String className : classNames) {
-                        className = className.trim();
-                        Class<?>      configClass = Class.forName(className);
-                        Configuration configAnn   = configClass.getAnnotation(Configuration.class);
-                        if (configAnn == null) {
-                            continue;
+                    else {
+                        if (enabledAutoConfigurations.contains(configClass)) {
+                            registerBeanDefinition(configClass);
                         }
-                        // 注入配置
-                        BeanDefinition beanDef = ComponentUtil.parse(configClass);
-                        assert beanDef != null;
-                        String beanName = ComponentUtil.determineBeanName(beanDef);
-                        beanFactory.registerBeanDefinition(beanName, beanDef);
-                        waitingConfigBeanNames.add(beanName);
                     }
                 }
-                parsed = true;
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
             }
+        }
+        catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void registerBeanDefinition(Class<?> configClass) {
+        Configuration configAnn = configClass.getAnnotation(Configuration.class);
+        if (configAnn == null) {
+            return;
+        }
+        // 注入配置
+        BeanDefinition beanDef = ComponentUtil.parse(configClass);
+        assert beanDef != null;
+        String beanName = ComponentUtil.determineBeanName(beanDef);
+        beanFactory.registerBeanDefinition(beanName, beanDef);
+        waiting.add(beanName);
+    }
+
+    private void parseEnableAutoConfiguration(Class<?> clazz) {
+        Enable.AutoConfiguration autoConfigurationAnn = clazz.getAnnotation(Enable.AutoConfiguration.class);
+        if (autoConfigurationAnn != null) {
+            Class<?>[] enableAutoConfigurations = autoConfigurationAnn.value();
+            Collections.addAll(this.enabledAutoConfigurations, enableAutoConfigurations);
         }
     }
 
@@ -132,7 +148,7 @@ public class ConfigurationBeanClassScanner {
             reader.setShouldRegister(beanName -> beanDefinition -> beanDefinitionRegistry -> {
                 // 添加到 waitingConfigBeanNames
                 if (beanDefinition.getBeanClass().isAnnotationPresent(Configuration.class)) {
-                    waitingConfigBeanNames.add(beanName);
+                    waiting.add(beanName);
                 }
                 // 不判断是否存在 直接添加
                 return true;
@@ -167,13 +183,13 @@ public class ConfigurationBeanClassScanner {
         if (componentScanAnn != null) {
             String[] basePackages = componentScanAnn.basePackages();
             // 扫包
-            Set<BeanDefinition> newBeanDefs = new ClassPathBeanDefinitionScanner().doScan(basePackages);
+            Set<BeanDefinition> newBeanDefs = new ClassPathBeanDefinitionScanner().scan(basePackages);
 
             for (BeanDefinition newBeanDef : newBeanDefs) {
                 String        newBeanName = ComponentUtil.determineBeanName(newBeanDef);
-                Configuration configAnn   = (Configuration) newBeanDef.getBeanClass().getAnnotation(Configuration.class);
-                if (configAnn != null && !startBeanNames.contains(newBeanName)) {
-                    waitingConfigBeanNames.add(newBeanName);
+                Configuration configAnn   = newBeanDef.getBeanClass().getAnnotation(Configuration.class);
+                if (configAnn != null && !start.contains(newBeanName)) {
+                    waiting.add(newBeanName);
                 }
                 // if (beanFactory.containsBeanDefinition(newBeanName)) {
                 //     throw new BeanDefinitionOverrideException("the bean [" + newBeanName + "] cannot be registered because it will override the old bean");
@@ -196,11 +212,11 @@ public class ConfigurationBeanClassScanner {
                     continue;
                 }
                 String newBeanName = ComponentUtil.determineBeanName(newBeanDef);
-                if (already.contains(newBeanName) || current.contains(newBeanName) || startBeanNames.contains(newBeanName)) {
+                if (already.contains(newBeanName) || current.contains(newBeanName) || start.contains(newBeanName)) {
                     continue;
                 }
                 beanFactory.registerBeanDefinition(newBeanName, newBeanDef);
-                waitingConfigBeanNames.add(newBeanName);
+                waiting.add(newBeanName);
             }
         }
     }

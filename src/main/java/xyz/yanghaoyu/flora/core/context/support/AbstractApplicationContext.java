@@ -4,11 +4,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.yanghaoyu.flora.core.OrderComparator;
 import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
-import xyz.yanghaoyu.flora.core.beans.factory.config.AutowireCapableBeanFactory;
-import xyz.yanghaoyu.flora.core.beans.factory.config.BeanFactoryPostProcessor;
-import xyz.yanghaoyu.flora.core.beans.factory.config.BeanPostProcessor;
-import xyz.yanghaoyu.flora.core.beans.factory.config.ConfigurationClassBeanFactoryPostProcessor;
+import xyz.yanghaoyu.flora.core.beans.factory.config.*;
 import xyz.yanghaoyu.flora.core.beans.factory.support.ApplicationContextAwareProcessor;
+import xyz.yanghaoyu.flora.core.beans.factory.support.BeanDefinitionRegistry;
 import xyz.yanghaoyu.flora.core.context.ApplicationListener;
 import xyz.yanghaoyu.flora.core.context.ConfigurableApplicationContext;
 import xyz.yanghaoyu.flora.core.context.event.*;
@@ -159,8 +157,9 @@ public abstract class AbstractApplicationContext
     private void additionallyLoadBeanDefinition() {
         LOGGER.trace("start resolve [Configuration] ...");
         ConfigurableListableBeanFactory beanFactory = getBeanFactory();
-        beanFactory.getBeansOfType(ConfigurationClassBeanFactoryPostProcessor.class).values()
-                .forEach(processor -> processor.postProcessBeanFactory(beanFactory));
+        beanFactory.getBeansOfType(BeanDefinitionRegistryPostProcessor.class).values()
+                .stream().sorted(OrderComparator.INSTANCE)
+                .forEach(processor -> processor.postProcessBeanDefinitionRegistry((BeanDefinitionRegistry) beanFactory));
         LOGGER.trace("finish resolve [Configuration]");
     }
 
@@ -175,7 +174,7 @@ public abstract class AbstractApplicationContext
         // 跳过 @Configuration 的处理器 已经调用过了
         processors.stream()
                 .sorted(OrderComparator.INSTANCE)  // sort
-                .filter(processor -> !(processor instanceof ConfigurationClassBeanFactoryPostProcessor))
+                .filter(processor -> !(processor instanceof ConfigurationClassPostProcessor))
                 .forEach(processor -> processor.postProcessBeanFactory(beanFactory));
         LOGGER.trace("finish register [BeanFactoryPostProcessor] ...");
     }

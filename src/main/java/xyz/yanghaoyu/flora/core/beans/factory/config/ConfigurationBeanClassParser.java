@@ -54,7 +54,8 @@ public class ConfigurationBeanClassParser {
 
                 if (shouldSkip(method)) {
                     configurationClass.addSkippedBeanFactoryMethod(method);
-                } else {
+                }
+                else {
                     configurationClass.addBeanFactoryMethod(method);
                 }
             }

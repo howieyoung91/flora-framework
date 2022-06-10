@@ -22,9 +22,9 @@ import xyz.yanghaoyu.flora.util.ReflectUtil;
 import java.util.Iterator;
 import java.util.Set;
 
-public class ConditionalSupportBeanFactoryProcessor
+public class ConditionalSupportPostProcessor
         implements BeanFactoryPostProcessor, PriorityOrdered {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConditionalSupportBeanFactoryProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConditionalSupportPostProcessor.class);
 
     private Set<String>                  skippedBeanNames;
     private FloraFrameworkConditionChain conditionChain = new FloraFrameworkConditionChain();
@@ -37,7 +37,7 @@ public class ConditionalSupportBeanFactoryProcessor
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory configurableListableBeanFactory) throws BeansException {
         DefaultListableBeanFactory beanFactory      = (DefaultListableBeanFactory) configurableListableBeanFactory;
-        ConditionContext           conditionContext = new InnerConditionContext(beanFactory);
+        ConditionContext           conditionContext = new FloraConditionContext(beanFactory);
         filter(beanFactory, conditionContext);
     }
 
@@ -63,11 +63,11 @@ public class ConditionalSupportBeanFactoryProcessor
     }
 
 
-    private static class InnerConditionContext implements ConditionContext {
+    private static class FloraConditionContext implements ConditionContext {
         private DefaultListableBeanFactory beanFactory;
         private DefaultResourceLoader      resourceLoader = new DefaultResourceLoader();
 
-        public InnerConditionContext(DefaultListableBeanFactory beanFactory) {
+        public FloraConditionContext(DefaultListableBeanFactory beanFactory) {
             this.beanFactory = beanFactory;
         }
 

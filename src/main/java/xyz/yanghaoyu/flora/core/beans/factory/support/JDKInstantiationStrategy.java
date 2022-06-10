@@ -14,10 +14,12 @@ public class JDKInstantiationStrategy implements InstantiationStrategy {
         try {
             if (constructor == null || args == null || args.length == 0) {
                 return ReflectUtil.newInstanceByDefaultCtor(clazz);
-            } else {
+            }
+            else {
                 return constructor.newInstance(args);
             }
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+        }
+        catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             throw new BeansException("Failed to instantiate [" + clazz.getName() + "]", e);
         }
     }

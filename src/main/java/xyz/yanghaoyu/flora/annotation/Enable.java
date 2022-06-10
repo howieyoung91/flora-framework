@@ -31,6 +31,7 @@ public @interface Enable {
     @Target({ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     @interface AutoConfiguration {
+        Class<?>[] value() default {Object.class}; // 默认允许全部自动配置
     }
 
     @Target({ElementType.TYPE})

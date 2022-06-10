@@ -12,12 +12,9 @@ import java.util.Set;
 
 
 public class ClassPathScanningCandidateComponentProvider {
-    public Set<Class<?>> findCandidateComponents(String basePath) {
+    protected Set<Class<?>> findCandidateComponents(String basePackage) {
         AnnotationClassScanner scanner =
-                new AnnotationClassScanner(
-                        basePath,
-                        Component.class, Configuration.class
-                );
+                new AnnotationClassScanner(basePackage, Component.class, Configuration.class);
         scanner.scan();
         return scanner.getClassSet();
     }

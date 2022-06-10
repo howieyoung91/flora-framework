@@ -81,7 +81,8 @@ public abstract class AbstractAutowireCapableBeanFactory
 
             // 执行 Bean 的初始化方法和 BeanPostProcessor 的前置和后置处理方法
             bean = initializeBean(beanName, bean, beanDefinition);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
             throw new BeanCreateException("Instantiation of bean failed when creating bean [" + beanName + "]", e);
         }
@@ -155,7 +156,8 @@ public abstract class AbstractAutowireCapableBeanFactory
         Constructor constructor = null;
         try {
             constructor = ReflectUtil.selectConstructorByArgsType(beanDefinition.getBeanClass(), args);
-        } catch (NoSuchMethodException e) {
+        }
+        catch (NoSuchMethodException e) {
             e.printStackTrace();
             throw new BeanCreateException("Error creating bean instance " + beanName);
         }
@@ -222,7 +224,8 @@ public abstract class AbstractAutowireCapableBeanFactory
                 }
                 ReflectUtil.setFieldValue(bean, name, value);
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
             throw new BeansException("Error setting property values：" + beanName);
         }
@@ -250,7 +253,8 @@ public abstract class AbstractAutowireCapableBeanFactory
 
         try {
             invokeInitMethods(beanName, wrappedBean, beanDefinition);
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -318,12 +322,11 @@ public abstract class AbstractAutowireCapableBeanFactory
         }
         if (bean instanceof DisposableBean || StringUtil.isNotEmpty(beanDefinition.getDestroyMethodName())) {
             DisposableBeanAdapter adapter = new DisposableBeanAdapter(bean, beanName, beanDefinition);
-            List<DestructionAwareBeanPostProcessor> destructionAwareBeanPostProcessors =
-                    (List) getBeanPostProcessors()
-                            .stream()
-                            .filter(processor -> processor instanceof DestructionAwareBeanPostProcessor)
-                            .collect(Collectors.toList());
-            adapter.setBeanPostProcessors(destructionAwareBeanPostProcessors);
+            List<DestructionAwareBeanPostProcessor> processors = (List) getBeanPostProcessors()
+                    .stream()
+                    .filter(processor -> processor instanceof DestructionAwareBeanPostProcessor)
+                    .collect(Collectors.toList());
+            adapter.setBeanPostProcessors(processors);
             registerDisposableBean(beanName, adapter);
         }
     }

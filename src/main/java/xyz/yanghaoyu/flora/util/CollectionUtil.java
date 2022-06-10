@@ -18,11 +18,14 @@ public abstract class CollectionUtil {
         if (targetType.isInterface()) {
             if (Set.class == targetType || AbstractCollection.class == targetType) {
                 return new LinkedHashSet<>();
-            } else if (List.class == targetType) {
+            }
+            else if (List.class == targetType) {
                 return new ArrayList<>();
-            } else if (SortedSet.class == targetType || NavigableSet.class == targetType) {
+            }
+            else if (SortedSet.class == targetType || NavigableSet.class == targetType) {
                 return new TreeSet<>();
-            } else {
+            }
+            else {
                 throw new IllegalArgumentException("Unsupported Collection interface: " + targetType.getName());
             }
         }
@@ -40,7 +43,8 @@ public abstract class CollectionUtil {
             try {
                 return (Collection) ReflectUtil.newInstanceByDefaultCtor(targetType);
                 // return (Collection<Object>) ReflectionUtils.accessibleConstructor(targetType).newInstance();
-            } catch (Throwable ex) {
+            }
+            catch (Throwable ex) {
                 throw new IllegalArgumentException(
                         "Could not instantiate Collection type: " + targetType.getName(), ex);
             }
@@ -52,7 +56,8 @@ public abstract class CollectionUtil {
         if (mapType.isInterface()) {
             if (Map.class == mapType) {
                 return new LinkedHashMap<>(capacity);
-            } else if (SortedMap.class == mapType || NavigableMap.class == mapType) {
+            }
+            else if (SortedMap.class == mapType || NavigableMap.class == mapType) {
                 // 可排序的
                 return new TreeMap<>();
             }
@@ -75,7 +80,8 @@ public abstract class CollectionUtil {
             }
             try {
                 return (Map<K, V>) ReflectUtil.newInstanceByDefaultCtor(mapType);
-            } catch (Throwable ex) {
+            }
+            catch (Throwable ex) {
                 throw new IllegalArgumentException("Could not instantiate Map type: " + mapType.getName(), ex);
             }
         }
@@ -85,11 +91,14 @@ public abstract class CollectionUtil {
         if (targetType.isInterface()) {
             if (Set.class == targetType || AbstractCollection.class == targetType) {
                 return new LinkedHashSet<>(cap);
-            } else if (List.class == targetType) {
+            }
+            else if (List.class == targetType) {
                 return new ArrayList<>(cap);
-            } else if (SortedSet.class == targetType || NavigableSet.class == targetType) {
+            }
+            else if (SortedSet.class == targetType || NavigableSet.class == targetType) {
                 return new TreeSet<>();
-            } else {
+            }
+            else {
                 throw new IllegalArgumentException("Unsupported Collection interface: " + targetType.getName());
             }
         }
@@ -107,7 +116,8 @@ public abstract class CollectionUtil {
             try {
                 // 使用默认构造函数
                 return (Collection) ReflectUtil.newInstanceByDefaultCtor(targetType);
-            } catch (Throwable ex) {
+            }
+            catch (Throwable ex) {
                 throw new IllegalArgumentException(
                         "Could not instantiate Collection type: " + targetType.getName(), ex);
             }

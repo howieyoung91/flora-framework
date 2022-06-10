@@ -1,5 +1,6 @@
 package xyz.yanghaoyu.flora.core.beans.factory.config;
 
+import cn.hutool.core.collection.ConcurrentHashSet;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import org.slf4j.Logger;
@@ -16,7 +17,6 @@ import xyz.yanghaoyu.flora.util.StringUtil;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -24,14 +24,17 @@ public class ConfigurationBeanCglibMethodInterceptor implements MethodIntercepto
     private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationBeanCglibMethodInterceptor.class);
 
     private final DefaultListableBeanFactory beanFactory;
-    private final Set<Method>                cache = new HashSet(3);
+    private final Set<Method>                cache = new ConcurrentHashSet<>();
 
     public ConfigurationBeanCglibMethodInterceptor(ConfigurableListableBeanFactory beanFactory) {
         this.beanFactory = (DefaultListableBeanFactory) beanFactory;
     }
 
+    /**
+     * 拦截 factoryMethod，先从 beanFactory 中获取
+     */
     @Override
-    public Object intercept(Object o, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
+    public Object intercept(Object target, Method method, Object[] args, MethodProxy methodProxy) throws Throwable {
         if (!cache.contains(method)) {
             if (method.isAnnotationPresent(Bean.class)) {
                 cache.add(method);
@@ -43,26 +46,33 @@ public class ConfigurationBeanCglibMethodInterceptor implements MethodIntercepto
                 return beanFactory.getBean(beanName);
             }
 
-            int i = 0;
-
-            Parameter[] parameters = method.getParameters();
-            for (Parameter parameter : parameters) {
-                Inject.ByName byNameAnn = parameter.getAnnotation(Inject.ByName.class);
-                Inject.ByType byTypeAnn = parameter.getAnnotation(Inject.ByType.class);
-                if (byNameAnn != null && byTypeAnn != null) {
-                    throw new DuplicateDeclarationException(
-                            "duplicate declaration [@Inject.ByName],[@Inject.ByType] on " + parameter.getName() + " when creating bean [" + beanName + "]"
-                    );
-                }
-                Object bean = getBeanFromBeanFactory(beanName, parameter, byNameAnn, byTypeAnn);
-                args[i] = bean;
-                i++;
-            }
+            // 解析参数, 注入
+            resolveFactoryMethod(method, args, beanName);
         }
-        return methodProxy.invokeSuper(o, args);
+        return methodProxy.invokeSuper(target, args);
     }
 
-    private Object getBeanFromBeanFactory(String beanName, Parameter parameter, Inject.ByName byNameAnn, Inject.ByType byTypeAnn) {
+    private void resolveFactoryMethod(Method method, Object[] args, String beanName) {
+        int i = 0;
+
+        Parameter[] parameters = method.getParameters();
+        for (Parameter parameter : parameters) {
+            Inject.ByName byNameAnn = parameter.getAnnotation(Inject.ByName.class);
+            Inject.ByType byTypeAnn = parameter.getAnnotation(Inject.ByType.class);
+            // check
+            if (byNameAnn != null && byTypeAnn != null) {
+                throw new DuplicateDeclarationException("duplicate declaration [@Inject.ByName],[@Inject.ByType] on " + parameter.getName() + " when creating bean [" + beanName + "]");
+            }
+            Object bean = findDependOnBeanFromBeanFactory(beanName, parameter, byNameAnn, byTypeAnn);
+            args[i] = bean;
+            i++;
+        }
+    }
+
+    /**
+     * 从 beanFactory 中找到依赖的 bean，默认 ByName
+     */
+    private Object findDependOnBeanFromBeanFactory(String beanName, Parameter parameter, Inject.ByName byNameAnn, Inject.ByType byTypeAnn) {
         Object bean = null;
         if (byTypeAnn != null) {
             Class dependOnBeanClass = determineDependOnBeanClass(parameter, byTypeAnn);
@@ -78,29 +88,33 @@ public class ConfigurationBeanCglibMethodInterceptor implements MethodIntercepto
                 throw new BeanCandidatesException("find too many candidates whose class is " + dependOnBeanClass + " when creating bean [" + beanName + "]");
             }
             bean = candidate.values().iterator().next();
-        } else {
+        }
+        else {
+            // byName
             String  dependOnBeanName = Component.DEFAULT_BEAN_NAME;
             boolean required         = true;
             if (byNameAnn == null) {
                 dependOnBeanName = parameter.getName();
-            } else {
+            }
+            else {
                 dependOnBeanName = determineDependOnBeanName(parameter, byNameAnn);
                 required = byNameAnn.required();
             }
 
-            try {
+            if (beanFactory.containsBeanDefinition(dependOnBeanName)) {
                 bean = beanFactory.getBean(dependOnBeanName);
-            } catch (Exception e) {
-                LOGGER.warn("{}", e.toString());
+            }
+            else {
                 if (required) {
                     throw new BeanCandidatesException("find no candidate [" + dependOnBeanName + "] when creating bean [" + beanName + "]");
                 }
             }
+
         }
         return bean;
     }
 
-    private String determineDependOnBeanName(Parameter parameter, Inject.ByName byNameAnn) {
+    private static String determineDependOnBeanName(Parameter parameter, Inject.ByName byNameAnn) {
         String dependOnBeanName;
         String value = byNameAnn.value();
         dependOnBeanName = byNameAnn.name();
@@ -112,7 +126,7 @@ public class ConfigurationBeanCglibMethodInterceptor implements MethodIntercepto
         return dependOnBeanName;
     }
 
-    private Class determineDependOnBeanClass(Parameter parameter, Inject.ByType byTypeAnn) {
+    private static Class determineDependOnBeanClass(Parameter parameter, Inject.ByType byTypeAnn) {
         Class value = byTypeAnn.value();
         Class clazz = byTypeAnn.clazz();
 

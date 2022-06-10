@@ -47,7 +47,8 @@ public class ConfigurationPropertiesBindingPostProcessor
         Method factoryMethod = beanDef.getFactoryMethod();
         if (factoryMethod == null) {
             handle(bean, clazz);
-        } else {
+        }
+        else {
             handle(bean, factoryMethod);
         }
         return bean;

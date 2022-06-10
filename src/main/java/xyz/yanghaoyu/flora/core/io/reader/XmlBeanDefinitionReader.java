@@ -138,7 +138,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
                 // 注入 AutowiredAnnotationProcessor 这样才能在 BeanProcessor 中注入属性
                 IocUtil.enableAutowiredAnnotations(getRegistry());
                 // 扫包
-                Set<BeanDefinition> beanDefinitions = new ClassPathBeanDefinitionScanner().doScan(basePaths);
+                Set<BeanDefinition> beanDefinitions = new ClassPathBeanDefinitionScanner().scan(basePaths);
 
                 for (BeanDefinition beanDefinition : beanDefinitions) {
                     String beanName = ComponentUtil.determineBeanName(beanDefinition);

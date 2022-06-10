@@ -34,7 +34,8 @@ public class AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor
         AnnotationAspectJExpressionPointcutAdvisorManager manager = null;
         if (beanFactory.containsSingletonBean(AnnotationAspectJExpressionPointcutAdvisorManager.class.getName())) {
             manager = beanFactory.getBean(AnnotationAspectJExpressionPointcutAdvisorManager.class.getName(), AnnotationAspectJExpressionPointcutAdvisorManager.class);
-        } else {
+        }
+        else {
             manager = new AnnotationAspectJExpressionPointcutAdvisorManager();
             beanFactory.registerSingleton(AnnotationAspectJExpressionPointcutAdvisorManager.class.getName(), manager);
         }

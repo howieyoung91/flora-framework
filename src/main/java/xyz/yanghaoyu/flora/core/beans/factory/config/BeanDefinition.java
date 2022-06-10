@@ -32,7 +32,7 @@ public class BeanDefinition {
         return this;
     }
 
-    public Class getBeanClass() {
+    public Class<?> getBeanClass() {
         return beanClass;
     }
 

@@ -69,11 +69,13 @@ public class AutowiredAnnotationBeanPostProcessor
                 for (Object dependOnBean : candidates.values()) {
                     ReflectUtil.setFieldValue(bean, actualClass, field.getName(), dependOnBean);
                 }
-            } else {
+            }
+            else {
                 if (injectByTypeAnno.required()) {
                     if (candidates.size() > 1) {
                         throw new BeansException("multiple beans are candidate! at: " + beanName + "field: " + field.getName() + ". Please use Inject.ByName");
-                    } else {
+                    }
+                    else {
                         throw new BeansException("No such Bean which class is  " + field.getType().getName() + " when gen " + beanName);
                     }
                 }
@@ -90,10 +92,11 @@ public class AutowiredAnnotationBeanPostProcessor
             Object dependOnBean = null;
             try {
                 dependOnBean = beanFactory.getBean(id);
-            } catch (Exception e) {
+            }
+            catch (Exception e) {
                 LOGGER.info("{}", e.toString());
                 if (injectByNameAnno.required()) {
-                    throw new BeansException("No such Bean which id is  " + id);
+                    throw new BeansException("no such bean named " + id);
                 }
             }
             ReflectUtil.setFieldValue(bean, actualClass, field.getName(), dependOnBean);
@@ -129,7 +132,8 @@ public class AutowiredAnnotationBeanPostProcessor
                 }
                 value = null;
                 ReflectUtil.setFieldValue(bean, clazz, field.getName(), null);
-            } else {
+            }
+            else {
                 // 类型转换
                 Object v = ConversionUtil.convertField(field, value, beanFactory.getConversionService());
                 ReflectUtil.setFieldValue(bean, clazz, field.getName(), v);

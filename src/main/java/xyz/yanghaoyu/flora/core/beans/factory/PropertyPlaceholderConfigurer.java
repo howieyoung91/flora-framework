@@ -77,7 +77,8 @@ public class PropertyPlaceholderConfigurer
                     new PlaceholderResolvingStringValueResolver(properties);
             beanFactory.addEmbeddedValueResolver(valueResolver);
 
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
             throw new BeansException("Could not load properties", e);
         }
@@ -94,10 +95,12 @@ public class PropertyPlaceholderConfigurer
             InputStream inputStream = resource.getInputStream();
             if (location.endsWith(".properties")) {
                 properties.load(inputStream);
-            } else if (location.endsWith(".yaml") || location.endsWith(".yml")) {
+            }
+            else if (location.endsWith(".yaml") || location.endsWith(".yml")) {
                 Map yamlMap = flatTree(yamlMapper.readValue(inputStream, Map.class));
                 map.putAll(yamlMap);
-            } else {
+            }
+            else {
                 throw new RuntimeException("unsupported property file!");
             }
             inputStream.close();
@@ -113,7 +116,8 @@ public class PropertyPlaceholderConfigurer
             if (v instanceof Map) {
                 flatTree((Map<String, Object>) v)
                         .forEach((s, s2) -> res.put(k + "." + s, s2));
-            } else {
+            }
+            else {
                 String value = v.toString();
                 if (v instanceof List) {
                     value = value.substring(1, value.length() - 1).trim();

@@ -10,10 +10,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2022/2/4 19:22<i/>
@@ -36,9 +33,11 @@ public class InitDestroyAnnotationBeanPostProcessor
         List<Method> initMethods      = lifecycleMethods[0];
         try {
             invokeInitialMethods(bean, initMethods);
-        } catch (InvocationTargetException e) {
+        }
+        catch (InvocationTargetException e) {
             throw new BeanCreateException(beanName, "Invocation of init method failed", e.getTargetException());
-        } catch (IllegalAccessException e) {
+        }
+        catch (IllegalAccessException e) {
             throw new BeanCreateException(beanName, "Invocation of init method failed", e);
         }
         return bean;
@@ -51,9 +50,11 @@ public class InitDestroyAnnotationBeanPostProcessor
         List<Method> destroyMethods   = lifecycleMethods[1];
         try {
             invokeDestroyMethods(bean, destroyMethods);
-        } catch (InvocationTargetException e) {
+        }
+        catch (InvocationTargetException e) {
             throw new BeanCreateException(beanName, "Invocation of destroy method failed", e.getTargetException());
-        } catch (IllegalAccessException e) {
+        }
+        catch (IllegalAccessException e) {
             throw new BeanCreateException(beanName, "Invocation of destroy method failed", e);
         }
     }

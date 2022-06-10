@@ -75,7 +75,8 @@ public abstract class IocUtil {
                             )
                     );
             registry.registerBeanDefinition(beanName, beanDef);
-        } else {
+        }
+        else {
             beanDef = ((ConfigurableListableBeanFactory) registry).getBeanDefinition(beanName);
             PropertyValues propertyValues = beanDef.getPropertyValues();
             PropertyValue  pv             = propertyValues.getPropertyValue(resourcesLocationsFieldName);

@@ -28,7 +28,8 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
                 this.factoryBeanObjectCache.put(beanName, (object == null ? NULL_OBJECT : object));
             }
             return (object == NULL_OBJECT ? null : object);
-        } else {
+        }
+        else {
             // 不是单例每次都要创建
             return doGetObjectFromFactoryBean(factoryBean, beanName);
         }
@@ -37,7 +38,8 @@ public abstract class FactoryBeanRegistrySupport extends DefaultSingletonBeanReg
     private Object doGetObjectFromFactoryBean(final FactoryBean factoryBean, final String beanName) {
         try {
             return factoryBean.getObject();
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             throw new BeansException("FactoryBean threw exception on object[" + beanName + "] creation", e);
         }
     }

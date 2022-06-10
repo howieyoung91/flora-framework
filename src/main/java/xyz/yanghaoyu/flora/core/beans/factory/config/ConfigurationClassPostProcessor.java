@@ -3,11 +3,12 @@ package xyz.yanghaoyu.flora.core.beans.factory.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xyz.yanghaoyu.flora.annotation.Configuration;
-import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.PropertyValue;
 import xyz.yanghaoyu.flora.core.beans.factory.PropertyValues;
+import xyz.yanghaoyu.flora.core.beans.factory.support.BeanDefinitionRegistry;
 import xyz.yanghaoyu.flora.core.beans.factory.support.DefaultListableBeanFactory;
 import xyz.yanghaoyu.flora.exception.BeansException;
+import xyz.yanghaoyu.flora.util.BeanUtil;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,12 +20,11 @@ import java.util.Set;
  * @version 1.0
  */
 
-public class ConfigurationClassBeanFactoryPostProcessor
-        implements BeanFactoryPostProcessor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationClassBeanFactoryPostProcessor.class);
+public class ConfigurationClassPostProcessor implements BeanDefinitionRegistryPostProcessor {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConfigurationClassPostProcessor.class);
 
     @Override
-    public void postProcessBeanFactory(ConfigurableListableBeanFactory configBeanFactory) throws BeansException {
+    public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry configBeanFactory) throws BeansException {
         DefaultListableBeanFactory beanFactory = (DefaultListableBeanFactory) configBeanFactory;
         HashSet<String>            classes     = findConfigBeanName(beanFactory);
 
@@ -50,8 +50,8 @@ public class ConfigurationClassBeanFactoryPostProcessor
     private void registerConditionalSupportBeanFactoryPostProcessor(DefaultListableBeanFactory beanFactory, Set<String> skippedStringNames) {
         PropertyValues propertyValues = new PropertyValues()
                 .addPropertyValue(new PropertyValue("skippedBeanNames", skippedStringNames));
-        BeanDefinition beanDef = new BeanDefinition(ConditionalSupportBeanFactoryProcessor.class, propertyValues);
-        beanFactory.registerBeanDefinition("flora$ConditionalSupportBeanFactoryPostProcessor$", beanDef);
+        BeanDefinition beanDef = new BeanDefinition(ConditionalSupportPostProcessor.class, propertyValues);
+        beanFactory.registerBeanDefinition(BeanUtil.builtInBeanName(ConditionalSupportPostProcessor.class), beanDef);
     }
 
     private HashSet<String> findConfigBeanName(DefaultListableBeanFactory beanFactory) {

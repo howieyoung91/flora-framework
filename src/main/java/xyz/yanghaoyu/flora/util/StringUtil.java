@@ -35,8 +35,8 @@ public abstract class StringUtil {
             return str;
         }
 
-        int len = str.length();
-        StringBuilder sb = new StringBuilder(str.length());
+        int           len = str.length();
+        StringBuilder sb  = new StringBuilder(str.length());
         for (int i = 0; i < len; i++) {
             char c = str.charAt(i);
             if (!Character.isWhitespace(c)) {
@@ -70,7 +70,8 @@ public abstract class StringUtil {
             for (int i = 0; i < str.length(); i++) {
                 result.add(deleteAny(str.substring(i, i + 1), charsToDelete));
             }
-        } else {
+        }
+        else {
             int pos = 0;
             int delPos;
             while ((delPos = str.indexOf(delimiter, pos)) != -1) {
@@ -98,8 +99,8 @@ public abstract class StringUtil {
             return inString;
         }
 
-        int lastCharIndex = 0;
-        char[] result = new char[inString.length()];
+        int    lastCharIndex = 0;
+        char[] result        = new char[inString.length()];
         for (int i = 0; i < inString.length(); i++) {
             char c = inString.charAt(i);
             if (charsToDelete.indexOf(c) == -1) {
@@ -133,7 +134,7 @@ public abstract class StringUtil {
         }
 
         StringBuilder sb = new StringBuilder();
-        Iterator<?> it = coll.iterator();
+        Iterator<?>   it = coll.iterator();
         while (it.hasNext()) {
             sb.append(prefix).append(it.next()).append(suffix);
             if (it.hasNext()) {
@@ -163,8 +164,8 @@ public abstract class StringUtil {
             return EMPTY_STRING_ARRAY;
         }
 
-        StringTokenizer st = new StringTokenizer(str, delimiters);
-        List<String> tokens = new ArrayList<>();
+        StringTokenizer st     = new StringTokenizer(str, delimiters);
+        List<String>    tokens = new ArrayList<>();
         while (st.hasMoreTokens()) {
             String token = st.nextToken();
             if (trimTokens) {

@@ -12,7 +12,7 @@ import xyz.yanghaoyu.flora.exception.BeansException;
 import xyz.yanghaoyu.flora.transaction.interceptor.TransactionInterceptor;
 import xyz.yanghaoyu.flora.transaction.support.AnnotationTransactionAttributeSource;
 
-public class TransactionBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
+public class TransactionPostProcessor implements BeanFactoryPostProcessor {
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         AnnotationAspectJExpressionPointcutAdvisorManager advisorManager = getAdvisorManager(beanFactory);

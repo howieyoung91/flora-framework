@@ -44,14 +44,15 @@ public abstract class ClassScanner {
                         // 若在 class 目录中，则执行添加类操作
                         String packagePath = url.getPath().replaceAll("%20", " ");
                         addClass(classSet, packagePath, targetPackage);
-                    } else if (protocol.equals("jar")) {
+                    }
+                    else if (protocol.equals("jar")) {
                         // 若在 jar 包中，则解析 jar 包中的 entry
-                        JarURLConnection jarURLConnection = (JarURLConnection) url.openConnection();
-                        JarFile jarFile = jarURLConnection.getJarFile();
-                        Enumeration<JarEntry> jarEntries = jarFile.entries();
+                        JarURLConnection      jarURLConnection = (JarURLConnection) url.openConnection();
+                        JarFile               jarFile          = jarURLConnection.getJarFile();
+                        Enumeration<JarEntry> jarEntries       = jarFile.entries();
                         while (jarEntries.hasMoreElements()) {
-                            JarEntry jarEntry = jarEntries.nextElement();
-                            String jarEntryName = jarEntry.getName();
+                            JarEntry jarEntry     = jarEntries.nextElement();
+                            String   jarEntryName = jarEntry.getName();
                             // 判断该 entry 是否为 class
                             if (jarEntryName.endsWith(".class")) {
                                 // 获取类名
@@ -64,7 +65,8 @@ public abstract class ClassScanner {
                     }
                 }
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
         return this;
@@ -86,7 +88,8 @@ public abstract class ClassScanner {
                     }
                     // 执行添加类操作
                     doAddClass(classSet, className);
-                } else {
+                }
+                else {
                     // 获取子包
                     String subPackagePath = fileName;
                     if (StringUtil.isNotEmpty(packagePath)) {
@@ -101,7 +104,8 @@ public abstract class ClassScanner {
                     addClass(classSet, subPackagePath, subPackageName);
                 }
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
     }

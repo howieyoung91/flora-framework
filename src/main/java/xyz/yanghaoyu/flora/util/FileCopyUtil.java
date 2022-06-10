@@ -69,7 +69,8 @@ public abstract class FileCopyUtil {
     public static int copy(InputStream in, OutputStream out) throws IOException {
         try {
             return StreamUtil.copy(in, out);
-        } finally {
+        }
+        finally {
             close(in);
             close(out);
         }
@@ -86,7 +87,8 @@ public abstract class FileCopyUtil {
     public static void copy(byte[] in, OutputStream out) throws IOException {
         try {
             out.write(in);
-        } finally {
+        }
+        finally {
             close(out);
         }
     }
@@ -125,16 +127,17 @@ public abstract class FileCopyUtil {
      */
     public static int copy(Reader in, Writer out) throws IOException {
         try {
-            int charCount = 0;
-            char[] buffer = new char[BUFFER_SIZE];
-            int charsRead;
+            int    charCount = 0;
+            char[] buffer    = new char[BUFFER_SIZE];
+            int    charsRead;
             while ((charsRead = in.read(buffer)) != -1) {
                 out.write(buffer, 0, charsRead);
                 charCount += charsRead;
             }
             out.flush();
             return charCount;
-        } finally {
+        }
+        finally {
             close(in);
             close(out);
         }
@@ -151,7 +154,8 @@ public abstract class FileCopyUtil {
     public static void copy(String in, Writer out) throws IOException {
         try {
             out.write(in);
-        } finally {
+        }
+        finally {
             close(out);
         }
     }
@@ -183,7 +187,8 @@ public abstract class FileCopyUtil {
     private static void close(Closeable closeable) {
         try {
             closeable.close();
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             // ignore
         }
     }

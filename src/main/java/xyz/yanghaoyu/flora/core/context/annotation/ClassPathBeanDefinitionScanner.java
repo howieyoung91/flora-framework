@@ -9,23 +9,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class ClassPathBeanDefinitionScanner extends ClassPathScanningCandidateComponentProvider {
-    private static Logger LOGGER = LoggerFactory.getLogger(ClassPathBeanDefinitionScanner.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ClassPathBeanDefinitionScanner.class);
 
-    public ClassPathBeanDefinitionScanner() {}
-
-
-    public Set<BeanDefinition> doScan(String... basePackages) {
-        Set<BeanDefinition> bds = new HashSet<>();
+    public Set<BeanDefinition> scan(String... basePackages) {
+        Set<BeanDefinition> beanDefinitions = new HashSet<>();
         for (String basePackage : basePackages) {
             LOGGER.trace("scan [Package] [{}]", basePackage);
-            Set<Class<?>> candidateClass = findCandidateComponents(basePackage);
-            for (Class<?> aClass : candidateClass) {
-                BeanDefinition beanDefinition = new BeanDefinition(aClass);
+            Set<Class<?>> candidateClasses = findCandidateComponents(basePackage);
+            for (Class<?> candidateClass : candidateClasses) {
+                BeanDefinition beanDefinition = new BeanDefinition(candidateClass);
                 ComponentUtil.determineBeanScope(beanDefinition);
-                // ComponentUtil.determineBeanInitMethodAndDestroyMethod(beanDefinition);
-                bds.add(beanDefinition);
+                beanDefinitions.add(beanDefinition);
             }
         }
-        return bds;
+        return beanDefinitions;
     }
 }
