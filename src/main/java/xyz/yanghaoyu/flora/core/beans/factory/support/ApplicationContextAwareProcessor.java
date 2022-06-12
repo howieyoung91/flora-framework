@@ -3,6 +3,8 @@ package xyz.yanghaoyu.flora.core.beans.factory.support;
 import xyz.yanghaoyu.flora.core.Ordered;
 import xyz.yanghaoyu.flora.core.PriorityOrdered;
 import xyz.yanghaoyu.flora.core.beans.factory.ApplicationContextAware;
+import xyz.yanghaoyu.flora.core.beans.factory.ApplicationEventPublisherAware;
+import xyz.yanghaoyu.flora.core.beans.factory.EmbeddedValueResolverAware;
 import xyz.yanghaoyu.flora.core.beans.factory.ResourceLoaderAware;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanPostProcessor;
 import xyz.yanghaoyu.flora.core.context.ApplicationContext;
@@ -27,6 +29,9 @@ public class ApplicationContextAwareProcessor implements BeanPostProcessor, Prio
         }
         if (bean instanceof ResourceLoaderAware) {
             ((ResourceLoaderAware) bean).setResourceLoader(applicationContext);
+        }
+        if (bean instanceof EmbeddedValueResolverAware) {
+            ((ApplicationEventPublisherAware) bean).setApplicationEventPublisher(applicationContext);
         }
         return bean;
     }

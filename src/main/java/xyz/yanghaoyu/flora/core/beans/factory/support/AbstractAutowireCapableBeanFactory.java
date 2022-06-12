@@ -246,6 +246,9 @@ public abstract class AbstractAutowireCapableBeanFactory
             else if (bean instanceof BeanDefinitionRegistryAware) {
                 ((BeanDefinitionRegistryAware) bean).setBeanRegistry((BeanDefinitionRegistry) this);
             }
+            else if (bean instanceof EmbeddedValueResolverAware) {
+                ((EmbeddedValueResolverAware) bean).setEmbeddedValueResolver(embeddedValueResolvers.get(0));
+            }
         }
 
         // 1. 执行 BeanPostProcessor Before 处理

@@ -37,7 +37,7 @@ public class PropertyPlaceholderConfigurer
     public void afterPropertiesSet() {
         // 这里要处理了 locations 乱序的问题
         // 确保库的配置文件比项目配置文件先解析
-        // todo 实验功能
+        // TODO 实验功能
         for (String location : locations) {
             usingLocations.addFirst(location);
         }

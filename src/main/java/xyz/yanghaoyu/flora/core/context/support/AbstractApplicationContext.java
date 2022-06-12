@@ -114,9 +114,7 @@ public abstract class AbstractApplicationContext
     private void initApplicationContextAwareProcessor() {
         // 由于 BeanFactory 无法感知 ApplicationContext,
         // 因此使用 ApplicationContextAwareProcessor 对 bean 进行增强
-        // 在 执行 BeanPostProcessorBeforeInit 时 将会判断 是否实现 ApplicationContextAware
-        // 如果实现,将会把 Context 注入
-        // LOGGER.trace("init [BeanAware] ...");
+        // 在 执行 BeanPostProcessorBeforeInit 时 将会判断 是否实现 ApplicationContextAware 如果实现,将会把 Context 注入
         ApplicationContextAwareProcessor acp = new ApplicationContextAwareProcessor(this);
         getBeanFactory().addBeanPostProcessor(acp);
     }

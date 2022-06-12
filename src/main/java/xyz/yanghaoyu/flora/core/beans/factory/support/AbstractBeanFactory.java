@@ -22,10 +22,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public abstract class AbstractBeanFactory
         extends FactoryBeanRegistrySupport implements ConfigurableBeanFactory {
-    private final Set<String>               currentlyCreatingBeans = new ConcurrentHashSet<>();
-    private final List<BeanPostProcessor>   beanPostProcessors     = new ArrayList<>();
-    private final List<StringValueResolver> embeddedValueResolvers = new CopyOnWriteArrayList<>();
-    private       ConversionService         conversionService;
+    private final   Set<String>               currentlyCreatingBeans = new ConcurrentHashSet<>();
+    private final   List<BeanPostProcessor>   beanPostProcessors     = new ArrayList<>();
+    protected final List<StringValueResolver> embeddedValueResolvers = new CopyOnWriteArrayList<>();
+    private         ConversionService         conversionService;
 
     @Override
     public void setConversionService(ConversionService conversionService) {
