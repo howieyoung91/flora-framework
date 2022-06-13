@@ -10,12 +10,10 @@ public class BeanDefinition {
     private PropertyValues propertyValues;
     private String         initMethodName;
     private String         destroyMethodName;
-    private boolean        singleton = true;
-    private boolean        prototype = false;
-
-    // @Bean @Configuration support
-    private String configurationClassBeanName = null;
-    private Method factoryMethod              = null;
+    private boolean        singleton                  = true;
+    private boolean        prototype                  = false;
+    private String         configurationClassBeanName = null;   // @Bean @Configuration support
+    private Method         factoryMethod              = null;   // @Bean @Configuration support
 
     public BeanDefinition(Class beanClass) {
         this.beanClass = beanClass;
@@ -44,18 +42,16 @@ public class BeanDefinition {
         return initMethodName;
     }
 
-    public BeanDefinition setInitMethodName(String initMethodName) {
+    public void setInitMethodName(String initMethodName) {
         this.initMethodName = initMethodName;
-        return this;
     }
 
     public String getDestroyMethodName() {
         return destroyMethodName;
     }
 
-    public BeanDefinition setDestroyMethodName(String destroyMethodName) {
+    public void setDestroyMethodName(String destroyMethodName) {
         this.destroyMethodName = destroyMethodName;
-        return this;
     }
 
     public boolean isSingleton() {

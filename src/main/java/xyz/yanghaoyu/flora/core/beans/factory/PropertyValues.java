@@ -6,20 +6,20 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class PropertyValues implements Iterable<PropertyValue> {
-    private final List<PropertyValue> propertyValueList = new ArrayList<>();
+    private final List<PropertyValue> propertyValues = new ArrayList<>();
 
     public PropertyValues addPropertyValue(PropertyValue pv) {
-        this.propertyValueList.add(pv);
+        this.propertyValues.add(pv);
         return this;
     }
 
     public PropertyValue[] getPropertyValues() {
-        return this.propertyValueList.toArray(new PropertyValue[0]);
+        return this.propertyValues.toArray(new PropertyValue[0]);
     }
 
 
     public PropertyValue getPropertyValue(String propertyName) {
-        for (PropertyValue pv : this.propertyValueList) {
+        for (PropertyValue pv : propertyValues) {
             if (pv.getName().equals(propertyName)) {
                 return pv;
             }
@@ -29,11 +29,11 @@ public class PropertyValues implements Iterable<PropertyValue> {
 
     @Override
     public Iterator<PropertyValue> iterator() {
-        return propertyValueList.iterator();
+        return propertyValues.iterator();
     }
 
     @Override
     public void forEach(Consumer<? super PropertyValue> action) {
-        propertyValueList.forEach(action);
+        propertyValues.forEach(action);
     }
 }

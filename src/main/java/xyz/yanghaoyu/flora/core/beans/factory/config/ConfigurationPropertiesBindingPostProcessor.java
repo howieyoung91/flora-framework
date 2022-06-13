@@ -42,7 +42,7 @@ public class ConfigurationPropertiesBindingPostProcessor
     @Override
     public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
         BeanDefinition beanDef = beanFactory.getBeanDefinition(beanName);
-        Class<?>       clazz   = ReflectUtil.getBeanClassFromCglibProxy(bean.getClass());
+        Class<?>       clazz   = ReflectUtil.getBeanClassFromCglibProxyIfNecessary(bean.getClass());
 
         Method factoryMethod = beanDef.getFactoryMethod();
         if (factoryMethod == null) {

@@ -4,6 +4,7 @@ import xyz.yanghaoyu.flora.core.beans.factory.BeanFactory;
 import xyz.yanghaoyu.flora.core.beans.factory.BeanFactoryAware;
 import xyz.yanghaoyu.flora.core.context.ApplicationListener;
 import xyz.yanghaoyu.flora.exception.BeansException;
+import xyz.yanghaoyu.flora.util.ReflectUtil;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -56,20 +57,15 @@ public abstract class AbstractApplicationEventMulticaster implements Application
      * 监听器是否对该事件感兴趣
      */
     protected boolean supportsEvent(ApplicationListener<ApplicationEvent> applicationListener, ApplicationEvent event) {
-        Class<? extends ApplicationListener> listenerClass = applicationListener.getClass();
-
-        // 按照 CglibSubclassingInstantiationStrategy、SimpleInstantiationStrategy 不同的实例化类型，需要判断后获取目标 class
-        // Class<?> targetClass = ClassUtils.isCglibProxyClass(listenerClass) ? listenerClass.getSuperclass() : listenerClass;
-        // Type genericInterface = targetClass.getGenericInterfaces()[0];
-
-
-        Type     genericInterface   = listenerClass.getGenericInterfaces()[0];
+        Class<?> targetClass        = ReflectUtil.getBeanClassFromCglibProxyIfNecessary(applicationListener.getClass());
+        Type     genericInterface   = targetClass.getGenericInterfaces()[0];
         Type     actualTypeArgument = ((ParameterizedType) genericInterface).getActualTypeArguments()[0];
         String   className          = actualTypeArgument.getTypeName();
-        Class<?> eventClass;
+        Class<?> eventClass         = null;
         try {
             eventClass = Class.forName(className);
-        } catch (ClassNotFoundException e) {
+        }
+        catch (ClassNotFoundException e) {
             throw new BeansException("wrong event class name: " + className);
         }
         return eventClass.isAssignableFrom(event.getClass());

@@ -150,7 +150,7 @@ public abstract class ReflectUtil {
         return (className != null && className.contains("$$"));
     }
 
-    public static Class<?> getBeanClassFromCglibProxy(Class<?> clazz) {
+    public static Class<?> getBeanClassFromCglibProxyIfNecessary(Class<?> clazz) {
         clazz = ReflectUtil.isCglibProxyClass(clazz) ? clazz.getSuperclass() : clazz;
         return clazz;
     }
