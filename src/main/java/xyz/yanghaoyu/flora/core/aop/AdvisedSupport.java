@@ -38,15 +38,6 @@ public class AdvisedSupport {
         return methodInterceptor;
     }
 
-    // public List<MethodInterceptor> getMethodInterceptors() {
-    //     return methodInterceptors;
-    // }
-    //
-    // public AdvisedSupport setMethodInterceptors(List<MethodInterceptor> methodInterceptors) {
-    //     this.methodInterceptors = methodInterceptors;
-    //     return this;
-    // }
-
     public void setMethodInterceptor(MethodInterceptor methodInterceptor) {
         this.methodInterceptor = methodInterceptor;
     }

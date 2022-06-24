@@ -5,7 +5,6 @@ package xyz.yanghaoyu.flora.core.beans.factory.support;
  * @version 1.0
  */
 
-
 public interface InitializingBean {
     void afterPropertiesSet() throws Exception;
 }

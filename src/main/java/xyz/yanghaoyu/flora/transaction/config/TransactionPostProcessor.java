@@ -13,6 +13,8 @@ import xyz.yanghaoyu.flora.transaction.interceptor.TransactionInterceptor;
 import xyz.yanghaoyu.flora.transaction.support.AnnotationTransactionAttributeSource;
 
 public class TransactionPostProcessor implements BeanFactoryPostProcessor {
+    public static final String POINTCUT = "@annotation(xyz.yanghaoyu.flora.transaction.annotation.Transactional)";
+
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         AnnotationAspectJExpressionPointcutAdvisorManager advisorManager = getAdvisorManager(beanFactory);
@@ -33,6 +35,6 @@ public class TransactionPostProcessor implements BeanFactoryPostProcessor {
         TransactionInterceptor interceptor = new TransactionInterceptor();
         interceptor.setBeanFactory(beanFactory);
         interceptor.setTransactionAttributeSource(new AnnotationTransactionAttributeSource());
-        advisorManager.addMethodEnhanceAdvice("@annotation(xyz.yanghaoyu.flora.transaction.annotation.Transactional)", interceptor);
+        advisorManager.registerMethodEnhanceAdvice(POINTCUT, interceptor);
     }
 }

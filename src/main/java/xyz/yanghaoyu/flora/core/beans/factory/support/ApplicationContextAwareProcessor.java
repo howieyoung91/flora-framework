@@ -30,7 +30,7 @@ public class ApplicationContextAwareProcessor implements BeanPostProcessor, Prio
         if (bean instanceof ResourceLoaderAware) {
             ((ResourceLoaderAware) bean).setResourceLoader(applicationContext);
         }
-        if (bean instanceof EmbeddedValueResolverAware) {
+        if (bean instanceof ApplicationEventPublisherAware) {
             ((ApplicationEventPublisherAware) bean).setApplicationEventPublisher(applicationContext);
         }
         return bean;

@@ -13,7 +13,6 @@ import xyz.yanghaoyu.flora.core.aop.interceptor.AdvicePoint;
 import xyz.yanghaoyu.flora.core.beans.factory.ConfigurableListableBeanFactory;
 import xyz.yanghaoyu.flora.exception.BeansException;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
@@ -31,45 +30,49 @@ public class AnnotationAwareAspectJAutoProxySupportBeanFactoryPostProcessor
     @Override
     public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
         LOGGER.trace("init [Aspect] ...");
-        AnnotationAspectJExpressionPointcutAdvisorManager manager = null;
-        if (beanFactory.containsSingletonBean(AnnotationAspectJExpressionPointcutAdvisorManager.class.getName())) {
-            manager = beanFactory.getBean(AnnotationAspectJExpressionPointcutAdvisorManager.class.getName(), AnnotationAspectJExpressionPointcutAdvisorManager.class);
-        }
-        else {
-            manager = new AnnotationAspectJExpressionPointcutAdvisorManager();
-            beanFactory.registerSingleton(AnnotationAspectJExpressionPointcutAdvisorManager.class.getName(), manager);
-        }
+        AnnotationAspectJExpressionPointcutAdvisorManager manager = makeSureAdvisorManager(beanFactory);
 
-
-        String[] names = beanFactory.getBeanDefinitionNames();
-        for (String name : names) {
+        String[] beanNames = beanFactory.getBeanDefinitionNames();
+        for (String beanName : beanNames) {
             // 首先 生成 Aspect
-            Class<?> clazz = beanFactory.getBeanDefinition(name).getBeanClass();
+            Class<?> clazz = beanFactory.getBeanDefinition(beanName).getBeanClass();
             // 是否标记 @Aspect
-            Annotation annotation = clazz.getAnnotation(Aspect.class);
-            if (annotation != null) {
-                Object   bean    = beanFactory.getBean(name);
+            Aspect aspectAnn = clazz.getAnnotation(Aspect.class);
+            if (aspectAnn != null) {
+                Object   bean    = beanFactory.getBean(beanName);
                 Method[] methods = clazz.getDeclaredMethods();
 
                 // 查找被 @Enhance 标记的方法
                 for (Method method : methods) {
-                    Aop.Enhance enhanceAnno = method.getAnnotation(Aop.Enhance.class);
-                    if (enhanceAnno == null) {
+                    Aop.Enhance enhanceAnn = method.getAnnotation(Aop.Enhance.class);
+                    if (enhanceAnn == null) {
                         continue;
                     }
 
-                    LOGGER.trace("register [Pointcut] [{}]", enhanceAnno.value());
-                    manager.addMethodEnhanceAdvice(
-                            enhanceAnno.value(),
-                            new Point(bean, method, getAdviceOrder(method))
-                    );
+                    LOGGER.trace("register [Pointcut] [{}]", enhanceAnn.value());
+                    manager.registerMethodEnhanceAdvice(enhanceAnn.value(), new Point(bean, method, determineAdviceOrder(method)));
                 }
             }
         }
     }
 
+    private AnnotationAspectJExpressionPointcutAdvisorManager makeSureAdvisorManager(ConfigurableListableBeanFactory beanFactory) {
+        AnnotationAspectJExpressionPointcutAdvisorManager manager = null;
+        Class<AnnotationAspectJExpressionPointcutAdvisorManager> managerClass
+                = AnnotationAspectJExpressionPointcutAdvisorManager.class;
+        String managerName = managerClass.getName();
+        if (beanFactory.containsSingletonBean(managerName)) {
+            manager = beanFactory.getBean(managerName, managerClass);
+        }
+        else {
+            manager = new AnnotationAspectJExpressionPointcutAdvisorManager();
+            beanFactory.registerSingleton(managerName, manager);
+        }
+        return manager;
+    }
+
     // 确定优先级
-    private int getAdviceOrder(Method method) {
+    private int determineAdviceOrder(Method method) {
         // 解析 @Order
         Order orderAnn = method.getAnnotation(Order.class);
         return orderAnn == null ? Ordered.LOWEST_PRECEDENCE : orderAnn.value();

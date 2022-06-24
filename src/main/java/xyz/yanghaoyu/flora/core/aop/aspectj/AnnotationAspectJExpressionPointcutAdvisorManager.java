@@ -27,7 +27,7 @@ public class AnnotationAspectJExpressionPointcutAdvisorManager implements BeanFa
         this.beanFactory = beanFactory;
     }
 
-    public void addMethodEnhanceAdvice(String pointCutExpr, AdvicePoint point) {
+    public void registerMethodEnhanceAdvice(String pointCutExpr, AdvicePoint point) {
         AnnotationAspectJExpressionPointcutAdvisor advisor = map.get(pointCutExpr);
         if (advisor == null) {
             advisor = new AnnotationAspectJExpressionPointcutAdvisor(pointCutExpr, new MethodEnhanceAdviceInterceptor());
