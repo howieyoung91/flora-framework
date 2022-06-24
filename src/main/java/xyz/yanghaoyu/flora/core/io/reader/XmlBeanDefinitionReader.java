@@ -102,7 +102,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
 
 
     private void parsePropertyPlaceholderConfigurer(Element root) {
-        NodeList enablePropertyPlaceholderConfigurerList = root.getElementsByTagName(XmlTag.ENABLE_PROPERTY_PLACEHOLDER_CONFIGURER);
+        NodeList enablePropertyPlaceholderConfigurerList = root.getElementsByTagName(XmlTag.ENABLE_PROPERTY_SOURCE);
         if (enablePropertyPlaceholderConfigurerList.getLength() == 1) {
             Node tag = enablePropertyPlaceholderConfigurerList.item(0);
             String location = ((Element) tag).getAttribute("location");
@@ -110,7 +110,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionFileReader {
             IocUtil.enablePropertyPlaceholderConfigurer(getRegistry(), location);
         } else if (enablePropertyPlaceholderConfigurerList.getLength() > 1) {
             // 一个xml中只能出现一个 <enable-property-placeholder-configurer/>
-            throw new BeansException("duplicate declaration <" + XmlTag.ENABLE_PROPERTY_PLACEHOLDER_CONFIGURER + "/> !");
+            throw new BeansException("duplicate declaration <" + XmlTag.ENABLE_PROPERTY_SOURCE + "/> !");
         }
     }
 

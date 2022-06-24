@@ -1,4 +1,3 @@
-
 package xyz.yanghaoyu.flora.core;
 
 import xyz.yanghaoyu.flora.util.ObjectUtil;
@@ -27,8 +26,7 @@ public final class MethodClassKey implements Comparable<MethodClassKey> {
             return false;
         }
         MethodClassKey otherKey = (MethodClassKey) other;
-        return this.method.equals(otherKey.method)
-               && ObjectUtil.nullSafeEquals(this.targetClass, otherKey.targetClass);
+        return this.method.equals(otherKey.method) && ObjectUtil.nullSafeEquals(this.targetClass, otherKey.targetClass);
     }
 
     @Override

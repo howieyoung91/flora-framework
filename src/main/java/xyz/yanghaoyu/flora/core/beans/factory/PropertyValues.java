@@ -17,7 +17,6 @@ public class PropertyValues implements Iterable<PropertyValue> {
         return this.propertyValues.toArray(new PropertyValue[0]);
     }
 
-
     public PropertyValue getPropertyValue(String propertyName) {
         for (PropertyValue pv : propertyValues) {
             if (pv.getName().equals(propertyName)) {

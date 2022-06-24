@@ -13,68 +13,109 @@ import xyz.yanghaoyu.flora.transaction.TransactionStatus;
 import java.util.List;
 
 public abstract class AbstractPlatformTransactionManager implements PlatformTransactionManager {
+
+    // ========================================   public methods   =========================================
+
     @Override
     public TransactionStatus getTransaction(TransactionDefinition definition) throws TransactionException {
         if (definition == null) {
             definition = new DefaultTransactionDefinition();
         }
-
         // check timeout
         if (definition.getTimeout() < TransactionDefinition.DEFAULT_TIMEOUT) {
             throw new TransactionException("Invalid transaction timeout " + definition.getTimeout() + "transaction name: " + definition.getName());
         }
 
         Object transaction = doGetTransaction();
-
-        if (definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_REQUIRED) {
-            // 不存在事务
-            if (!TransactionSynchronizationManager.isSynchronizationActive()) {
-                return startTransaction(definition, transaction, null);
-            }
-
-            // 存在事务, 不用开启事务
-            if (TransactionSynchronizationManager.isSynchronizationActive()) {
-                return new DefaultTransactionStatus(transaction, false, false);
-            }
+        // 目前只允许 PROPAGATION_REQUIRED 的事务
+        if (!(definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_REQUIRED)) {
+            throw new IllegalStateException("unknown propagation behavior. only support [PROPAGATION_REQUIRED]");
+        }
+        // 不存在事务
+        if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+            return startTransaction(definition, transaction, null);
         }
         else {
-            // NESTED
-            if (TransactionSynchronizationManager.isSynchronizationActive()) {
-                DefaultTransactionStatus status = new DefaultTransactionStatus(transaction, false, false);
-                status.createAndHoldSavepoint();
-                return status;
-            }
+            // 存在事务, 不用开启事务
+            return new DefaultTransactionStatus(transaction, false, false);
         }
-        return startTransaction(definition, transaction, null);
+
+        // 以下代码暂时不使用
+        // if (definition.getPropagationBehavior() == TransactionDefinition.PROPAGATION_REQUIRED) {
+        //     // 不存在事务
+        //     if (!TransactionSynchronizationManager.isSynchronizationActive()) {
+        //         return startTransaction(definition, transaction, null);
+        //     }
+        //
+        //     // 存在事务, 不用开启事务
+        //     if (TransactionSynchronizationManager.isSynchronizationActive()) {
+        //         return new DefaultTransactionStatus(transaction, false, false);
+        //     }
+        // }
+        // else {
+        //     // NESTED
+        //     if (TransactionSynchronizationManager.isSynchronizationActive()) {
+        //         DefaultTransactionStatus status = new DefaultTransactionStatus(transaction, false, false);
+        //         status.createAndHoldSavepoint();
+        //         return status;
+        //     }
+        // }
+        // return startTransaction(definition, transaction, null);
     }
 
-    private DefaultTransactionStatus startTransaction(
-            TransactionDefinition definition, Object transaction, Object suspendedResources
-    ) {
+    @Override
+    public void commit(TransactionStatus transactionStatus) throws TransactionException {
+        if (transactionStatus.isCompleted()) {
+            throw new IllegalArgumentException("Transaction is already completed - do not call or rollback more than once per transaction");
+        }
+        DefaultTransactionStatus status = (DefaultTransactionStatus) transactionStatus;
+        try {
+            // 有保存点 就会回滚到保存点
+            if (status.hasSavepoint()) {
+                status.releaseHeldSavepoint();
+            }
+            else if (status.isNewTransaction()) {
+                doCommit(status);
+            }
+        }
+        finally {
+            cleanupAfterCompletion(status);
+        }
+    }
+
+    @Override
+    public void rollback(TransactionStatus transactionStatus) throws TransactionException {
+        if (transactionStatus.isCompleted()) {
+            throw new IllegalArgumentException("Transaction is already completed - do not call commit or rollback more than once per transaction");
+        }
+
+        DefaultTransactionStatus status = (DefaultTransactionStatus) transactionStatus;
+        try {
+            if (status.hasSavepoint()) {
+                status.rollbackToHeldSavepoint();
+            }
+            else if (status.isNewTransaction()) {
+                doRollback(status);
+            }
+        }
+        finally {
+            cleanupAfterCompletion(status);
+        }
+    }
+
+    // ========================================   public methods   =========================================
+
+
+    // -----------------------------------------------------------------------------------------------------
+    // --------------------------------------    private methods    ----------------------------------------
+    // -----------------------------------------------------------------------------------------------------
+
+    private DefaultTransactionStatus startTransaction(TransactionDefinition definition, Object transaction, Object suspendedResources) {
         DefaultTransactionStatus status = new DefaultTransactionStatus(transaction, true, true);
         status.setSuspendedResources(suspendedResources);
         doBegin(transaction, definition); // 开启事务
         prepareSynchronization(status, definition); // 交给事务同步管理器管理
         return status;
-    }
-
-    @Override
-    public void commit(TransactionStatus status) throws TransactionException {
-        if (status.isCompleted()) {
-            throw new IllegalArgumentException("Transaction is already completed - do not call or rollback more than once per transaction");
-        }
-        DefaultTransactionStatus defaultTransactionStatus = (DefaultTransactionStatus) status;
-        try {
-            if (status.hasSavepoint()) {
-                (defaultTransactionStatus).releaseHeldSavepoint();
-            }
-            else if (status.isNewTransaction()) {
-                doCommit(defaultTransactionStatus);
-            }
-        }
-        finally {
-            cleanupAfterCompletion(defaultTransactionStatus);
-        }
     }
 
     private void cleanupAfterCompletion(DefaultTransactionStatus status) {
@@ -96,40 +137,19 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
      */
     protected final void resume(Object transaction, SuspendedResourcesHolder resourcesHolder) {
         if (resourcesHolder != null) {
-            Object suspendedResources = resourcesHolder.suspendedResources;
-            if (suspendedResources != null) {
-                doResume(transaction, suspendedResources);
+            Object resources = resourcesHolder.suspendedResources;
+            if (resources != null) {
+                doResume(transaction, resources);
             }
-            List<TransactionSynchronization> suspendedSynchronizations = resourcesHolder.suspendedSynchronizations;
-            if (suspendedSynchronizations != null) {
+            List<TransactionSynchronization> synchronizations = resourcesHolder.suspendedSynchronizations;
+            if (synchronizations != null) {
                 TransactionSynchronizationManager.setActualTransactionActive(resourcesHolder.wasActive);
                 TransactionSynchronizationManager.setCurrentTransactionName(resourcesHolder.name);
-                doResumeSynchronization(suspendedSynchronizations);
+                doResumeSynchronization(synchronizations);
             }
         }
     }
 
-
-    @Override
-    public void rollback(TransactionStatus status) throws TransactionException {
-        if (status.isCompleted()) {
-            throw new IllegalArgumentException("Transaction is already completed - do not call commit or rollback more than once per transaction");
-        }
-
-
-        DefaultTransactionStatus defaultTransactionStatus = (DefaultTransactionStatus) status;
-        try {
-            if (defaultTransactionStatus.hasSavepoint()) {
-                defaultTransactionStatus.rollbackToHeldSavepoint();
-            }
-            else if (defaultTransactionStatus.isNewTransaction()) {
-                doRollback(defaultTransactionStatus);
-            }
-        }
-        finally {
-            cleanupAfterCompletion(defaultTransactionStatus);
-        }
-    }
 
     /**
      * 挂起一个事务，把上下文保存到 SuspendedResourcesHolder
@@ -201,6 +221,11 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
         }
     }
 
+    // -----------------------------------------------------------------------------------------------------
+    // --------------------------------------    private methods    ----------------------------------------
+    // -----------------------------------------------------------------------------------------------------
+
+
     protected abstract Object doGetTransaction() throws TransactionException;
 
     protected abstract void doCommit(DefaultTransactionStatus status) throws TransactionException;
@@ -229,9 +254,7 @@ public abstract class AbstractPlatformTransactionManager implements PlatformTran
             this.suspendedResources = suspendedResources;
         }
 
-        public SuspendedResourcesHolder(
-                Object suspendedResources, List<TransactionSynchronization> suspendedSynchronizations,
-                String name, boolean wasActive) {
+        public SuspendedResourcesHolder(Object suspendedResources, List<TransactionSynchronization> suspendedSynchronizations, String name, boolean wasActive) {
             this.suspendedResources = suspendedResources;
             this.suspendedSynchronizations = suspendedSynchronizations;
             this.name = name;

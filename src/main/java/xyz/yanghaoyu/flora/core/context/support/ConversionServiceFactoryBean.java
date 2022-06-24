@@ -20,9 +20,10 @@ import xyz.yanghaoyu.flora.exception.BeansException;
  */
 
 public class ConversionServiceFactoryBean implements FactoryBean<ConversionService>, InitializingBean, BeanFactoryAware {
-    private static final Logger                          LOGGER = LoggerFactory.getLogger(ConversionServiceFactoryBean.class);
-    private              ConfigurableListableBeanFactory beanFactory;
-    private              GenericConversionService        conversionService;
+    private static final Logger LOGGER = LoggerFactory.getLogger(ConversionServiceFactoryBean.class);
+
+    private ConfigurableListableBeanFactory beanFactory;
+    private GenericConversionService        conversionService;
 
     @Override
     public ConversionService getObject() throws Exception {
@@ -54,11 +55,13 @@ public class ConversionServiceFactoryBean implements FactoryBean<ConversionServi
                 GenericConverter bean = (GenericConverter) beanFactory.getBean(beanName);
                 LOGGER.trace("register [GenericConverter] [{}]", beanName);
                 conversionService.addConverter(bean);
-            } else if (Converter.class.isAssignableFrom(beanClass)) {
+            }
+            else if (Converter.class.isAssignableFrom(beanClass)) {
                 Converter bean = (Converter) beanFactory.getBean(beanName);
                 LOGGER.trace("register [Converter] [{}]", beanName);
                 conversionService.addConverter(bean);
-            } else if (ConverterFactory.class.isAssignableFrom(beanClass)) {
+            }
+            else if (ConverterFactory.class.isAssignableFrom(beanClass)) {
                 ConverterFactory<?, ?> bean = (ConverterFactory<?, ?>) beanFactory.getBean(beanName);
                 LOGGER.trace("register [ConverterFactory] [{}]", beanName);
                 conversionService.addConverterFactory(bean);

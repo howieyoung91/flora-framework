@@ -16,10 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @version 1.0
  */
 public class AnnotationAspectJExpressionPointcutAdvisorManager implements BeanFactoryAware {
-    private final Map<String, AnnotationAspectJExpressionPointcutAdvisor> map
-            = new ConcurrentHashMap<>(8);
-    private       Collection<AnnotationAspectJExpressionPointcutAdvisor>  advisorsCache
-            = map.values();
+    private final Map<String, AnnotationAspectJExpressionPointcutAdvisor> map = new ConcurrentHashMap<>(8);
     private       BeanFactory                                             beanFactory;
 
     @Override
@@ -37,10 +34,7 @@ public class AnnotationAspectJExpressionPointcutAdvisorManager implements BeanFa
     }
 
     private Collection<AnnotationAspectJExpressionPointcutAdvisor> getAdvisorCandidates() {
-        if (advisorsCache == null) {
-            advisorsCache = map.values();
-        }
-        return advisorsCache;
+        return map.values();
     }
 
     public Collection<AnnotationAspectJExpressionPointcutAdvisor> getAdvisorCandidates(Class<?> clazz) {

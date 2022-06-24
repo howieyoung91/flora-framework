@@ -7,12 +7,10 @@ import xyz.yanghaoyu.flora.core.aop.PointcutAdvisor;
 
 @Deprecated
 public class AspectJExpressionPointcutAdvisor implements PointcutAdvisor {
-    // 切入点
-    private AspectJExpressionPointcut pointcut;
-    // 拦截器
-    private MethodInterceptor         methodInterceptor;
-    // 表达式
-    private String                    expression;
+    private AspectJExpressionPointcut pointcut;          // 切入点
+    private MethodInterceptor         methodInterceptor; // 拦截器
+    private String                    expression;        // 表达式
+
 
     @Override
     public Pointcut getPointcut() {
@@ -26,7 +24,6 @@ public class AspectJExpressionPointcutAdvisor implements PointcutAdvisor {
     public Advice getAdvice() {
         return methodInterceptor;
     }
-
 
     public AspectJExpressionPointcutAdvisor setAdvice(MethodInterceptor advice) {
         this.methodInterceptor = advice;

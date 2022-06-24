@@ -18,6 +18,8 @@ public interface ListableBeanFactory extends BeanFactory {
      */
     <T> Map<String, T> getBeansOfType(Class<T> type) throws BeansException;
 
+    <T> T getBeanOfType(Class<T> type) throws BeansException;
+
     /**
      * 返回注册表中所有的Bean名称
      */

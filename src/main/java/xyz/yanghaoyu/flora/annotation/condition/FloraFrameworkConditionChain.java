@@ -53,7 +53,8 @@ public class FloraFrameworkConditionChain extends FloraFrameworkCondition {
                     return false;
                 }
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             e.printStackTrace();
         }
         return true;

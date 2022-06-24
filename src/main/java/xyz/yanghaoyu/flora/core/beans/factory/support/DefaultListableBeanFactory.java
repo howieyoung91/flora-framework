@@ -12,8 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFactory
-        implements ConfigurableListableBeanFactory, BeanDefinitionRegistry {
+public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFactory implements ConfigurableListableBeanFactory, BeanDefinitionRegistry {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultListableBeanFactory.class);
 
     private final Map<String, BeanDefinition> beanDefinitionMap = new ConcurrentHashMap<>();
@@ -78,6 +77,19 @@ public class DefaultListableBeanFactory extends AbstractAutowireCapableBeanFacto
             }
         });
         return result;
+    }
+
+    @Override
+    public <T> T getBeanOfType(Class<T> type) throws BeansException {
+        for (Map.Entry<String, BeanDefinition> entry : beanDefinitionMap.entrySet()) {
+            BeanDefinition beanDefinition = entry.getValue();
+            Class<?>       beanClass      = beanDefinition.getBeanClass();
+            if (beanClass.isAssignableFrom(type)) {
+                String beanName = entry.getKey();
+                return (T) getBean(beanName);
+            }
+        }
+        return null;
     }
 
     @Override

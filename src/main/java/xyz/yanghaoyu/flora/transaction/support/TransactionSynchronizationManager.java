@@ -15,23 +15,18 @@ import java.util.*;
 public abstract class TransactionSynchronizationManager {
     private static final Logger logger = LoggerFactory.getLogger(TransactionSynchronizationManager.class);
 
-    private static final ThreadLocal<Map<Object, Object>> resources =
-            new NamedThreadLocal<>("Transactional resources");
+    private static final ThreadLocal<Map<Object, Object>> resources = new NamedThreadLocal<>("Transactional resources");
 
-    private static final ThreadLocal<Set<TransactionSynchronization>> synchronizations =
-            new NamedThreadLocal<>("Transaction synchronizations");
+    private static final ThreadLocal<Set<TransactionSynchronization>> synchronizations = new NamedThreadLocal<>("Transaction synchronizations");
 
-    private static final ThreadLocal<String> currentTransactionName =
-            new NamedThreadLocal<>("Current transaction name");
+    private static final ThreadLocal<String> currentTransactionName = new NamedThreadLocal<>("Current transaction name");
 
+    private static final ThreadLocal<Boolean> actualTransactionActive = new NamedThreadLocal<>("Actual transaction active");
     // private static final ThreadLocal<Boolean> currentTransactionReadOnly =
     //         new NamedThreadLocal<>("Current transaction read-only status");
 
     // private static final ThreadLocal<Integer> currentTransactionIsolationLevel =
     //         new NamedThreadLocal<>("Current transaction isolation level");
-
-    private static final ThreadLocal<Boolean> actualTransactionActive =
-            new NamedThreadLocal<>("Actual transaction active");
 
 
     //-------------------------------------------------------------------------
@@ -44,16 +39,14 @@ public abstract class TransactionSynchronizationManager {
     }
 
     public static boolean hasResource(Object key) {
-        Object actualKey = key;
-        Object value     = doGetResource(actualKey);
+        Object value = doGetResource(key);
         return (value != null);
     }
 
     public static Object getResource(Object key) {
-        Object actualKey = key;
-        Object value     = doGetResource(actualKey);
+        Object value = doGetResource(key);
         if (value != null) {
-            logger.trace("Retrieved value [" + value + "] for key [" + actualKey + "] bound to thread [" + Thread.currentThread().getName() + "]");
+            logger.trace("Retrieved value [" + value + "] for key [" + key + "] bound to thread [" + Thread.currentThread().getName() + "]");
         }
         return value;
     }
@@ -97,18 +90,15 @@ public abstract class TransactionSynchronizationManager {
     }
 
     public static Object unbindResource(Object key) throws IllegalStateException {
-        Object actualKey = key;
-        Object value     = doUnbindResource(actualKey);
+        Object value = doUnbindResource(key);
         if (value == null) {
-            throw new IllegalStateException(
-                    "No value for key [" + actualKey + "] bound to thread [" + Thread.currentThread().getName() + "]");
+            throw new IllegalStateException("No value for key [" + key + "] bound to thread [" + Thread.currentThread().getName() + "]");
         }
         return value;
     }
 
     public static Object unbindResourceIfPossible(Object key) {
-        Object actualKey = key;
-        return doUnbindResource(actualKey);
+        return doUnbindResource(key);
     }
 
     private static Object doUnbindResource(Object actualKey) {

@@ -55,17 +55,15 @@ public abstract class AbstractAutowireCapableBeanFactory
         LOGGER.trace("create [Bean] [{}]", beanName);
         Object bean = null;
         try {
-            // 实例化
             addCurrentlyCreatingBean(beanName);
 
+            // 实例化
             bean = createBeanInstance(beanDefinition, beanName, args);
 
             // 先把 bean 暴露在三级缓存中, 解决循环依赖
             if (beanDefinition.isSingleton()) {
                 Object finalBean = bean;
-                addSingletonFactory(
-                        beanName, () -> getEarlyBeanReference(beanName, beanDefinition, finalBean)
-                );
+                addSingletonFactory(beanName, () -> getEarlyBeanReference(beanName, beanDefinition, finalBean));
             }
 
             // 实例化后, 返回 false 不再向下执行
@@ -186,17 +184,10 @@ public abstract class AbstractAutowireCapableBeanFactory
         List<BeanPostProcessor> beanPostProcessors = getBeanPostProcessors();
         for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
             if (beanPostProcessor instanceof InstantiationAwareBeanPostProcessor) {
-                // PropertyValues pvs =
                 ((InstantiationAwareBeanPostProcessor) beanPostProcessor).postProcessPropertyValues(beanDefinition.getPropertyValues(), bean, beanName);
-                // if (pvs != null) {
-                //     for (PropertyValue propertyValue : pvs.getPropertyValues()) {
-                //         beanDefinition.getPropertyValues().addPropertyValue(propertyValue);
-                //     }
-                // }
             }
         }
     }
-
 
     /**
      * 属性填充

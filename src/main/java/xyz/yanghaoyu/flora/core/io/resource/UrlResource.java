@@ -24,7 +24,8 @@ public class UrlResource implements Resource {
         URLConnection con = this.url.openConnection();
         try {
             return con.getInputStream();
-        } catch (IOException ex) {
+        }
+        catch (IOException ex) {
             if (con instanceof HttpURLConnection) {
                 ((HttpURLConnection) con).disconnect();
             }

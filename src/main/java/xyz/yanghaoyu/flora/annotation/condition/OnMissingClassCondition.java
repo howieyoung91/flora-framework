@@ -25,7 +25,8 @@ public class OnMissingClassCondition extends FloraFrameworkCondition {
             try {
                 loader.loadClass(className);
                 return false;
-            } catch (ClassNotFoundException ignored) {
+            }
+            catch (ClassNotFoundException ignored) {
             }
         }
         return true;

@@ -123,10 +123,7 @@ public class AutowiredAnnotationBeanPostProcessor
             String key   = valueAnn.value();
             String value = beanFactory.resolveEmbeddedValue(key);
 
-            if (StringUtil.isEmpty(value) ||
-                (PropertyUtil.isPropertyKey(key) &&
-                 PropertyUtil.isPropertyKey(value))
-            ) {
+            if (StringUtil.isEmpty(value) || (PropertyUtil.isPropertyKey(key) && PropertyUtil.isPropertyKey(value))) {
                 if (valueAnn.required()) {
                     throw new BeansException("Fail to find the value [" + valueAnn.value() + "]");
                 }

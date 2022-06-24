@@ -7,7 +7,7 @@ import xyz.yanghaoyu.flora.core.convert.converter.Converter;
  * @version 1.0
  */
 
- class NumberToCharacterConverter implements Converter<Number, Character> {
+class NumberToCharacterConverter implements Converter<Number, Character> {
     @Override
     public Character convert(Number source) {
         return (char) source.shortValue();

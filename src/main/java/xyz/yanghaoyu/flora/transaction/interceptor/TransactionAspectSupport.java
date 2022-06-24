@@ -18,8 +18,8 @@ import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentMap;
 
 public abstract class TransactionAspectSupport implements BeanFactoryAware {
-    private static final ThreadLocal<TransactionInfo> TRANSACTION_INFO_HOLDER =
-            new NamedThreadLocal<>("current aspect-driven transaction");
+    private static final ThreadLocal<TransactionInfo> TRANSACTION_INFO_HOLDER
+            = new NamedThreadLocal<>("current aspect-driven transaction");
 
     private BeanFactory                                       beanFactory;
     private ConcurrentMap<Object, PlatformTransactionManager> transactionManagers = new ConcurrentReferenceHashMap(4);
@@ -30,15 +30,27 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware {
         this.beanFactory = beanFactory;
     }
 
+    public void setTransactionAttributeSource(TransactionAttributeSource source) {
+        this.source = source;
+    }
+
+
+    // -----------------------------------------------------------------------------------------------------
+    // ⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇    private methods    ⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇
+    // -----------------------------------------------------------------------------------------------------
+
     /**
      * 在事务内执行方法，交给子类调用
      */
-    protected Object invokeWithinTransaction(Method method, Class<?> targetClass, InvocationCallback invocation) throws Throwable {
+    protected Object invokeWithinTransaction(Method method, Class<?> targetClass,
+                                             InvocationCallback invocation) throws Throwable {
         TransactionAttribute       attribute          = source.getTransactionAttribute(method, targetClass);
         PlatformTransactionManager transactionManager = determineTransactionManager(attribute);
 
-        TransactionInfo info   = createTransactionIfNecessary(transactionManager, attribute, ReflectUtil.getQualifiedMethodName(method, targetClass));
-        Object          result = null;
+        TransactionInfo info = createTransactionIfNecessary(
+                transactionManager, attribute, ReflectUtil.getQualifiedMethodName(method, targetClass));
+
+        Object result = null;
         try {
             result = invocation.proceedWithInvocation();
         }
@@ -59,13 +71,13 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware {
         }
         String transactionManagerName = attribute.getTransactionManager();
         if (StringUtil.hasText(transactionManagerName)) {
-            return doGetTransactionManagerFromCache(transactionManagerName);
+            return getTransactionManager(transactionManagerName);
         }
         return null;
     }
 
 
-    private PlatformTransactionManager doGetTransactionManagerFromCache(String transactionManagerName) {
+    private PlatformTransactionManager getTransactionManager(String transactionManagerName) {
         PlatformTransactionManager transactionManager = transactionManagers.get(transactionManagerName);
         if (transactionManager == null) {
             transactionManager = beanFactory.getBean(transactionManagerName, PlatformTransactionManager.class);
@@ -149,13 +161,15 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware {
         TransactionStatus status = info.getTransactionStatus();
         if (status == null) {
             return;
+
         }
         info.getTransactionManager().commit(status);
     }
 
-    public void setTransactionAttributeSource(TransactionAttributeSource source) {
-        this.source = source;
-    }
+    // -----------------------------------------------------------------------------------------------------
+    // ⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆    private methods    ⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆⬆
+    // -----------------------------------------------------------------------------------------------------
+
 
     protected interface InvocationCallback {
         Object proceedWithInvocation() throws Throwable;
@@ -168,11 +182,9 @@ public abstract class TransactionAspectSupport implements BeanFactoryAware {
         private       TransactionStatus          transactionStatus;
         private       TransactionInfo            oldTransactionInfo;
 
-        public TransactionInfo(
-                PlatformTransactionManager transactionManager,
-                TransactionAttribute transactionAttribute,
-                String joinPointIdentification
-        ) {
+        public TransactionInfo(PlatformTransactionManager transactionManager,
+                               TransactionAttribute transactionAttribute,
+                               String joinPointIdentification) {
             this.transactionManager = transactionManager;
             this.transactionAttribute = transactionAttribute;
             this.joinPointIdentification = joinPointIdentification;

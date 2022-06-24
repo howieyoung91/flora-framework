@@ -44,7 +44,8 @@ public final class FloraFactoriesLoader {
                 map.put(url.getPath(), yamlMap);
                 inputStream.close();
             }
-        } catch (IOException e) {
+        }
+        catch (IOException e) {
             e.printStackTrace();
         }
         return map;

@@ -20,13 +20,16 @@ public class DefaultResourceLoader implements ResourceLoader {
         if (location == null) {
             throw new NullPointerException("location must not be null!");
         }
+
         if (location.startsWith(CLASSPATH_URL_PREFIX)) {
             return new ClassPathResource(location.substring(CLASSPATH_URL_PREFIX.length()));
-        } else {
+        }
+        else {
             try {
                 URL url = new URL(location);
                 return new UrlResource(url);
-            } catch (MalformedURLException e) {
+            }
+            catch (MalformedURLException e) {
                 return new FileSystemResource(location);
             }
         }

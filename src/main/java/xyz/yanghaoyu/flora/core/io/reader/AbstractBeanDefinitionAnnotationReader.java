@@ -8,7 +8,8 @@ import xyz.yanghaoyu.flora.core.beans.factory.support.BeanDefinitionRegistry;
  */
 
 
-public abstract class AbstractBeanDefinitionAnnotationReader extends AbstractBeanDefinitionReader implements BeanDefinitionAnnotationReader {
+public abstract class AbstractBeanDefinitionAnnotationReader
+        extends AbstractBeanDefinitionReader implements BeanDefinitionAnnotationReader {
     public AbstractBeanDefinitionAnnotationReader(BeanDefinitionRegistry registry) {
         super(registry);
     }

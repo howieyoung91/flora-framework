@@ -9,9 +9,8 @@ import java.io.IOException;
  * @author <a href="https://yanghaoyu.xyz">Howie Young</a><i>on 2021/12/6 20:08<i/>
  * @version 1.0
  */
-
-
-public abstract class AbstractAnnotationConfigApplicationContext extends AbstractRefreshableAnnotationConfigApplicationContext {
+public abstract class AbstractAnnotationConfigApplicationContext
+        extends AbstractRefreshableAnnotationConfigApplicationContext {
     public AbstractAnnotationConfigApplicationContext(Class... classes) {
         setBaseConfigurationClasses(classes);
     }
@@ -21,7 +20,8 @@ public abstract class AbstractAnnotationConfigApplicationContext extends Abstrac
         AnnotationBeanDefinitionReader reader = new AnnotationBeanDefinitionReader(beanFactory);
         try {
             reader.loadBeanDefinitions(getBaseConfigurationClasses());
-        } catch (IOException | ClassNotFoundException e) {
+        }
+        catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }

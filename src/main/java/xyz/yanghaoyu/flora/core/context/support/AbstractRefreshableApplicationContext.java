@@ -9,7 +9,6 @@ import xyz.yanghaoyu.flora.exception.BeansException;
 /**
  * 这个类主要关注工厂的创建
  */
-
 public abstract class AbstractRefreshableApplicationContext extends AbstractApplicationContext {
     public static final Logger                     LOGGER = LoggerFactory.getLogger(AbstractRefreshableApplicationContext.class);
     private             DefaultListableBeanFactory beanFactory;

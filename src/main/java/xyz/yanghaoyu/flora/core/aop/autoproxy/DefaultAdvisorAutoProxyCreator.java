@@ -19,7 +19,8 @@ import java.util.Set;
  * 按照 advisor 生成代理
  */
 @Deprecated
-public class DefaultAdvisorAutoProxyCreator implements SmartInstantiationAwareBeanPostProcessor, BeanFactoryAware {
+public class DefaultAdvisorAutoProxyCreator
+        implements SmartInstantiationAwareBeanPostProcessor, BeanFactoryAware {
     protected DefaultListableBeanFactory beanFactory;
 
     protected final Set<Object> earlyProxyReferences = Collections.synchronizedSet(new HashSet<>());
@@ -30,9 +31,7 @@ public class DefaultAdvisorAutoProxyCreator implements SmartInstantiationAwareBe
     }
 
     private boolean isInfrastructureClass(Class<?> beanClass) {
-        return Advice.class.isAssignableFrom(beanClass)
-               || Pointcut.class.isAssignableFrom(beanClass)
-               || Advisor.class.isAssignableFrom(beanClass);
+        return Advice.class.isAssignableFrom(beanClass) || Pointcut.class.isAssignableFrom(beanClass) || Advisor.class.isAssignableFrom(beanClass);
     }
 
     @Override
@@ -57,7 +56,7 @@ public class DefaultAdvisorAutoProxyCreator implements SmartInstantiationAwareBe
                 continue;
             }
             AdvisedSupport advisedSupport = new AdvisedSupport();
-            TargetSource targetSource = new TargetSource(temp);
+            TargetSource   targetSource   = new TargetSource(temp);
             // 把真实对象注入
             advisedSupport.setTargetSource(targetSource);
             // 方法拦截器 怎样增强

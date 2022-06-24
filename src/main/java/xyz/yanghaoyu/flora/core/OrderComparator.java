@@ -27,7 +27,8 @@ public class OrderComparator implements Comparator<Object> {
         if (p1 && !p2) {
             // 优先级更高 返回 -1
             return -1;
-        } else if (!p1 && p2) {
+        }
+        else if (!p1 && p2) {
             return 1;
         }
 
@@ -39,7 +40,6 @@ public class OrderComparator implements Comparator<Object> {
     private int getOrder(Object o) {
         return o instanceof Ordered ? ((Ordered) o).getOrder() : Ordered.LOWEST_PRECEDENCE / 2;
     }
-
 
     public static void sort(List<?> list) {
         if (list.size() > 1) {
@@ -56,7 +56,8 @@ public class OrderComparator implements Comparator<Object> {
     public static void sortIfNecessary(Object value) {
         if (value instanceof Object[]) {
             sort((Object[]) value);
-        } else if (value instanceof List) {
+        }
+        else if (value instanceof List) {
             sort((List<?>) value);
         }
     }

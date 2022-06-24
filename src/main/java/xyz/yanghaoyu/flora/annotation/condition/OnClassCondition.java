@@ -16,6 +16,7 @@ public class OnClassCondition extends FloraFrameworkCondition {
         if (onClassAnn == null) {
             return true;
         }
+
         return doMatch(context, onClassAnn);
     }
 
@@ -25,7 +26,8 @@ public class OnClassCondition extends FloraFrameworkCondition {
             for (String className : onClassAnn.value()) {
                 loader.loadClass(className);
             }
-        } catch (ClassNotFoundException e) {
+        }
+        catch (ClassNotFoundException e) {
             return false;
         }
         return true;

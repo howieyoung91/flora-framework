@@ -21,7 +21,7 @@ public abstract class IocUtil {
         // registerBuiltinBeanIfNecessary(registry, BuiltInBean.DEFAULT_ADVISOR_AUTO_PROXY_CREATOR);
 
         // Annotation AOP
-        registerBuiltinBeanIfNecessary(registry, BuiltInBean.ANNOTATION_AWARE_ASPECT_J_AUTO_PROXY_SUPPORT_BEAN_FACTORY_POST_PROCESSOR);
+        registerBuiltinBeanIfNecessary(registry, BuiltInBean.AUTO_PROXY_SUPPORT_BEAN_FACTORY_POST_PROCESSOR);
         registerBuiltinBeanIfNecessary(registry, BuiltInBean.ANNOTATION_AWARE_ASPECT_J_AUTO_PROXY_CREATOR);
     }
 

@@ -4,7 +4,6 @@ import xyz.yanghaoyu.flora.core.Ordered;
 import xyz.yanghaoyu.flora.core.PriorityOrdered;
 import xyz.yanghaoyu.flora.core.beans.factory.ApplicationContextAware;
 import xyz.yanghaoyu.flora.core.beans.factory.ApplicationEventPublisherAware;
-import xyz.yanghaoyu.flora.core.beans.factory.EmbeddedValueResolverAware;
 import xyz.yanghaoyu.flora.core.beans.factory.ResourceLoaderAware;
 import xyz.yanghaoyu.flora.core.beans.factory.config.BeanPostProcessor;
 import xyz.yanghaoyu.flora.core.context.ApplicationContext;

@@ -15,7 +15,7 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
     void addEmbeddedValueResolver(StringValueResolver valueResolver);
 
     String resolveEmbeddedValue(String value);
-    
+
     void setConversionService(ConversionService conversionService);
 
     ConversionService getConversionService();

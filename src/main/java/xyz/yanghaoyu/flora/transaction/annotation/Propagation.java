@@ -9,6 +9,7 @@ import xyz.yanghaoyu.flora.transaction.TransactionDefinition;
 
 public enum Propagation {
     REQUIRED(TransactionDefinition.PROPAGATION_REQUIRED);
+    // todo support
     // SUPPORTS(TransactionDefinition.PROPAGATION_SUPPORTS),
     // MANDATORY(TransactionDefinition.PROPAGATION_MANDATORY),
     // REQUIRES_NEW(TransactionDefinition.PROPAGATION_REQUIRES_NEW),
