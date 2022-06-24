@@ -1,5 +1,7 @@
 # flora-framework
 
+![flora](./doc/assets/flora.png)
+
 ## Install
 
 使用
