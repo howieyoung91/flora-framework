@@ -6,9 +6,9 @@
 
     <groupId>xyz.yanghaoyu.flora.framework</groupId>
     <artifactId>flora-framework</artifactId>
-    <version>1.1</version>
+    <version>1.2</version>
 
-    <name>flora</name>
+    <name>flora-framework</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
